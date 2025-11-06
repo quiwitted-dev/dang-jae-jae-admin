@@ -32,7 +32,7 @@ const RIGHT_ITEM = [
 
 const RightSide = () => {
   return (
-    <div className='pt-20'>
+    <div className="hidden md:block pt-20">
       <h3 className="text-[43px] font-extralight whitespace-normal break-keep">
         복잡한 정비사업? 데이터로 1분 만에 끝내세요! 친절하고 쉬운 통합 데이터로
         딱 핵심만 알려드릴게요. 가장 확실한 투자 독립! 지금 바로 무료로
@@ -53,9 +53,9 @@ const RightSide = () => {
             <div className="relative p-0 min-w-[94px]">
               <Image src={item.img} alt={item.title} fill />
             </div>
-            <div className="py-10 px-7 flex flex-col gap-4">
+            <div className="py-10 px-7 flex flex-col gap-4 bg-white/4">
               <h3 className={`${item.color} text-base`}>{item.title}</h3>
-              <p>{item.desc}</p>
+              <p className="text-white">{item.desc}</p>
             </div>
           </div>
         ))}
