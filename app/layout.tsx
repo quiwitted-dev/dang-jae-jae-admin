@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Playfair_Display } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/layout/Header';
+import ModalProvider from '@/components/providers/ModalProviders';
 
 // Playfair Display Google 폰트 설정
 const playfairDisplay = Playfair_Display({
@@ -27,6 +28,7 @@ export default function RootLayout({
       >
         <Header />
         {children}
+        <ModalProvider />
       </body>
     </html>
   );
