@@ -105,7 +105,7 @@ const DetailSideBar = ({
             <Button className="rounded-full">비교담기</Button>
           </div>
 
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-4 px-5 md:px-0">
             <h4 className="text-[20px] font-bold whitespace-nowrap">
               요즘시세
             </h4>
@@ -115,7 +115,7 @@ const DetailSideBar = ({
             </p>
           </div>
 
-          <div className="border-2 border-black rounded-4xl flex flex-row p-3 gap-8">
+          <div className="border-2 border-black rounded-4xl flex flex-row p-3 gap-8 mx-2 md:mx-0">
             <div className="text-[40px] font-normal text-center">
               <div className="flex flex-row">
                 <span className="font-playfair">
@@ -164,7 +164,7 @@ const DetailSideBar = ({
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 px-5 md:px-0">
             <div className="mb-4 text-sm font-normal text-[#49454F]">
               <div>
                 <p>
