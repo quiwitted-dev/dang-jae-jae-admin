@@ -33,7 +33,7 @@ const RIGHT_ITEM = [
 const RightSide = () => {
   return (
     <div className="hidden md:block pt-20">
-      <h3 className="text-[43px] font-extralight whitespace-normal break-keep">
+      <h3 className="text-[43px] md:max-w-[980px] font-extralight whitespace-normal break-keep">
         복잡한 정비사업? 데이터로 1분 만에 끝내세요! 친절하고 쉬운 통합 데이터로
         딱 핵심만 알려드릴게요. 가장 확실한 투자 독립! 지금 바로 무료로
         시작해보세요.
@@ -47,7 +47,7 @@ const RightSide = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-1">
+      <div className="grid grid-cols-2 gap-1 md:pb-[140px]">
         {RIGHT_ITEM.map((item) => (
           <div key={item.title} className="flex flex-row">
             <div className="relative p-0 min-w-[94px]">
