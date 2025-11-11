@@ -4,6 +4,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Bookmark, Search, UserRound } from 'lucide-react';
 import useStore from '@/store/useStore';
+import Link from 'next/link';
 
 const Header = () => {
   const { isOpen, toggleOpen } = useStore();
@@ -21,13 +22,15 @@ const Header = () => {
           <Search />
         </div>
       </div>
-      <Image
-        src={'/logo.png'}
-        alt="로고"
-        width={80}
-        height={40}
-        className="hidden md:absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
-      />
+      <Link href={'/'}>
+        <Image
+          src={'/logo.png'}
+          alt="로고"
+          width={80}
+          height={40}
+          className="hidden md:block md:absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+        />
+      </Link>
       <div className="relative flex flex-row items-center gap-1 md:gap-2">
         <Button
           className="hidden md:flex flex-row"
