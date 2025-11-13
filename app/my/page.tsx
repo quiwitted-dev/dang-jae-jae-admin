@@ -8,8 +8,8 @@ export const user = {
 
 const MyPage = () => {
   return (
-    <div className="flex flex-row bg-[#212138] min-h-dvh">
-      <div className="max-w-[600px] md:w-[600px]">
+    <div className="flex lg:flex-row flex-col bg-[#212138] min-h-dvh lg:px-0 px-2">
+      <div className="lg:max-w-[600px] lg:md:w-[600px]">
         <LeftSide user={user} />
       </div>
       <div className="flex flex-1">
