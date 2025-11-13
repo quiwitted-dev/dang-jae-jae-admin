@@ -7,10 +7,15 @@ interface StoreState {
   myPageTab: 'message' | 'assetManagement' | 'settings' | 'none';
   setMyPageTab: (tab: 'message' | 'assetManagement' | 'settings') => void;
 
-  settingsTab: 'privacy' | 'policies' | 'analysis' | 'service';
+  settingsTab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none';
   setSettingsTab: (
-    tab: 'privacy' | 'policies' | 'analysis' | 'service'
+    tab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none'
   ) => void;
+
+  // isTermsModalOpen: boolean;
+  // setIsTermsModalOpen: () => void;
+
+  clear: () => void;
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -22,6 +27,12 @@ const useStore = create<StoreState>((set) => ({
 
   settingsTab: 'privacy',
   setSettingsTab: (tab) => set({ settingsTab: tab }),
+
+  // isTermsModalOpen: false,
+  // setIsTermsModalOpen: () =>
+  //   set((state) => ({ isTermsModalOpen: !state.isTermsModalOpen })),
+
+  clear: () => set({ myPageTab: 'none', settingsTab: 'none' }),
 }));
 
 export default useStore;
