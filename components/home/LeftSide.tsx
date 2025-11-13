@@ -173,12 +173,14 @@ const LeftSide = () => {
           </p>
         </div>
 
-        <Button
-          className="absolute mx-auto bottom-9 left-1/2 -translate-x-1/2 text-[25px] font-semibold rounded-full"
-          size={'lg'}
-        >
-          <Plus /> 예정지 추가하기
-        </Button>
+        <Link href={'/expected_add'}>
+          <Button
+            className="absolute mx-auto bottom-9 left-1/2 -translate-x-1/2 text-[25px] font-semibold rounded-full"
+            size={'lg'}
+          >
+            <Plus /> 예정지 추가하기
+          </Button>
+        </Link>
       </div>
     </div>
   );
