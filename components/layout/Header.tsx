@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import { Bookmark, ChevronLeft, Home, Search, UserRound } from 'lucide-react';
 import useStore from '@/store/useStore';
 import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const Header = () => {
   const isOpen = useStore((state) => state.isOpen);
@@ -61,7 +62,9 @@ const Header = () => {
           <Button variant={'white'}>
             <Bookmark fill="black" />
           </Button>
-          <Button variant={'white'}>비교보기</Button>
+          <Link href={'/compare'}>
+            <Button variant={'white'}>비교보기</Button>
+          </Link>
         </div>
       </div>
       {/* 모바일 */}
@@ -88,7 +91,9 @@ const Header = () => {
               <Button variant={'white'}>
                 <Bookmark fill="black" />
               </Button>
-              <Button variant={'white'}>비교보기</Button>
+              <Link href={'/compare'}>
+                <Button variant={'white'}>비교보기</Button>
+              </Link>
             </div>
           </div>
         )}
@@ -103,7 +108,9 @@ const Header = () => {
               <Button variant={'white'}>
                 <Bookmark fill="black" />
               </Button>
-              <Button variant={'white'}>비교보기</Button>
+              <Link href={'/compare'}>
+                <Button variant={'white'}>비교보기</Button>
+              </Link>
             </div>
           </div>
         )}
