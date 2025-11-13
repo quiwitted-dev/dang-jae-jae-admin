@@ -4,7 +4,6 @@ import useStore from '@/store/useStore';
 import { Bookmark, ChevronLeft, icons, MoveRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '../ui/button';
-import Header from '../layout/Header';
 
 const Signin = () => {
   const { toggleOpen } = useStore();
