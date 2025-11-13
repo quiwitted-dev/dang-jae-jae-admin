@@ -6,7 +6,7 @@ import { ProjectType } from '@/types/type';
 
 const ProjectCard = ({ item }: { item: ProjectType }) => {
   return (
-    <Card className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-300/190 min-w-[400px] max-w-[500px]">
+    <Card className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-300/220 min-w-[350px] max-w-[500px] mx-auto">
       <Image
         src={'/temp_location.png'}
         fill
@@ -17,7 +17,7 @@ const ProjectCard = ({ item }: { item: ProjectType }) => {
         <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
         <div className="flex flex-col gap-1">
           <p className="text-xs font-semibold">{item.address}</p>
-          <h3 className="text-sm font-bold truncate w-[160px]">
+          <h3 className="text-sm font-bold truncate w-40">
             {item.project_name}
           </h3>
         </div>
