@@ -1,6 +1,7 @@
 import LeftSide, { ITEM } from '@/components/home/LeftSide';
 import RightSide from '@/components/home/RightSide';
 import { Button } from '@/components/ui/button';
+import { getApprovedBusiness } from '@/services/api';
 import Image from 'next/image';
 
 export const FILTER_BUTTON = [
@@ -20,6 +21,8 @@ export default async function Home({
   const { index } = await searchParams;
   const map = (index && ITEM[Number(index)].map) || '';
 
+  const data = await getApprovedBusiness();
+
   return (
     <main>
       {/* 필터링 */}
@@ -34,7 +37,7 @@ export default async function Home({
         </div>
       </div>
       <div className="flex flex-row">
-        <LeftSide />
+        <LeftSide data={data} />
         {index && (
           <div className="flex-1 min-h-dvh">
             <Image
