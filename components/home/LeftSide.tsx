@@ -1,10 +1,9 @@
-import { Bookmark, Plus } from 'lucide-react';
-import { Badge } from '../ui/badge';
+import { Plus } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
 import ProjectCard from '../common/ProjectCard';
+import { ApprovedSubmissionList } from '@/types/type';
 
 export const ITEM = [
   {
@@ -147,24 +146,25 @@ export const ITEM = [
   },
 ];
 
-const LeftSide = () => {
+const LeftSide = async ({ data }: { data: ApprovedSubmissionList }) => {
+  const submissions = data.submissions.slice(0, 20);
   return (
     <div className="flex flex-col max-w-[700px] w-full gap-4">
       {/* 목록 */}
       <div className="flex flex-col gap-2 md:px-[120px] px-2">
-        {ITEM.map((item, index) => (
-          <Link key={index} href={`/${index}`}>
+        {submissions.map((item) => (
+          <Link key={item.id} href={`/${item.id}?source=${item.dataSource}`}>
             <ProjectCard item={item} />
           </Link>
         ))}
       </div>
-      <div className="md:hidden relative flex flex-col flex-1 min-h-[650px] mt-10 ">
+      <div className="relative flex flex-col flex-1 min-h-[650px] mt-10">
         <Image
           src={'/faces.png'}
           width={400}
           height={300}
           alt="얼굴 아이콘들"
-          className="absolute bottom-0 left-0 right-0 w-full object-contain -z-10"
+          className="absolute bottom-0 left-0 right-0 w-full object-contain -z-10 md:px-[120px]"
         />
 
         <div>
