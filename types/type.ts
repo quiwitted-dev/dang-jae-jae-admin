@@ -44,3 +44,44 @@ export type ProjectType = {
     other_area_m2: number;
   };
 };
+
+export type MainTitleResponse = {
+  success: boolean;
+  mainTitle: {
+    id: string;
+    title: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type ApprovedSubmissionList = {
+  success: boolean;
+  submissions: Array<ApprovedSubmission>;
+  total: 0;
+};
+
+export type ApprovedSubmission = {
+  id: string;
+  dataType: 'PUBLIC_DATA';
+  projectName: string;
+  address: string;
+  projectType: string;
+  currentStage: string;
+  generalSaleUnits: number;
+  averageLandSharePyeong: string;
+  totalSaleUnits: number;
+  newConstructionUnits: number;
+  rentalUnits: number;
+  projectAreaM2: string;
+  volumeRatio: string;
+  newVolumeRatio: string;
+  ownerCount: number;
+  businessOperatorName: string;
+  announcementDates: {};
+  renovationPrice: {};
+  dataSource: string;
+  createdAt: string;
+  reviewedAt: string;
+  user: {};
+};
