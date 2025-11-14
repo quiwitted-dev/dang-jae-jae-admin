@@ -3,13 +3,14 @@ import { X } from 'lucide-react';
 const ComparePage = () => {
   return (
     <div className="flex flex-row min-h-dvh relative">
-      {/* 왼쪽 50% - 보라색에서 파란색 그라데이션 */}
+      {/* 왼쪽 50% - 그라데이션 */}
       <div className="absolute left-0 top-0 w-1/2 h-full bg-linear-to-b from-[#F2EEEB] via-[#CFCCFF] to-[#D1DFD3]"></div>
 
-      {/* 오른쪽 50% - 노란색에서 핑크색 그라데이션 */}
+      {/* 오른쪽 50% - 그라데이션 */}
       <div className="absolute right-0 top-0 w-1/2 h-full bg-linear-to-b from-[#F2EEEB] via-[#EECFD3] to-[#E7DDE3]"></div>
 
-      <section className="flex flex-1 flex-col relative text-black items-center pt-4">
+      {/* 좌측 md이상 */}
+      <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
         <X width={34} height={34} strokeWidth={1} />
         <div className="flex flex-col gap-2 text-center pt-4">
           <h3 className="text-[18px] font-bold">
@@ -33,12 +34,34 @@ const ComparePage = () => {
         </h3>
       </section>
 
-      <section className="flex-1 flex flex-col items-center justify-center relative z-20 text-black">
+      {/* 좌측 모바일 */}
+      <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 left-0 w-1/2 h-[300px] z-20">
+        <X width={34} height={34} strokeWidth={1} />
+        <div className="flex flex-col gap-2 text-center pt-4 w-full">
+          <h3 className="text-[18px] font-bold truncate ">
+            한남하이츠아파트 주택재건축정비사업조합
+          </h3>
+          <p className="text-xl font-thin">성동구 옥수동</p>
+        </div>
+        <div className="flex flex-col gap-3 pt-[60px]">
+          <div className="flex flex-col text-center">
+            <p className="text-sm font-extrabold">정비구역 면적</p>
+            <p className="text-xl font-thin">48837.5 m2</p>
+          </div>
+          <div className="flex flex-col text-center">
+            <p className="text-sm font-extrabold">택지 면적</p>
+            <p className="text-xl font-thin">48837.5 m2</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 메인 비교 */}
+      <section className="flex-1 flex flex-col items-center justify-center relative z-10 text-black md:px-0 px-4">
         {/* Top Line with 위치 */}
-        <div className="mt-20 w-full flex items-center justify-center">
+        <div className="md:mt-20 mt-28 w-full flex items-center justify-center">
           <div className="w-full relative">
-            <div className="h-px bg-black w-full"></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white rounded-full w-[60px] h-[60px] flex items-center justify-center text-sm font-normal">
+            <div className="h-px bg-black md:w-full w-0"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white rounded-full md:w-[60px] md:h-[60px] w-10 h-10 flex items-center justify-center text-sm font-normal">
               위치
             </div>
           </div>
@@ -46,15 +69,21 @@ const ComparePage = () => {
 
         {/* 면적 Bubble */}
         {/* Todo : 면적도 계산할 수 있으면 계산 (가능할 듯?) */}
-        <div className="relative w-full">
-          <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10">
+        <div className="relative flex w-full h-[250px]">
+          <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10 ">
             <div
-              className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-full"
-              style={{ width: `${73.5}px` }} // 왼쪽 비율
+              className="absolute top-1/2 right-0 -translate-y-1/2 bg-radial-[at_75%_30%] from-white/70 to-[#E2D2E0] to-90% transition-all duration-500 rounded-l-full"
+              style={{ width: `${250 / 2}px`, height: `${250}px` }} // 왼쪽 비율
             />
           </div>
-          <div className="bg-purple-200/60 rounded-full w-32 h-32 flex items-center justify-center">
-            <span className="text-lg font-semibold text-gray-700">면적</span>
+          <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden -z-10 ">
+            <div
+              className="absolute top-1/2 left-0 -translate-y-1/2 bg-radial-[at_30%_25%] from-white/10 to-[#268F79]/30 to-90% transition-all duration-500 rounded-r-full"
+              style={{ width: `${150 / 2}px`, height: `${150}px` }} // 왼쪽 비율
+            />
+          </div>
+          <div className="rounded-full flex items-center justify-center mx-auto">
+            <span className="text-sm font-normal text-black">면적</span>
           </div>
         </div>
 
@@ -345,7 +374,8 @@ const ComparePage = () => {
         </div>
       </section>
 
-      <section className="flex flex-1 flex-col relative text-black items-center pt-4">
+      {/* 좌측 md이상 */}
+      <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
         <X width={34} height={34} strokeWidth={1} />
         <div className="flex flex-col gap-2 text-center pt-4">
           <h3 className="text-[18px] font-bold">
