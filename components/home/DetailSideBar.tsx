@@ -1,8 +1,18 @@
 'use client';
-import { ArrowLeft, ArrowRight, Bookmark, X } from 'lucide-react';
+
+import {
+  ArrowLeft,
+  ArrowRight,
+  Bookmark,
+  Check,
+  Pencil,
+  X,
+} from 'lucide-react';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
 import { ProjectType } from '@/types/type';
+import { useState } from 'react';
+import { Input } from '../ui/input';
 
 const DetailSideBar = ({
   data,
@@ -11,6 +21,7 @@ const DetailSideBar = ({
   data: ProjectType;
   index?: number;
 }) => {
+  const [isEdit, setIsEdit] = useState(false);
   const router = useRouter();
 
   const handleGoHome = () => {
@@ -20,6 +31,13 @@ const DetailSideBar = ({
       router.push('/');
     }
   };
+
+  const handleEdit = () => {
+    setIsEdit(!isEdit);
+  };
+
+  const handleSave = () => {};
+
   return (
     <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] max-w-[700px] md:w-[700px] text-black min-h-dvh">
       <div className="flex flex-row items-center justify-between px-4 py-5">
@@ -69,54 +87,91 @@ const DetailSideBar = ({
             </p>
           </div>
 
-          <div className="border-2 border-black rounded-4xl flex flex-row p-3 gap-8 mx-2 md:mx-0">
+          <div className="border-2 relative border-black rounded-4xl flex flex-row p-3 gap-8 mx-2 md:mx-0">
+            <div
+              className="absolute -top-5 left-5 w-7 h-7 bg-black rounded-full flex items-center justify-center cursor-pointer"
+              onClick={handleEdit}
+            >
+              <Pencil className="text-white" size={15} />
+            </div>
             <div className="text-[40px] font-normal text-center">
-              <div className="flex flex-row">
-                <span className="font-playfair">
-                  {data.price_range.min.toString().replace(/0{8}$/, '')}
-                </span>
+              <div className="flex flex-row items-center">
+                {isEdit ? (
+                  <Input className="text-right" placeholder="" required />
+                ) : (
+                  <span className="font-playfair">
+                    {data.price_range.min.toString().replace(/0{8}$/, '')}
+                  </span>
+                )}
                 억
               </div>
               <p>~</p>
-              <div className="flex flex-row">
-                <p className="font-playfair">
-                  {data.price_range.max.toString().replace(/0{8}$/, '')}
-                </p>
+              <div className="flex flex-row items-center">
+                {isEdit ? (
+                  <Input className="text-right" placeholder="" required />
+                ) : (
+                  <span className="font-playfair">
+                    {data.price_range.max.toString().replace(/0{8}$/, '')}
+                  </span>
+                )}
                 억
               </div>
             </div>
 
             <div className="flex flex-col justify-around">
-              <p className="text-xs font-medium text-gray-500 whitespace-normal break-keep">
-                사용자가 게시한 대략적인 <strong>시세정보</strong>이며 매물 별로
-                크게 상이할 수 있고,{' '}
-                <strong className="text-gray-700">
-                  참고 목적으로만 제공됩니다.
-                </strong>{' '}
-                당신의재재는 시세내용의 정확성을 보증하지 않습니다.
-              </p>
+              {isEdit ? (
+                <p className="text-xs font-medium text-gray-500 whitespace-normal break-keep">
+                  현재 구역의 전반적인 시세를 알려주세요~! 억 단위이며 천단위는
+                  반올림 해주세요. <br />
+                  <span className="text-red-600">빨간색은 필수</span>입니다.
+                </p>
+              ) : (
+                <p className="text-xs font-medium text-gray-500 whitespace-normal break-keep">
+                  사용자가 게시한 대략적인 <strong>시세정보</strong>이며 매물
+                  별로 크게 상이할 수 있고,{' '}
+                  <strong className="text-gray-700">
+                    참고 목적으로만 제공됩니다.
+                  </strong>{' '}
+                  당신의재재는 시세내용의 정확성을 보증하지 않습니다.
+                </p>
+              )}
+
               <div className="flex flex-row text-[14px] font-semibold justify-between items-center border-b border-b-gray py-2">
                 <p>최소 초기 투자금</p>
                 <div className="flex flex-row items-end">
-                  <p className="font-playfair text-[28px]">
-                    {data.price_range.min_initial_investment
-                      .toString()
-                      .replace(/0{8}$/, '')}
-                  </p>
+                  {isEdit ? (
+                    <Input className="text-right" placeholder="" required />
+                  ) : (
+                    <span className="font-playfair">
+                      {data.price_range.min_initial_investment
+                        .toString()
+                        .replace(/0{8}$/, '')}
+                    </span>
+                  )}
                   억
                 </div>
               </div>
               <div className="flex flex-row text-[14px] font-semibold justify-between items-center">
-                <p>프리미엄(P)</p>
+                <p className="whitespace-nowrap">프리미엄(P)</p>
                 <div className="flex flex-row items-end">
-                  <p className="font-playfair text-[28px]">
-                    {data.price_range.premium.toString().replace(/0{8}$/, '')}
-                  </p>
+                  {isEdit ? (
+                    <Input className="text-right" placeholder="" required />
+                  ) : (
+                    <span className="font-playfair">
+                      {data.price_range.premium.toString().replace(/0{8}$/, '')}
+                    </span>
+                  )}
                   억
                 </div>
               </div>
             </div>
           </div>
+          {isEdit && (
+            <Button className="rounded-4xl font-medium items-center flex flex-row cursor-pointer">
+              <Check />
+              완료
+            </Button>
+          )}
 
           <div className="mt-6 px-5 md:px-0">
             <div className="mb-4 text-sm font-normal text-[#49454F]">
