@@ -1,11 +1,13 @@
 'use client';
+
 import Image from 'next/image';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { Bookmark, ChevronLeft, Home, Search, UserRound } from 'lucide-react';
+import { ChevronLeft, Home, Search, UserRound } from 'lucide-react';
 import useStore from '@/store/useStore';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 const Header = () => {
   const isOpen = useStore((state) => state.isOpen);
@@ -17,18 +19,23 @@ const Header = () => {
 
   const router = useRouter();
 
+  useEffect(() => {
+    clear();
+  }, [pathname]);
+
   const handleSigninToggle = () => {
     toggleOpen();
   };
 
   const handleLink = (link: string) => {
     router.push(link);
-    clear();
   };
 
   const handleBack = () => {
     router.back();
   };
+
+  // Todo : 비교보기 버튼 비교담기 상태에 따라 아이콘 표현 달리하기 (가능한가?)
 
   return (
     <>
@@ -59,11 +66,19 @@ const Header = () => {
             <UserRound fill="black" />
             <p>로그인</p>
           </Button>
-          <Button variant={'white'}>
+          {/* <Button variant={'white'}>
             <Bookmark fill="black" />
-          </Button>
+          </Button> */}
           <Link href={'/compare'}>
-            <Button variant={'white'}>비교보기</Button>
+            <Button variant={'white'}>
+              <Image
+                src={'/Compare.png'}
+                alt="비교보기 아이콘"
+                width={27}
+                height={27}
+              />
+              비교보기
+            </Button>
           </Link>
         </div>
       </div>
@@ -79,18 +94,17 @@ const Header = () => {
               </div>
             </div>
             <div className="relative flex flex-row items-center gap-1 md:gap-2">
-              <p onClick={() => handleLink('/my')}>마이페이지</p>
+              <p onClick={() => handleLink('/my')}>my</p>
               <Button
-                className="hidden md:flex flex-row"
+                className="flex flex-row"
                 variant={'white'}
                 onClick={handleSigninToggle}
               >
                 <UserRound fill="black" />
-                <p>로그인</p>
               </Button>
-              <Button variant={'white'}>
+              {/* <Button variant={'white'}>
                 <Bookmark fill="black" />
-              </Button>
+              </Button> */}
               <Link href={'/compare'}>
                 <Button variant={'white'}>비교보기</Button>
               </Link>
@@ -105,11 +119,45 @@ const Header = () => {
               <Home onClick={() => handleLink('/')} />
             </div>
             <div className="relative flex flex-row items-center gap-1">
-              <Button variant={'white'}>
+              {/* <Button variant={'white'}>
                 <Bookmark fill="black" />
-              </Button>
+              </Button> */}
               <Link href={'/compare'}>
-                <Button variant={'white'}>비교보기</Button>
+                <Button variant={'white'}>
+                  <Image
+                    src={'/Compare.png'}
+                    alt="비교보기 아이콘"
+                    width={27}
+                    height={27}
+                  />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {pathname === '/compare' && (
+          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-white text-black">
+            <div className="flex flex-row items-center justify-center gap-7">
+              <ChevronLeft onClick={handleBack} />
+              <Home onClick={() => handleLink('/')} />
+            </div>
+            <div className="relative flex flex-row items-center gap-1">
+              {/* <Button variant={'white'}>
+                <Bookmark fill="black" />
+              </Button> */}
+              <Link href={'/compare'}>
+                <Button
+                  variant={'white'}
+                  className="border border-black rounded-full p-1"
+                >
+                  <Image
+                    src={'/Compare.png'}
+                    alt="비교보기 아이콘"
+                    width={27}
+                    height={27}
+                  />
+                </Button>
               </Link>
             </div>
           </div>
