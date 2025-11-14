@@ -4,11 +4,17 @@ import useStore from '@/store/useStore';
 import { Bookmark, ChevronLeft, icons, MoveRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '../ui/button';
+import { signinKakao } from '@/services/api';
+import { useEffect } from 'react';
 
 const Signin = () => {
   const { toggleOpen } = useStore();
   const handleModalToggle = () => {
     toggleOpen();
+  };
+
+  const handleKakaoSignin = () => {
+    signinKakao();
   };
 
   return (
@@ -61,6 +67,7 @@ const Signin = () => {
             <Button
               variant={'link'}
               className="w-full text-[25px] font-medium bg-[#FAE100] text-[#3C1F1A] py-8 rounded-full mb-5"
+              onClick={handleKakaoSignin}
             >
               카카오톡으로 로그인
             </Button>
