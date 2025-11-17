@@ -5,9 +5,10 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { ChevronLeft, Home, Search, UserRound } from 'lucide-react';
 import useStore from '@/store/useStore';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect } from 'react';
+// import { kakaoLogin } from '@/services/api';
 
 const Header = () => {
   const isOpen = useStore((state) => state.isOpen);
@@ -16,12 +17,27 @@ const Header = () => {
   const myPageTab = useStore((state) => state.myPageTab);
   const settingsTab = useStore((state) => state.settingsTab);
   const pathname = usePathname();
-
+  const searchParams = useSearchParams();
+  // const code = searchParams.get('code');
   const router = useRouter();
 
   useEffect(() => {
     clear();
   }, [pathname]);
+
+  // useEffect(() => {
+  //   if (!code) return;
+
+  //   const login = async () => {
+  //     try {
+  //       const data = await kakaoLogin(code);
+  //     } catch (error) {
+  //       console.error('카카오 로그인 실패:', error);
+  //     }
+  //   };
+
+  //   login();
+  // }, [code]);
 
   const handleSigninToggle = () => {
     toggleOpen();
@@ -82,6 +98,7 @@ const Header = () => {
           </Link>
         </div>
       </div>
+
       {/* 모바일 */}
       <div className="lg:hidden">
         {pathname === '/' && (
