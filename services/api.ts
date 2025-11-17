@@ -1,4 +1,5 @@
 import { ApprovedSubmissionList, MainTitleResponse } from '@/types/type';
+import { redirect } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -65,14 +66,22 @@ export const getApprovedBusiness =
   };
 
 export const signinKakao = async () => {
-  try {
-    const res = await fetch(`${API_URL}/api/auth/kakao`);
+  redirect(`${API_URL}/api/auth/kakao`);
+};
 
-    if (!res.ok) {
-      throw new Error(`API 요청 실패`);
-    }
-  } catch (error) {
-    console.error('에러:', error);
-    // 에러 시 기본값 반환
+export const kakaoLogin = async (code: string) => {
+  const res = await fetch(`/api/auth/kakao/callback`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code }),
+  });
+
+  if (!res.ok) {
+    const message = await res.text();
+    throw new Error(message || '카카오 로그인에 실패했습니다.');
   }
+
+  const data = await res.json();
+
+  return data;
 };
