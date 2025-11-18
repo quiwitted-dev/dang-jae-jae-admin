@@ -4,10 +4,11 @@ import useStore from '@/store/useStore';
 import { Bookmark, ChevronLeft, icons, MoveRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '../ui/button';
-import { permissionKakao } from '@/services/api';
+import { permissionKakao } from '@/services/auth.api';
 
 const Login = () => {
   const { toggleOpen } = useStore();
+
   const handleModalToggle = () => {
     toggleOpen();
   };
