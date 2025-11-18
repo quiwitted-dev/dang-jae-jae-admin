@@ -3,28 +3,36 @@
 import Image from 'next/image';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { ChevronLeft, Home, Search, UserRound } from 'lucide-react';
+import { ChevronLeft, Home, LogOut, Search, UserRound } from 'lucide-react';
 import useStore from '@/store/useStore';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { logout } from '@/services/api';
-// import { kakaoLogin } from '@/services/api';
+import useAuthStore from '@/store/useAuthStore';
+import { logout } from '@/services/auth.api';
+type headerProps = {
+  isLoggedIn: boolean;
+};
 
-const Header = () => {
-  const isOpen = useStore((state) => state.isOpen);
+const Header = ({ isLoggedIn }: headerProps) => {
   const toggleOpen = useStore((state) => state.toggleOpen);
   const clear = useStore((state) => state.clear);
-  const myPageTab = useStore((state) => state.myPageTab);
-  const settingsTab = useStore((state) => state.settingsTab);
+  const isLogin = useAuthStore((state) => state.isLogin);
+  const setIsLogin = useAuthStore((state) => state.setIsLogin);
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  // const code = searchParams.get('code');
   const router = useRouter();
 
   useEffect(() => {
     clear();
   }, [pathname]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setIsLogin(isLoggedIn);
+    } else {
+      setIsLogin(isLoggedIn);
+    }
+  }, [isLoggedIn]);
 
   const handleLoginToggle = () => {
     toggleOpen();
@@ -40,7 +48,10 @@ const Header = () => {
 
   const handleLogout = async () => {
     const data = await logout();
-    console.log(data);
+    if (data.success === true) {
+      setIsLogin(false);
+      alert('로그아웃');
+    }
   };
 
   // Todo : 비교보기 버튼 비교담기 상태에 따라 아이콘 표현 달리하기 (가능한가?)
@@ -65,25 +76,27 @@ const Header = () => {
           className="hidden lg:block lg:absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 hover:cursor-pointer"
         />
         <div className="relative flex flex-row items-center gap-1 md:gap-2">
-          <p onClick={() => handleLink('/my')}>마이페이지</p>
           <Button
             className="hidden md:flex flex-row"
             variant={'white'}
-            onClick={handleLoginToggle}
+            onClick={() => {
+              isLogin ? handleLink('/my') : handleLoginToggle();
+            }}
           >
             <UserRound fill="black" />
-            <p>로그인</p>
+            {isLogin ? <></> : <p>로그인</p>}
           </Button>
-          <Button
-            className="hidden md:flex flex-row"
-            variant={'white'}
-            onClick={handleLogout}
-          >
-            <p>로그아웃</p>
-          </Button>
-          {/* <Button variant={'white'}>
-            <Bookmark fill="black" />
-          </Button> */}
+
+          {isLogin && (
+            <Button
+              className="hidden md:flex flex-row"
+              variant={'white'}
+              onClick={handleLogout}
+            >
+              <LogOut fill="black" />
+            </Button>
+          )}
+
           <Link href={'/compare'}>
             <Button variant={'white'}>
               <Image
