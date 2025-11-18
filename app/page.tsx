@@ -1,7 +1,7 @@
-import LeftSide, { ITEM } from '@/components/home/LeftSide';
+import LeftSide from '@/components/home/LeftSide';
 import RightSide from '@/components/home/RightSide';
 import { Button } from '@/components/ui/button';
-import { getApprovedBusiness } from '@/services/api';
+import { getApprovedBusiness } from '@/services/submission.api';
 import Image from 'next/image';
 
 export const FILTER_BUTTON = [
@@ -19,7 +19,7 @@ export default async function Home({
   searchParams: Promise<{ index?: string }>;
 }) {
   const { index } = await searchParams;
-  const map = (index && ITEM[Number(index)].map) || '';
+  // const map = (index && ITEM[Number(index)].map) || '';
 
   const data = await getApprovedBusiness();
 
@@ -40,13 +40,13 @@ export default async function Home({
         <LeftSide data={data} />
         {index && (
           <div className="flex-1 min-h-dvh">
-            <Image
+            {/* <Image
               src={map}
               width={800}
               height={1000}
               alt="지도"
               className="w-full h-full object-cover"
-            />
+            /> */}
           </div>
         )}
         {!index && <RightSide />}
