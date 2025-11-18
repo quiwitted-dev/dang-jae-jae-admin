@@ -8,6 +8,7 @@ import useStore from '@/store/useStore';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { logout } from '@/services/api';
 // import { kakaoLogin } from '@/services/api';
 
 const Header = () => {
@@ -25,21 +26,7 @@ const Header = () => {
     clear();
   }, [pathname]);
 
-  // useEffect(() => {
-  //   if (!code) return;
-
-  //   const login = async () => {
-  //     try {
-  //       const data = await kakaoLogin(code);
-  //     } catch (error) {
-  //       console.error('카카오 로그인 실패:', error);
-  //     }
-  //   };
-
-  //   login();
-  // }, [code]);
-
-  const handleSigninToggle = () => {
+  const handleLoginToggle = () => {
     toggleOpen();
   };
 
@@ -49,6 +36,11 @@ const Header = () => {
 
   const handleBack = () => {
     router.back();
+  };
+
+  const handleLogout = async () => {
+    const data = await logout();
+    console.log(data);
   };
 
   // Todo : 비교보기 버튼 비교담기 상태에 따라 아이콘 표현 달리하기 (가능한가?)
@@ -77,10 +69,17 @@ const Header = () => {
           <Button
             className="hidden md:flex flex-row"
             variant={'white'}
-            onClick={handleSigninToggle}
+            onClick={handleLoginToggle}
           >
             <UserRound fill="black" />
             <p>로그인</p>
+          </Button>
+          <Button
+            className="hidden md:flex flex-row"
+            variant={'white'}
+            onClick={handleLogout}
+          >
+            <p>로그아웃</p>
           </Button>
           {/* <Button variant={'white'}>
             <Bookmark fill="black" />
@@ -115,7 +114,7 @@ const Header = () => {
               <Button
                 className="flex flex-row"
                 variant={'white'}
-                onClick={handleSigninToggle}
+                onClick={handleLoginToggle}
               >
                 <UserRound fill="black" />
               </Button>

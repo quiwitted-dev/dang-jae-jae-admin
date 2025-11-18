@@ -65,11 +65,11 @@ export const getApprovedBusiness =
     }
   };
 
-export const signinKakao = async () => {
+export const permissionKakao = async () => {
   redirect(`${API_URL}/api/auth/kakao`);
 };
 
-export const kakaoLogin = async (code: string) => {
+export const LoginKakao = async (code: string) => {
   const res = await fetch(`/api/auth/kakao/callback`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -84,4 +84,30 @@ export const kakaoLogin = async (code: string) => {
   const data = await res.json();
 
   return data;
+};
+
+export const logout = async () => {
+  try {
+    const res = await fetch(`/api/auth/logout`, { method: 'POST' });
+    if (!res.ok) {
+      throw new Error('로그아웃 실패');
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('logout 에러 : ', error);
+  }
+};
+
+export const getSubmissionDetail = async () => {
+  try {
+    const res = await fetch(`${API_URL}/api/submisson`, { method: 'POST' });
+    if (!res.ok) {
+      throw new Error('로그아웃 실패');
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('getSubmissionDetail 에러 : ', error);
+  }
 };

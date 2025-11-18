@@ -1,6 +1,6 @@
 'use client';
 
-import { kakaoLogin } from '@/services/api';
+import { LoginKakao } from '@/services/api';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -14,7 +14,8 @@ export default function KakaoCallbackPage() {
 
     const login = async () => {
       try {
-        const res = await kakaoLogin(code);
+        const res = await LoginKakao(code);
+        console.log(res);
 
         // 로그인 성공 처리
         router.replace('/');

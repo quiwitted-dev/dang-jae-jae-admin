@@ -2,7 +2,7 @@
 'use client';
 import { useEffect } from 'react';
 import useStore from '@/store/useStore';
-import Signin from '../common/Signin';
+import Login from '../common/Login';
 
 export default function ModalProvider() {
   const { isOpen } = useStore();
@@ -22,5 +22,5 @@ export default function ModalProvider() {
     };
   }, [isOpen]);
 
-  return isOpen ? <Signin /> : null;
+  return isOpen ? <Login /> : null;
 }
