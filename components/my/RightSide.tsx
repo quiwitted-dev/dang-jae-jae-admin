@@ -1,16 +1,15 @@
 'use client';
 
 import useStore from '@/store/useStore';
-import { ITEM } from '../home/LeftSide';
 import ProjectCard from '../common/ProjectCard';
 import Link from 'next/link';
 import SettingsNavigation from './SettingsNavigation';
 import { getSettingsContent } from '@/lib/getSettingsContent';
-import { getMainTitle } from '@/services/api';
 
 const RightSide = () => {
   const myPageTab = useStore((state) => state.myPageTab);
   const settingsTab = useStore((state) => state.settingsTab);
+  const item = [];
 
   const getTabTitle = () => {
     switch (settingsTab) {
@@ -39,7 +38,7 @@ const RightSide = () => {
       {/* Todo : 북마크는 max 3개 */}
       {myPageTab === 'none' && (
         <div className="grid 3xl:grid-cols-3 2xl:grid-cols-2 grid-cols-1 gap-4 mb-16 lg:mb-0">
-          {ITEM.map((item, index) => (
+          {item.map((item, index) => (
             <div
               className="flex flex-col gap-4 text-[#FAFFCE] relative"
               key={index}
