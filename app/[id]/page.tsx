@@ -1,6 +1,6 @@
 import DetailRightSide from '@/components/home/DetailRightSide';
 import DetailSideBar from '@/components/home/DetailSideBar';
-import { ITEM } from '@/components/home/LeftSide';
+import { getSubmissionDetail } from '@/services/submission.api';
 
 const Detailpage = async ({
   params,
@@ -11,8 +11,8 @@ const Detailpage = async ({
 }) => {
   const { id } = await params;
   const { index } = await searchParams;
-  const data = ITEM[Number(id)];
-  const map = ITEM[Number(id)].map;
+  const data = await getSubmissionDetail(id);
+  // const map = ITEM[Number(id)].map;
 
   return (
     <div className="flex md:flex-row flex-col">
@@ -20,7 +20,7 @@ const Detailpage = async ({
         <DetailSideBar data={data} index={index ? Number(index) : Number(id)} />
       </div>
       <div className="flex-1 md:min-h-dvh order-1 md:order-2">
-        <DetailRightSide map={map} />
+        {/* <DetailRightSide map={map} /> */}
       </div>
     </div>
   );
