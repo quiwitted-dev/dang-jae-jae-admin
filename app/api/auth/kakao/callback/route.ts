@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export async function POST(request: Request) {
-  // console.log(request);
   const body = await request.json();
   const code = body?.code;
 
