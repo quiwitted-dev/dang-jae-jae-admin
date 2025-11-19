@@ -18,7 +18,6 @@ export default function KakaoCallbackPage() {
     const login = async () => {
       try {
         const res = await LoginKakao(code);
-        console.log(res);
         const { id, nickname: name } = res.user;
         setIsLogin(true);
         setUser({ id, name });

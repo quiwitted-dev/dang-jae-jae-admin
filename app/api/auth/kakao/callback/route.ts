@@ -18,7 +18,6 @@ export async function POST(request: Request) {
     credentials: 'include',
     // redirect: 'manual',
   });
-  console.log(backendRes);
 
   // 2. 백엔드가 쿠키를 내려줬다면 이걸 가져온다
   const setCookie = backendRes.headers.get('set-cookie');

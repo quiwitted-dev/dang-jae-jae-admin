@@ -38,7 +38,6 @@ export const getSubmissionDetail = async (id: string) => {
     const res = await fetch(`${API_URL}/api/submisson/${id}`, {
       method: 'GET',
     });
-    console.log(res);
 
     if (!res.ok) {
       throw new Error('사업 예정지 신청 상세 조회 실패');
