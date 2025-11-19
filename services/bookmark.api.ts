@@ -37,6 +37,10 @@ export const postBookmark = async (id: string) => {
       body: JSON.stringify({ referenceId: id, dataType: 'PUBLIC_DATA' }),
     });
 
+    if (res.status === 401) {
+      return;
+    }
+
     if (!res.ok) {
       throw new Error('북마크 등록 실패');
     }
