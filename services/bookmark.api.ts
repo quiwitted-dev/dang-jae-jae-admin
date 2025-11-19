@@ -1,21 +1,32 @@
+import { FavoriteApiResponse } from '@/types/favorite.type';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const getBookmark = async () => {
+export const getBookmark = async (): Promise<FavoriteApiResponse> => {
   try {
-    const res = await fetch(`${API_URL}/api/favorite`, {
+    const res = await fetch(`/api/favorite`, {
       method: 'GET',
-      cache: 'no-cache',
     });
-    // console.log(res);
+
+    if (res.status === 401) {
+      return {
+        success: false,
+        favorites: [],
+      };
+    }
 
     if (!res.ok) {
-      throw new Error('북마크 조회 실패');
+      throw new Error(`북마크 조회 실패 ${res.status} ${res.statusText}`);
     }
 
     const data = await res.json();
-    return data;
+    return data.data;
   } catch (error) {
     console.error('getBookmark 에러 : ', error);
+    return {
+      success: false,
+      favorites: [],
+    };
   }
 };
 
@@ -39,10 +50,10 @@ export const postBookmark = async (id: string) => {
 
 export const deleteBookmark = async (id: string) => {
   try {
-    const res = await fetch(`${API_URL}/api/favorite/${id}`, {
-      method: 'GET',
+    const res = await fetch(`/api/favorite/`, {
+      method: 'DELETE',
+      body: JSON.stringify({ id }),
     });
-    console.log(res);
 
     if (!res.ok) {
       throw new Error('북마크 삭제 실패');
