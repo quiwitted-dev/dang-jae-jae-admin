@@ -1,4 +1,7 @@
-import { ApprovedSubmissionList } from '@/types/type';
+import {
+  ApprovedSubmissionList,
+  SubmissionPublicDetail,
+} from '@/types/submission.type';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -32,20 +35,42 @@ export const getApprovedBusiness =
     }
   };
 
-// 사업 예정지 신청 상세 조회
-export const getSubmissionDetail = async (id: string) => {
+// 사업 예정지 공공데이터 상세 조회
+export const getSubmissionPublicDetail = async (
+  id: string
+): Promise<SubmissionPublicDetail> => {
+  const res = await fetch(`${API_URL}/api/submission/public/${id}`, {
+    method: 'GET',
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `사업 예정지 공공데이터 상세 조회 실패: ${res.status} ${res.statusText}`
+    );
+  }
+
+  const data = await res.json();
+
+  return data.data;
+};
+
+// 사업 예정지 유저데이터 상세 조회
+export const getSubmissionUserDetail = async (id: string) => {
   try {
-    const res = await fetch(`${API_URL}/api/submisson/${id}`, {
+    const res = await fetch(`${API_URL}/api/submission/user/${id}`, {
       method: 'GET',
     });
 
     if (!res.ok) {
-      throw new Error('사업 예정지 신청 상세 조회 실패');
+      throw new Error(
+        `사업 예정지 유저 상세 조회 실패 ${res.status} ${res.statusText}`
+      );
     }
 
     const data = await res.json();
-    return data;
+    return data.data;
   } catch (error) {
-    console.error('getSubmissionDetail 에러 : ', error);
+    console.error('getSubmissionUserDetail 에러 : ', error);
   }
 };
