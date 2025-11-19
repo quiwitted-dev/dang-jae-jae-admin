@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -5,7 +7,12 @@ import { ApprovedSubmission } from '@/types/type';
 import Bookmark from './Bookmark';
 import Link from 'next/link';
 
-const ProjectCard = async ({ item }: { item: ApprovedSubmission }) => {
+type ProjectCardProps = {
+  item: ApprovedSubmission;
+  isFavorite: boolean;
+};
+
+const ProjectCard = ({ item, isFavorite }: ProjectCardProps) => {
   const { id } = item;
 
   const averageLandSharePyeong = () => {
@@ -69,7 +76,7 @@ const ProjectCard = async ({ item }: { item: ApprovedSubmission }) => {
           <p className="text-sm">{item.newConstructionUnits || '-'} 신축세대</p>
           <p className="text-xs">임대 {item.rentalUnits || '-'}</p>
         </div>
-        <Bookmark id={id} />
+        <Bookmark id={id} isFavorite={isFavorite} />
         <div className="flex flex-col text-xs text-gray-700 text-right">
           <p>
             소유자 수{' '}
