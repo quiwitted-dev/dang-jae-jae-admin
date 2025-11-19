@@ -24,7 +24,6 @@ const Bookmark = ({ id, isFavorite }: BookMarkProps) => {
     try {
       if (!isFavorite) {
         const data = await postBookmark(id);
-        if (!data) throw new Error('등록 실패');
       } else {
         const data = await deleteBookmark(id);
         if (!data) throw new Error('삭제 실패');

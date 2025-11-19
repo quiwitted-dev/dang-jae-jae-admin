@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
-import { ProjectType } from '@/types/type';
+import { ProjectType } from '@/types/submission.type';
 import { useState } from 'react';
 import { Input } from '../ui/input';
 

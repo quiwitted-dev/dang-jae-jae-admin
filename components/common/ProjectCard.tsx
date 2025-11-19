@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { ApprovedSubmission } from '@/types/type';
+import { ApprovedSubmission } from '@/types/submission.type';
 import Bookmark from './Bookmark';
 import Link from 'next/link';
 
