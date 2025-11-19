@@ -1,9 +1,14 @@
+'use client';
+
 import { Plus } from 'lucide-react';
 import { Button } from '../ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import ProjectCard from '../common/ProjectCard';
 import { ApprovedSubmissionList } from '@/types/type';
+import { useEffect, useState } from 'react';
+import { Favorite } from '@/types/favorite.type';
+import { getBookmark } from '@/services/bookmark.api';
 
 // export const ITEM = [
 //   {
@@ -146,15 +151,30 @@ import { ApprovedSubmissionList } from '@/types/type';
 //   },
 // ];
 
-const LeftSide = async ({ data }: { data: ApprovedSubmissionList }) => {
+const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
   const submissions = data.submissions.slice(0, 20);
+  const [favorites, setFavorites] = useState<Favorite[]>([]);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      const { favorites } = await getBookmark();
+      setFavorites(favorites ?? []);
+    };
+    fetchFavorites();
+  }, []);
+
+  const favoriteSet = new Set(favorites.map((f) => f.referenceId));
+
   return (
     <div className="flex flex-col max-w-[700px] w-full gap-4">
       {/* 목록 */}
       <div className="flex flex-col gap-2 md:px-[120px] px-2">
-        {submissions.map((item) => (
-          <ProjectCard key={item.id} item={item} />
-        ))}
+        {submissions.map((item) => {
+          const isFavorite = favoriteSet.has(item.id);
+          return (
+            <ProjectCard key={item.id} item={item} isFavorite={isFavorite} />
+          );
+        })}
       </div>
       <div className="relative flex flex-col flex-1 min-h-[650px] mt-10">
         <Image
