@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { API_URL } from './api';
 
 export const permissionKakao = async () => {
   redirect(`${API_URL}/api/auth/kakao`);
@@ -24,15 +23,10 @@ export const LoginKakao = async (code: string) => {
 };
 
 export const logout = async () => {
-  try {
-    const res = await fetch(`/api/auth/logout`, { method: 'POST' });
-    if (!res.ok) {
-      throw new Error('로그아웃 실패');
-    }
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error('logout 에러 : ', error);
-    return { success: false };
+  const res = await fetch(`/api/auth/logout`, { method: 'POST' });
+  if (!res.ok) {
+    throw new Error('로그아웃 실패');
   }
+  const data = await res.json();
+  return data;
 };
