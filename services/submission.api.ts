@@ -1,3 +1,4 @@
+import { ExpectedFormInputs } from '@/schemas/expectedSchema';
 import {
   ApprovedSubmissionList,
   SubmissionPublicDetail,
@@ -59,4 +60,20 @@ export const getSubmissionUserDetail = async (id: string) => {
 
   const data = await res.json();
   return data.data;
+};
+
+export const postSubmissionUser = async (form: ExpectedFormInputs) => {
+  const res = await fetch(`/api/submission`, {
+    method: 'POST',
+    body: JSON.stringify({ form }),
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `사업 예정지 유저 입력 실패 ${res.status} ${res.statusText}`
+    );
+  }
+  // todo : 사업 등록 성공하면 return 뭐 주고 아니면 뭐 주고
+  const data = await res.json();
+  console.log(data);
 };
