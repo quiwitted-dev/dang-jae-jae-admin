@@ -13,11 +13,13 @@ import { getBookmark } from '@/services/bookmark.api';
 const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
   const submissions = data.submissions.slice(0, 20);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const fetchFavorites = async () => {
       const { favorites } = await getBookmark();
       setFavorites(favorites ?? []);
+      setIsLoaded(true);
     };
     fetchFavorites();
   }, []);
@@ -29,7 +31,7 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
       {/* 목록 */}
       <div className="flex flex-col gap-2 md:px-[120px] px-2">
         {submissions.map((item) => {
-          const isFavorite = favoriteSet.has(item.id);
+          const isFavorite = isLoaded ? favoriteSet.has(item.id) : false;
           return (
             <ProjectCard key={item.id} item={item} isFavorite={isFavorite} />
           );
