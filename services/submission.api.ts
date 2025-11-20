@@ -2,6 +2,7 @@ import { ExpectedFormInputs } from '@/schemas/expectedSchema';
 import {
   ApprovedSubmissionList,
   SubmissionPublicDetail,
+  SubmissionUserDetail,
 } from '@/types/submission.type';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -47,7 +48,9 @@ export const getSubmissionPublicDetail = async (
 };
 
 // 사업 예정지 유저데이터 상세 조회
-export const getSubmissionUserDetail = async (id: string) => {
+export const getSubmissionUserDetail = async (
+  id: string
+): Promise<SubmissionUserDetail> => {
   const res = await fetch(`${API_URL}/api/submission/user/${id}`, {
     method: 'GET',
   });
