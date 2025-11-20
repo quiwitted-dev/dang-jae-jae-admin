@@ -2,7 +2,6 @@ import LeftSide from '@/components/home/LeftSide';
 import RightSide from '@/components/home/RightSide';
 import { Button } from '@/components/ui/button';
 import { getApprovedBusiness } from '@/services/submission.api';
-import Image from 'next/image';
 
 export const FILTER_BUTTON = [
   '위치',
