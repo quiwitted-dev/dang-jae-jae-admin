@@ -6,7 +6,7 @@ export type ApprovedSubmissionList = {
 
 export type ApprovedSubmission = {
   id: string;
-  dataType: 'PUBLIC_DATA';
+  dataType: 'PUBLIC_DATA' | 'SUBMISSION';
   projectName: string;
   address: string;
   projectType: string;
@@ -22,11 +22,14 @@ export type ApprovedSubmission = {
   ownerCount: number;
   businessOperatorName: string;
   announcementDates: {};
-  renovationPrice: {};
+  renovationPrice: Renovationprice;
   dataSource: string;
   createdAt: string;
   reviewedAt: string;
-  user: {};
+  user: {
+    id: string;
+    nickname: string;
+  };
 };
 
 export type SubmissionPublicDetail =
@@ -106,4 +109,48 @@ export type GyeonggiSubmissionDetail = {
   newUnits60To85M2: number; // 60~85㎡
   newUnits85To135M2: number; // 85~135㎡
   newUnitsOver135M2: number; // 135㎡ 이상
+};
+
+export type SubmissionUserDetail = {
+  id: string;
+  tempName: string;
+  location: string;
+  applicablePolicy: string;
+  businessEntity: string;
+  businessType: string;
+  mainUsage: string;
+  usageZone: string;
+
+  projectArea: string;
+  currentVolumeRatio: string;
+  expectedVolumeRatio: string;
+
+  expectedNewUnits: number;
+  ownerCount: number;
+  constructionYear: number;
+
+  priceRange: string;
+  consentRate: string;
+  consentContact: string;
+
+  notes: string;
+
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Renovationprice = {
+  id: string;
+  price: string;
+  minimumInitialInvestment: string;
+  premium: string;
+  status: string;
+  isDisplayed: true;
+  displayedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    nickname: string;
+  };
 };
