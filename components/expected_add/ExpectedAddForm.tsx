@@ -30,8 +30,11 @@ const ExpectedAddForm = () => {
   const onSubmit = async (form: ExpectedFormInputs) => {
     try {
       // 서버 통신 (가상 예시)
-      await postSubmissionUser(form);
-      console.log(form); // 유효성 검사를 통과한 데이터
+      const data = await postSubmissionUser(form);
+      if (data.success) {
+        alert('등록이 완료되었습니다.');
+        router.push('/');
+      }
     } catch (error) {
       const message =
         error instanceof Error ? error.message : '회원가입에 실패했습니다.';
