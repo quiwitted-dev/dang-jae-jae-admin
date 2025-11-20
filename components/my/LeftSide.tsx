@@ -9,18 +9,19 @@ import SettingsNavigation from './SettingsNavigation';
 import { useState } from 'react';
 import TermsModal from './TermsModal';
 import { Switch } from '../ui/switch';
+import { User } from '@/types/user.type';
+import { Input } from '../ui/input';
+import { putUser } from '@/services/user.api.server';
 
-type LeftSideProps = {
-  name: string;
-  userId: string;
-};
-
-const LeftSide = ({ user }: { user: LeftSideProps }) => {
+const LeftSide = ({ user }: { user: User }) => {
   const myPageTab = useStore((state) => state.myPageTab);
   const setSettingsTab = useStore((state) => state.setSettingsTab);
   const settingsTab = useStore((state) => state.settingsTab);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editNickname, setEditNickname] = useState('');
+  const [nickname, setNickname] = useState(user.nickname);
 
   const handleSettingTabs = (
     tab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none'
@@ -47,6 +48,15 @@ const LeftSide = ({ user }: { user: LeftSideProps }) => {
     setIsTermsModalOpen(true);
   };
 
+  const handleNicknameSubmit = async (nickname: string) => {
+    try {
+      const data = await putUser(nickname);
+      if (data) setNickname(data?.nickname);
+    } finally {
+      setIsEdit(false);
+    }
+  };
+
   return (
     <div className="pt-16 lg:px-16">
       {myPageTab === 'none' && (
@@ -54,7 +64,7 @@ const LeftSide = ({ user }: { user: LeftSideProps }) => {
           <h2 className="text-4xl font-extralight leading-snug">
             안녕하세요!
             <br />
-            <span className="font-bold">{user.name}</span>님의
+            <span className="font-bold">{nickname}</span>님의
             <br />
             <p className="whitespace-normal break-keep">
               <span className="text-[#FAFFCE]">관심 정비사업장</span>들 입니다.
@@ -70,17 +80,29 @@ const LeftSide = ({ user }: { user: LeftSideProps }) => {
           <div className="flex flex-col gap-3">
             <p className="text-sm font-extralight text-[#F5B3CB]">닉네임</p>
             <div className="flex flex-row justify-between items-center gap-5">
-              <p className="text-4xl bold">{user.name}</p>
+              {!isEdit ? (
+                <p className="text-4xl bold">{nickname}</p>
+              ) : (
+                <Input
+                  placeholder="변경하고 싶은 닉네임 입력"
+                  onChange={(e) => setEditNickname(e.target.value)}
+                />
+              )}
+
               <Button
                 className="py-2 px-3 rounded-4xl bg-[#D5B3CB] text-black hover:bg-[#F5B3CB] hover:cursor-pointer"
                 size={'none'}
+                onClick={() => {
+                  isEdit ? handleNicknameSubmit(editNickname) : setIsEdit(true);
+                }}
               >
                 <Pencil />
-                <p>수정</p>
+                <p>{isEdit ? '확인' : '수정'}</p>
               </Button>
             </div>
             <p className="text-sm font-extralight text-[#F5B3CB]">
-              유저 아이디 {user.userId}
+              {/* todo : 여기 카카오 아이디(ex : 4549379906)인데 뭐로 해야하지?  */}
+              유저 아이디
             </p>
           </div>
 
