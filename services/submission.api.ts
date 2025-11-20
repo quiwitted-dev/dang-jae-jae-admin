@@ -75,5 +75,5 @@ export const postSubmissionUser = async (form: ExpectedFormInputs) => {
   }
   // todo : 사업 등록 성공하면 return 뭐 주고 아니면 뭐 주고
   const data = await res.json();
-  console.log(data);
+  return data;
 };
