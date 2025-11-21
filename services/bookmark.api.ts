@@ -1,6 +1,6 @@
-import { FavoriteApiResponse } from '@/types/favorite.type';
+import { Favorites } from '@/types/favorite.type';
 
-export const getBookmark = async (): Promise<FavoriteApiResponse> => {
+export const getBookmark = async (): Promise<Favorites> => {
   const res = await fetch(`/api/favorite`, {
     method: 'GET',
   });
