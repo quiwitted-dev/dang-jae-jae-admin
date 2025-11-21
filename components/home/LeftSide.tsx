@@ -5,26 +5,28 @@ import { Button } from '../ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import ProjectCard from '../common/ProjectCard';
-import { ApprovedSubmissionList } from '@/types/submission.type';
+import {
+  ApprovedSubmission,
+  ApprovedSubmissionList,
+} from '@/types/submission.type';
 import { useEffect, useState } from 'react';
-import { Favorite } from '@/types/favorite.type';
 import { getBookmark } from '@/services/bookmark.api';
 
 const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
-  const submissions = data.submissions.slice(0, 20);
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const submissions = data.submissions.slice(0, 1000);
+  const [favorites, setFavorites] = useState<ApprovedSubmission[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      const { favorites } = await getBookmark();
-      setFavorites(favorites ?? []);
+      const data = await getBookmark();
+      setFavorites(data.favorites ?? []);
       setIsLoaded(true);
     };
     fetchFavorites();
   }, []);
 
-  const favoriteSet = new Set(favorites.map((f) => f.referenceId));
+  const favoriteSet = new Set(favorites.map((f) => f.id));
 
   return (
     <div className="flex flex-col max-w-[700px] w-full gap-4">
