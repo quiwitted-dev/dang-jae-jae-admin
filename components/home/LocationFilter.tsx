@@ -1,0 +1,241 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { ChevronDown } from 'lucide-react';
+
+const LOCATION_DATA = {
+  서울시: [
+    '강남',
+    '강동',
+    '강북',
+    '강서',
+    '관악',
+    '광진',
+    '구로',
+    '금천',
+    '노원',
+    '도봉',
+    '동대문',
+    '동작',
+    '마포',
+    '서대문',
+    '서초',
+    '성동',
+    '성북',
+    '송파',
+    '양천',
+    '영등포',
+    '용산',
+    '은평',
+    '종로',
+    '중구',
+    '중랑',
+  ],
+  경기도: [
+    '고양',
+    '과천',
+    '광명',
+    '광주',
+    '구리',
+    '군포',
+    '김포',
+    '남양주',
+    '동두천',
+    '부천',
+    '성남',
+    '수원',
+    '시흥',
+    '안산',
+    '안성',
+    '안양',
+    '양주',
+    '여주',
+    '오산',
+    '용인',
+    '의왕',
+    '의정부',
+    '이천',
+    '파주',
+    '평택',
+    '포천',
+    '하남',
+    '화성',
+  ],
+};
+
+export default function LocationFilter() {
+  const [selectedRegion, setSelectedRegion] = useState<string>('');
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [showDistricts, setShowDistricts] = useState<string>('');
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [isPositioned, setIsPositioned] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+        setShowDistricts('');
+      }
+    };
+
+    const updateDropdownPosition = () => {
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        const dropdownWidth = 256; // w-64 = 16rem = 256px
+        const viewportWidth = window.innerWidth;
+        const padding = 16; // 여백
+
+        let left = rect.left + window.scrollX;
+
+        // 드롭다운이 화면 우측을 벗어나는 경우 위치 조정
+        if (left + dropdownWidth > viewportWidth - padding) {
+          left = viewportWidth - dropdownWidth - padding;
+        }
+
+        // 드롭다운이 화면 좌측을 벗어나는 경우 위치 조정
+        if (left < padding) {
+          left = padding;
+        }
+
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY + 4,
+          left: left,
+        });
+        setIsPositioned(true);
+      }
+    };
+
+    if (isOpen) {
+      setIsPositioned(false);
+      updateDropdownPosition();
+      window.addEventListener('scroll', updateDropdownPosition);
+      window.addEventListener('resize', updateDropdownPosition);
+    } else {
+      setIsPositioned(false);
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', updateDropdownPosition);
+      window.removeEventListener('resize', updateDropdownPosition);
+    };
+  }, [isOpen]);
+
+  const handleRegionSelect = (region: string) => {
+    if (selectedRegion === region) {
+      // 같은 지역 클릭시 세부 지역 토글
+      setShowDistricts(showDistricts === region ? '' : region);
+    } else {
+      setSelectedRegion(region);
+      setSelectedDistrict('');
+      setShowDistricts(region);
+    }
+  };
+
+  const handleDistrictSelect = (district: string) => {
+    setSelectedDistrict(district);
+    setIsOpen(false);
+    setShowDistricts('');
+  };
+
+  const handleReset = () => {
+    setSelectedRegion('');
+    setSelectedDistrict('');
+    setIsOpen(false);
+    setShowDistricts('');
+  };
+
+  const getDisplayText = () => {
+    if (selectedDistrict) {
+      return `${selectedRegion} ${selectedDistrict}`;
+    }
+    if (selectedRegion) {
+      return selectedRegion;
+    }
+    return '위치';
+  };
+
+  return (
+    <>
+      <Button
+        ref={buttonRef}
+        variant="ghost"
+        className="flex items-center gap-2"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <p className="text-2xl font-bold">{getDisplayText()}</p>
+        <ChevronDown />
+      </Button>
+
+      {isOpen && isPositioned && (
+        <div
+          ref={dropdownRef}
+          className="fixed w-64 bg-white border border-gray-200 rounded-md shadow-lg z-[9999]"
+          style={{
+            top: `${dropdownPosition.top}px`,
+            left: `${dropdownPosition.left}px`,
+          }}
+        >
+          <div className="py-1">
+            {Object.entries(LOCATION_DATA).map(([region, districts]) => (
+              <div key={region}>
+                <button
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center text-black justify-between ${
+                    selectedRegion === region ? 'bg-blue-50 text-blue-600' : ''
+                  }`}
+                  onClick={() => handleRegionSelect(region)}
+                >
+                  <span className="font-medium">{region}</span>
+                  <ChevronDown />
+                </button>
+
+                {showDistricts === region && (
+                  <div className="bg-gray-50 border-t border-gray-100">
+                    <div className="grid grid-cols-3 gap-1 p-2">
+                      {districts.map((district) => (
+                        <button
+                          key={district}
+                          className={`px-2 py-1 text-sm rounded text-black hover:bg-gray-200 ${
+                            selectedDistrict === district
+                              ? 'bg-blue-100 text-blue-600'
+                              : ''
+                          }`}
+                          onClick={() => handleDistrictSelect(district)}
+                        >
+                          {district}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {(selectedRegion || selectedDistrict) && (
+              <>
+                <div className="border-t border-gray-100 my-1"></div>
+                <button
+                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                  onClick={handleReset}
+                >
+                  선택 초기화
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
