@@ -7,12 +7,12 @@ import SettingsNavigation from './SettingsNavigation';
 import { getSettingsContent } from '@/lib/getSettingsContent';
 import { useEffect, useState } from 'react';
 import { getBookmark } from '@/services/bookmark.api';
-import { Favorite } from '@/types/favorite.type';
+import { ApprovedSubmission } from '@/types/submission.type';
 
 const RightSide = () => {
   const myPageTab = useStore((state) => state.myPageTab);
   const settingsTab = useStore((state) => state.settingsTab);
-  const [myBookmark, setMyBookmark] = useState<Favorite[]>([]);
+  const [myBookmark, setMyBookmark] = useState<ApprovedSubmission[]>([]);
   // todo 북마크 가지고 다시 데이터 가져온 후 item으로 넘기기
 
   useEffect(() => {
@@ -21,7 +21,6 @@ const RightSide = () => {
       setMyBookmark(data.favorites);
     })();
   }, []);
-  console.log(myBookmark);
 
   const getTabTitle = () => {
     switch (settingsTab) {
@@ -58,11 +57,11 @@ const RightSide = () => {
               key={index}
             >
               <h3 className="text-4xl text-center font-medium">
-                {item.publicRenovationData.address}
+                {item.address.split(' ').slice(2).join(' ')}
               </h3>
-              <Link href={`/${index}`}>
+              <Link href={`/${item.id}?type=${item.dataType}`}>
                 <div className="relative z-0 mx-auto">
-                  {/* <ProjectCard item={item} /> */}
+                  <ProjectCard item={item} isFavorite={true} />
                 </div>
               </Link>
               {/* <p className="text-center text-base">{item.project_name}</p> */}
