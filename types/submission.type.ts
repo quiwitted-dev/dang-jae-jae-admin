@@ -26,6 +26,7 @@ export type ApprovedSubmission = {
   dataSource: string;
   createdAt: string;
   reviewedAt: string;
+  referenceId?: string;
   user: {
     id: string;
     nickname: string;
