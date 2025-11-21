@@ -1,7 +1,7 @@
 export type ApprovedSubmissionList = {
   success: boolean;
   submissions: Array<ApprovedSubmission>;
-  total: 0;
+  total?: 0;
 };
 
 export type ApprovedSubmission = {
