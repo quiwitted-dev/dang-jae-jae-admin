@@ -123,17 +123,15 @@ const Header = ({ isLoggedIn }: headerProps) => {
               </div>
             </div>
             <div className="relative flex flex-row items-center gap-1 md:gap-2">
-              <p onClick={() => handleLink('/my')}>my</p>
               <Button
                 className="flex flex-row"
                 variant={'white'}
-                onClick={handleLoginToggle}
+                onClick={() => {
+                  isLogin ? handleLink('/my') : handleLoginToggle();
+                }}
               >
                 <UserRound fill="black" />
               </Button>
-              {/* <Button variant={'white'}>
-                <Bookmark fill="black" />
-              </Button> */}
               <Link href={'/compare'}>
                 <Button variant={'white'}>비교보기</Button>
               </Link>
