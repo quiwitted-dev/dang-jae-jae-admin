@@ -16,6 +16,7 @@ import {
   SeoulSubmissionDetail,
   SubmissionPublicDetail,
 } from '@/types/submission.type';
+import useCompareStore from '@/store/useCompareStore';
 
 type SeoulSideBarProps = {
   publicData: SeoulSubmissionDetail;
@@ -23,6 +24,7 @@ type SeoulSideBarProps = {
 
 const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
   const [isEdit, setIsEdit] = useState(false);
+  const { setCompare } = useCompareStore();
   const router = useRouter();
   const { id } = publicData;
 
@@ -79,7 +81,15 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
             <Button className="rounded-full">
               <Bookmark />
             </Button>
-            <Button className="rounded-full">비교담기</Button>
+            <Button
+              className="rounded-full"
+              onClick={() => {
+                setCompare(id);
+                alert('비교하기에 담았습니다');
+              }}
+            >
+              비교담기
+            </Button>
           </div>
 
           <div className="flex flex-row gap-4 px-5 md:px-0">
