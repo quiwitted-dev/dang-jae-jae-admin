@@ -1,3 +1,5 @@
+import { ApprovedSubmission } from './submission.type';
+
 export type PublicRenovationData = {
   address: string;
   currentStage: string;
@@ -7,16 +9,7 @@ export type PublicRenovationData = {
   projectType: string;
 };
 
-export type Favorite = {
-  createdAt: string;
-  dataType: string; // "PUBLIC_DATA"
-  id: string;
-  publicRenovationData: PublicRenovationData;
-  referenceId: string;
-  updatedAt: string;
-};
-
-export type FavoriteApiResponse = {
+export type Favorites = {
   success: boolean;
-  favorites: Favorite[];
+  favorites: Array<ApprovedSubmission>;
 };
