@@ -26,7 +26,12 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
     fetchFavorites();
   }, []);
 
-  const favoriteSet = new Set(favorites.map((f) => f.id));
+  const favoriteSet = new Set(
+    favorites.map((f) => f.referenceId ?? f.id ?? '')
+  );
+  const favoriteIdMap = new Map(
+    favorites.map((f) => [f.referenceId ?? f.id ?? '', f.id])
+  );
 
   return (
     <div className="flex flex-col max-w-[700px] w-full gap-4">
@@ -34,8 +39,14 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
       <div className="flex flex-col gap-2 md:px-[120px] px-2">
         {submissions.map((item) => {
           const isFavorite = isLoaded ? favoriteSet.has(item.id) : false;
+          const favoriteId = favoriteIdMap.get(item.id);
           return (
-            <ProjectCard key={item.id} item={item} isFavorite={isFavorite} />
+            <ProjectCard
+              key={item.id}
+              item={item}
+              isFavorite={isFavorite}
+              favoriteId={favoriteId}
+            />
           );
         })}
       </div>

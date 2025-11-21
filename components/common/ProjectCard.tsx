@@ -10,11 +10,13 @@ import { useRouter } from 'next/navigation';
 type ProjectCardProps = {
   item: ApprovedSubmission;
   isFavorite: boolean;
+  favoriteId?: string;
 };
 
-const ProjectCard = ({ item, isFavorite }: ProjectCardProps) => {
+const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
   const { id } = item;
   const router = useRouter();
+  // console.log(favoriteId)
 
   const averageLandSharePyeong = () => {
     if (+item.projectAreaM2 === 0 || +item.ownerCount === 0) {
@@ -99,7 +101,11 @@ const ProjectCard = ({ item, isFavorite }: ProjectCardProps) => {
               </p>
               <p className="text-xs">임대 {item.rentalUnits || '-'}</p>
             </div>
-            <Bookmark id={id} isFavorite={isFavorite} />
+            <Bookmark
+              referenceId={id}
+              bookmarkId={favoriteId}
+              isFavorite={isFavorite}
+            />
             <div className="flex flex-col text-xs text-gray-700 text-right">
               <p>
                 소유자 수{' '}
@@ -115,7 +121,11 @@ const ProjectCard = ({ item, isFavorite }: ProjectCardProps) => {
               <p className="text-xs">{item.projectName}</p>
               <p className="text-xs">{`${dong} ${locationDetail}`}</p>
             </div>
-            <Bookmark id={id} isFavorite={isFavorite} />
+            <Bookmark
+              referenceId={id}
+              bookmarkId={favoriteId}
+              isFavorite={isFavorite}
+            />
             <div className="flex flex-col">
               <p className="text-xs text-black text-right">예정지</p>
             </div>

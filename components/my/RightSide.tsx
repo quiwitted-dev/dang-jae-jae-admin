@@ -59,7 +59,7 @@ const RightSide = () => {
               <h3 className="text-4xl text-center font-medium">
                 {item.address.split(' ').slice(2).join(' ')}
               </h3>
-              <Link href={`/${item.id}?type=${item.dataType}`}>
+              <Link href={`/${item.referenceId}?type=${item.dataType}`}>
                 <div className="relative z-0 mx-auto">
                   <ProjectCard item={item} isFavorite={true} />
                 </div>
