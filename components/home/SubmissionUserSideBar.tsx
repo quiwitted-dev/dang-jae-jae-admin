@@ -13,6 +13,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Input } from '../ui/input';
 import { SubmissionUserDetail } from '@/types/submission.type';
+import useCompareStore from '@/store/useCompareStore';
+import { postPrice } from '@/services/price.api';
 
 const SubmissionUserSideBar = ({
   submissionData,
@@ -21,6 +23,9 @@ const SubmissionUserSideBar = ({
 }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [popup, setPopup] = useState(false);
+  const [maxPrice, setMaxPrice] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const { setCompare } = useCompareStore();
   const router = useRouter();
   const { id } = submissionData;
 
@@ -43,8 +48,31 @@ const SubmissionUserSideBar = ({
     setIsEdit(!isEdit);
   };
 
-  const handleSave = () => {};
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const referenceId = id;
 
+    const form = {
+      minPrice,
+      maxPrice,
+    };
+
+    try {
+      const data = await postPrice({
+        referenceId,
+        dataType: 'SUBMISSION',
+        form,
+      });
+      if (data.success) {
+        alert('가격 입력이 확인되었습니다.');
+        setIsEdit(false);
+        setMaxPrice('');
+        setMinPrice('');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="relative bg-linear-to-b from-[#A1ACEB] to-[#FFFEB1] max-w-[700px] md:w-[700px] text-black min-h-dvh">
       <div className="flex flex-row items-center justify-between px-4 py-5">
@@ -87,7 +115,14 @@ const SubmissionUserSideBar = ({
             <Button className="rounded-full">
               <Bookmark />
             </Button>
-            <Button className="rounded-full">비교담기</Button>
+            <Button
+              className="rounded-full"
+              onClick={() => {
+                setCompare({ id, dataType: 'SUBMISSON' });
+              }}
+            >
+              비교담기
+            </Button>
           </div>
 
           <div className="flex flex-row gap-4 px-5 md:px-0">
@@ -100,7 +135,11 @@ const SubmissionUserSideBar = ({
             </p>
           </div>
 
-          <div className="border-2 relative border-black rounded-4xl flex flex-row p-3 gap-8 mx-2 md:mx-0">
+          <form
+            id="price-form"
+            className="border-2 relative border-black rounded-4xl flex flex-row p-3 gap-8 mx-2 md:mx-0"
+            onSubmit={handleSave}
+          >
             <div
               className="absolute -top-5 left-5 w-7 h-7 bg-black rounded-full flex items-center justify-center cursor-pointer"
               onClick={handleEdit}
@@ -110,7 +149,14 @@ const SubmissionUserSideBar = ({
             <div className="text-[40px] font-normal text-center">
               <div className="flex flex-row items-center">
                 {isEdit ? (
-                  <Input className="text-right" placeholder="" required />
+                  <Input
+                    className="text-right"
+                    placeholder=""
+                    required
+                    onChange={(e) => {
+                      setMinPrice(e.target.value);
+                    }}
+                  />
                 ) : (
                   <span className="font-playfair">{min}</span>
                 )}
@@ -119,7 +165,14 @@ const SubmissionUserSideBar = ({
               <p>~</p>
               <div className="flex flex-row items-center">
                 {isEdit ? (
-                  <Input className="text-right" placeholder="" required />
+                  <Input
+                    className="text-right"
+                    placeholder=""
+                    required
+                    onChange={(e) => {
+                      setMaxPrice(e.target.value);
+                    }}
+                  />
                 ) : (
                   <span className="font-playfair">{max}</span>
                 )}
@@ -148,17 +201,21 @@ const SubmissionUserSideBar = ({
               <div className="flex flex-row text-base font-semibold justify-between items-center py-2">
                 <p>동의율</p>
                 <div className="flex flex-row items-end">
-                  {isEdit ? (
+                  {/* {isEdit ? (
                     <Input className="text-right" placeholder="" required />
                   ) : (
-                    <span>{submissionData.consentRate} %</span>
-                  )}
+                  )} */}
+                  <span>{submissionData.consentRate} %</span>
                 </div>
               </div>
             </div>
-          </div>
+          </form>
           {isEdit && (
-            <Button className="rounded-4xl font-medium items-center flex flex-row cursor-pointer">
+            <Button
+              className="rounded-4xl font-medium items-center flex flex-row cursor-pointer"
+              type="submit"
+              form="price-form"
+            >
               <Check />
               완료
             </Button>
