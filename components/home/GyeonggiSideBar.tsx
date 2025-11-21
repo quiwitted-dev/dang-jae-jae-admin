@@ -12,11 +12,9 @@ import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Input } from '../ui/input';
-import {
-  GyeonggiSubmissionDetail,
-  SubmissionPublicDetail,
-} from '@/types/submission.type';
+import { GyeonggiSubmissionDetail } from '@/types/submission.type';
 import useCompareStore from '@/store/useCompareStore';
+import { postPrice } from '@/services/price.api';
 
 type GyeonggiSideBarProps = {
   publicData: GyeonggiSubmissionDetail;
@@ -24,12 +22,16 @@ type GyeonggiSideBarProps = {
 
 const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
   const [isEdit, setIsEdit] = useState(false);
+  const [maxPrice, setMaxPrice] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [minimumInitialInvestment, setMinimumInitialInvestment] = useState('');
+  const [premium, setPremium] = useState('');
   const { setCompare } = useCompareStore();
   const router = useRouter();
   const { id } = publicData;
 
   const average_land_share =
-    (+publicData.projectAreaM2 / +publicData.ownerCount) * 0.3025;
+    ((+publicData.projectAreaM2 / +publicData.ownerCount) * 0.3025).toFixed(2);
 
   const handleGoHome = () => {
     if (id !== undefined) {
@@ -43,7 +45,35 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
     setIsEdit(!isEdit);
   };
 
-  const handleSave = () => {};
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const referenceId = id;
+
+    const form = {
+      minPrice,
+      maxPrice,
+      minimumInitialInvestment,
+      premium,
+    };
+
+    try {
+      const data = await postPrice({
+        referenceId,
+        dataType: 'PUBLIC_DATA',
+        form,
+      });
+      if (data.success) {
+        alert('가격 입력이 확인되었습니다.');
+        setIsEdit(false);
+        setMaxPrice('');
+        setMinPrice('');
+        setMinimumInitialInvestment('');
+        setPremium('');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] max-w-[700px] md:w-[700px] text-black min-h-dvh">
@@ -85,7 +115,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
             <Button
               className="rounded-full"
               onClick={() => {
-                setCompare(id);
+                setCompare({ id, dataType: 'PUBLIC' });
                 alert('비교하기에 담았습니다.');
               }}
             >
@@ -103,7 +133,11 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
             </p>
           </div>
 
-          <div className="border-2 relative border-black rounded-4xl flex flex-row p-3 gap-8 mx-2 md:mx-0">
+          <form
+            id="price-form"
+            className="border-2 relative border-black rounded-4xl flex flex-row p-3 gap-8 mx-2 md:mx-0"
+            onSubmit={handleSave}
+          >
             <div
               className="absolute -top-5 left-5 w-7 h-7 bg-black rounded-full flex items-center justify-center cursor-pointer"
               onClick={handleEdit}
@@ -113,7 +147,14 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
             <div className="text-[40px] font-normal text-center">
               <div className="flex flex-row items-center">
                 {isEdit ? (
-                  <Input className="text-right" placeholder="" required />
+                  <Input
+                    className="text-right"
+                    placeholder=""
+                    required
+                    onChange={(e) => {
+                      setMinPrice(e.target.value);
+                    }}
+                  />
                 ) : (
                   <span className="font-playfair">0</span>
                 )}
@@ -122,7 +163,14 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               <p>~</p>
               <div className="flex flex-row items-center">
                 {isEdit ? (
-                  <Input className="text-right" placeholder="" required />
+                  <Input
+                    className="text-right"
+                    placeholder=""
+                    required
+                    onChange={(e) => {
+                      setMaxPrice(e.target.value);
+                    }}
+                  />
                 ) : (
                   <span className="font-playfair">0</span>
                 )}
@@ -152,7 +200,14 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 <p>최소 초기 투자금</p>
                 <div className="flex flex-row items-end">
                   {isEdit ? (
-                    <Input className="text-right" placeholder="" required />
+                    <Input
+                      className="text-right"
+                      placeholder=""
+                      required
+                      onChange={(e) => {
+                        setMinimumInitialInvestment(e.target.value);
+                      }}
+                    />
                   ) : (
                     <span className="font-playfair">0</span>
                   )}
@@ -163,7 +218,14 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 <p className="whitespace-nowrap">프리미엄(P)</p>
                 <div className="flex flex-row items-end">
                   {isEdit ? (
-                    <Input className="text-right" placeholder="" required />
+                    <Input
+                      className="text-right"
+                      placeholder=""
+                      required
+                      onChange={(e) => {
+                        setPremium(e.target.value);
+                      }}
+                    />
                   ) : (
                     <span className="font-playfair">0</span>
                   )}
@@ -171,9 +233,13 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 </div>
               </div>
             </div>
-          </div>
+          </form>
           {isEdit && (
-            <Button className="rounded-4xl font-medium items-center flex flex-row cursor-pointer">
+            <Button
+              className="rounded-4xl font-medium items-center flex flex-row cursor-pointer"
+              type="submit"
+              form="price-form"
+            >
               <Check />
               완료
             </Button>
