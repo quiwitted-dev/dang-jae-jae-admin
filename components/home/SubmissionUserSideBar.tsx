@@ -119,6 +119,7 @@ const SubmissionUserSideBar = ({
               className="rounded-full"
               onClick={() => {
                 setCompare({ id, dataType: 'SUBMISSON' });
+                alert('비교하기에 담았습니다.');
               }}
             >
               비교담기
