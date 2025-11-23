@@ -1,7 +1,7 @@
 import { API_URL } from '@/services/api';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: NextResponse) {
+export async function POST(request: Request) {
   try {
     const cookie = request.headers.get('cookie') || '';
     const form = await request.json();
@@ -38,3 +38,4 @@ export async function POST(request: NextResponse) {
     );
   }
 }
+

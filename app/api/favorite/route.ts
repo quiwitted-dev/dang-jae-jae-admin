@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function GET(request: NextResponse) {
+export async function GET(request: Request) {
   try {
     const cookie = request.headers.get('cookie') || '';
 
@@ -38,7 +38,7 @@ export async function GET(request: NextResponse) {
   }
 }
 
-export async function POST(request: NextResponse) {
+export async function POST(request: Request) {
   try {
     const cookie = request.headers.get('cookie') || '';
     const { referenceId, dataType } = await request.json();
@@ -76,7 +76,7 @@ export async function POST(request: NextResponse) {
   }
 }
 
-export async function DELETE(request: NextResponse) {
+export async function DELETE(request: Request) {
   try {
     const cookie = request.headers.get('cookie') || '';
     const { id } = await request.json();
@@ -112,3 +112,4 @@ export async function DELETE(request: NextResponse) {
     );
   }
 }
+

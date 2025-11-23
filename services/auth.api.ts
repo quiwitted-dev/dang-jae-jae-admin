@@ -1,8 +1,8 @@
-import { redirect } from 'next/navigation';
 import { API_URL } from './api';
 
 export const permissionKakao = async () => {
-  redirect(`${API_URL}/api/auth/kakao`);
+  if (typeof window === 'undefined') return;
+  window.location.href = `${API_URL}/api/auth/kakao`;
 };
 
 export const LoginKakao = async (code: string) => {
@@ -30,3 +30,5 @@ export const logout = async () => {
   const data = await res.json();
   return data;
 };
+
+
