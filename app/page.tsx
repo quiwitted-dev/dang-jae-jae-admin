@@ -8,11 +8,12 @@ export const FILTER_BUTTON: string[] = [];
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ id?: string }>;
+  searchParams: Promise<{ id?: string; page?: string }>;
 }) {
-  const { id } = await searchParams;
+  const params = await searchParams;
+  const { id, ...query } = params;
 
-  const data = await getApprovedBusiness();
+  const data = await getApprovedBusiness(query);
 
   const selected = id
     ? data.submissions.find((submission) => submission.id === id)
@@ -22,7 +23,7 @@ export default async function Home({
   return (
     <main>
       {/* 필터링 */}
-      <div className="flex flex-row">
+      <div className="flex flex-row gap-5">
         <LeftSide data={data} />
         {selected && (
           <div className="flex-1 min-h-dvh max-h-screen">
