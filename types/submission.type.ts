@@ -1,7 +1,10 @@
 export type ApprovedSubmissionList = {
   success: boolean;
   submissions: Array<ApprovedSubmission>;
-  total?: 0;
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
 };
 
 export type ApprovedSubmission = {
