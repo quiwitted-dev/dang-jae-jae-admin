@@ -5,6 +5,7 @@ import {
   getBookmark,
   postBookmark,
 } from '@/services/bookmark.api';
+import useAuthStore from '@/store/useAuthStore';
 import { BookmarkIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 
@@ -15,6 +16,7 @@ type BookMarkProps = {
 };
 
 const Bookmark = ({ referenceId, bookmarkId, isFavorite }: BookMarkProps) => {
+  const isLogin = useAuthStore((state) => state.isLogin);
   const [loading, setLoading] = useState(false);
   const [favorite, setFavorite] = useState(isFavorite);
   const [currentBookmarkId, setCurrentBookmarkId] = useState(bookmarkId);
@@ -24,10 +26,21 @@ const Bookmark = ({ referenceId, bookmarkId, isFavorite }: BookMarkProps) => {
     setCurrentBookmarkId(bookmarkId);
   }, [isFavorite, bookmarkId]);
 
+  useEffect(() => {
+    if (!isLogin) {
+      setFavorite(false);
+      setCurrentBookmarkId(undefined);
+    }
+  }, [isLogin]);
+
   const handleToggleBookmark = async (id: string, e: MouseEvent) => {
     e.stopPropagation();
 
     if (loading) return;
+    if (!isLogin) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
 
     setLoading(true);
 
