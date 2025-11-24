@@ -8,18 +8,23 @@ import OwnerCountFilter from '@/components/home/OwnerCountFilter';
 import NewUnitsFilter from '@/components/home/NewUnitsFilter';
 import { Button } from '@/components/ui/button';
 import { getApprovedBusiness } from '@/services/submission.api';
+import MapView from '@/components/home/MapView';
 
 export const FILTER_BUTTON: string[] = [];
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ index?: string }>;
+  searchParams: Promise<{ id?: string }>;
 }) {
-  const { index } = await searchParams;
-  // const map = (index && ITEM[Number(index)].map) || '';
+  const { id } = await searchParams;
 
   const data = await getApprovedBusiness();
+
+  const selected = id
+    ? data.submissions.find((submission) => submission.id === id)
+    : undefined;
+  const mapAddress = selected?.address;
 
   return (
     <main>
@@ -37,18 +42,12 @@ export default async function Home({
       </div>
       <div className="flex flex-row">
         <LeftSide data={data} />
-        {index && (
-          <div className="flex-1 min-h-dvh">
-            {/* <Image
-              src={map}
-              width={800}
-              height={1000}
-              alt="지도"
-              className="w-full h-full object-cover"
-            /> */}
+        {selected && (
+          <div className="flex-1 min-h-dvh max-h-screen">
+            <MapView address={mapAddress} />
           </div>
         )}
-        {!index && <RightSide />}
+        {!selected && <RightSide />}
       </div>
     </main>
   );
