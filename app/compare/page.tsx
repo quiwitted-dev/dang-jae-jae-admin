@@ -215,6 +215,34 @@ const ComparePage = () => {
         </div>
       </div>
 
+      {/* 우측 모바일 */}
+      <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 right-0 w-1/2 h-[300px] z-20">
+        <X
+          width={34}
+          height={34}
+          strokeWidth={1}
+          onClick={() => removeCompare(1)}
+        />
+        <div className="flex flex-col gap-2 text-center pt-4 w-full">
+          <h3 className="text-[18px] font-bold truncate ">
+            {compare2.zoneName}
+          </h3>
+          <p className="text-xl font-thin">{compare2.address}</p>
+        </div>
+        <div className="flex flex-col gap-3 pt-[60px]">
+          <div className="flex flex-col text-center">
+            <p className="text-sm font-extrabold">정비구역 면적</p>
+            <p className="text-xl font-thin">{compare2.projectArenaM2} m2</p>
+          </div>
+          <div className="flex flex-col text-center">
+            <p className="text-sm font-extrabold">택지 면적</p>
+            <p className="text-xl font-thin">
+              {compare2.residentialLandAreaM2} m2
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* 메인 비교 */}
       <section className="flex-1 flex flex-col items-center justify-center relative z-10 text-black md:px-0 px-4">
         {/* Top Line with 위치 */}
