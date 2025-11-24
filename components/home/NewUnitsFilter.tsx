@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import useFilterStore from '@/store/useFilterStore';
+import { useSearchParams } from 'next/navigation';
 
 const NEW_UNITS_OPTIONS = [
   { value: 100, label: '100세대' },
@@ -15,6 +16,7 @@ const NEW_UNITS_OPTIONS = [
 
 export default function NewUnitsFilter() {
   const { newUnits: selectedRange, setNewUnits } = useFilterStore();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -77,6 +79,23 @@ export default function NewUnitsFilter() {
       window.removeEventListener('resize', updateDropdownPosition);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    const toNumberOrNull = (value: string | null) => {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : null;
+    };
+    setNewUnits({
+      newConstructionUnitsMin: toNumberOrNull(
+        params.get('newConstructionUnitsMin')
+      ),
+      newConstructionUnitsMax: toNumberOrNull(
+        params.get('newConstructionUnitsMax')
+      ),
+    });
+  }, [searchParams, setNewUnits]);
 
   const handleUnitsClick = useCallback(
     (units: number) => {

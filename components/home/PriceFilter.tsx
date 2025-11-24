@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import useFilterStore from '@/store/useFilterStore';
+import { useSearchParams } from 'next/navigation';
 
 const PRICE_OPTIONS = [
   { value: 1, label: '1억' },
@@ -20,6 +21,7 @@ const PRICE_OPTIONS = [
 
 export default function PriceFilter() {
   const { price: selectedRange, setPrice } = useFilterStore();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -82,6 +84,19 @@ export default function PriceFilter() {
       window.removeEventListener('resize', updateDropdownPosition);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    const toNumberOrNull = (value: string | null) => {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : null;
+    };
+    setPrice({
+      minPrice: toNumberOrNull(params.get('minPrice')),
+      maxPrice: toNumberOrNull(params.get('maxPrice')),
+    });
+  }, [searchParams, setPrice]);
 
   const handlePriceClick = useCallback(
     (price: number) => {

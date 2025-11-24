@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import useFilterStore from '@/store/useFilterStore';
+import { useSearchParams } from 'next/navigation';
 
 const BUSINESS_STAGES = [
   '공식승인 전 단계',
@@ -16,6 +17,7 @@ const BUSINESS_STAGES = [
 
 export default function BusinessStageFilter() {
   const { currentStage: selectedStage, setCurrentStage } = useFilterStore();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -78,6 +80,12 @@ export default function BusinessStageFilter() {
       window.removeEventListener('resize', updateDropdownPosition);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    setCurrentStage(params.get('currentStage') ?? '');
+  }, [searchParams, setCurrentStage]);
 
   const handleStageSelect = (stage: string) => {
     setCurrentStage(stage);

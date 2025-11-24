@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import useFilterStore from '@/store/useFilterStore';
+import { useSearchParams } from 'next/navigation';
 
 const BUSINESS_TYPES = [
   '재건축',
@@ -15,6 +16,7 @@ const BUSINESS_TYPES = [
 
 export default function BusinessTypeFilter() {
   const { projectTypes, setProjectTypes } = useFilterStore();
+  const searchParams = useSearchParams();
   const selectedType = projectTypes[0] || '';
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -78,6 +80,13 @@ export default function BusinessTypeFilter() {
       window.removeEventListener('resize', updateDropdownPosition);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    const types = params.getAll('projectTypes');
+    setProjectTypes(types);
+  }, [searchParams, setProjectTypes]);
 
   const handleTypeSelect = (type: string) => {
     setProjectTypes([type]);

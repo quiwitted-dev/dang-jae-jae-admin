@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import useFilterStore from '@/store/useFilterStore';
+import { useSearchParams } from 'next/navigation';
 
 const LOCATION_DATA = {
   서울시: [
@@ -67,6 +68,7 @@ const LOCATION_DATA = {
 
 export default function LocationFilter() {
   const { locations, setLocations } = useFilterStore();
+  const searchParams = useSearchParams();
   const [selectRegion, setSelectRegion] = useState({
     region: '',
     district: '',
@@ -166,6 +168,28 @@ export default function LocationFilter() {
     setIsOpen(false);
     setShowDistricts('');
   };
+
+  useEffect(() => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    const locs = params.getAll('locations');
+    if (!locs.length) {
+      setLocations([]);
+      setSelectRegion({ region: '', district: '' });
+      return;
+    }
+
+    const first = locs[0];
+    const isSeoul = first.endsWith('구');
+    const district = isSeoul
+      ? first.replace(/구$/, '')
+      : first.replace(/시$/, '');
+    setLocations(locs);
+    setSelectRegion({
+      region: isSeoul ? '서울시' : '경기도',
+      district,
+    });
+  }, [searchParams, setLocations]);
 
   const getDisplayText = () => {
     if (selectRegion.district) {
