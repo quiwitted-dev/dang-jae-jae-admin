@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import useFilterStore from '@/store/useFilterStore';
 
 const BUSINESS_STAGES = [
   '공식승인 전 단계',
@@ -14,12 +15,14 @@ const BUSINESS_STAGES = [
 ];
 
 export default function BusinessStageFilter() {
-  const [selectedStage, setSelectedStage] = useState<string>('');
+  const { currentStage: selectedStage, setCurrentStage } = useFilterStore();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  console.log(selectedStage)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -79,12 +82,12 @@ export default function BusinessStageFilter() {
   }, [isOpen]);
 
   const handleStageSelect = (stage: string) => {
-    setSelectedStage(stage);
+    setCurrentStage(stage);
     setIsOpen(false);
   };
 
   const handleReset = () => {
-    setSelectedStage('');
+    setCurrentStage('');
     setIsOpen(false);
   };
 

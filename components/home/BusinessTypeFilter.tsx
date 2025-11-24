@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import useFilterStore from '@/store/useFilterStore';
 
 const BUSINESS_TYPES = [
   '재건축',
@@ -13,12 +14,14 @@ const BUSINESS_TYPES = [
 ];
 
 export default function BusinessTypeFilter() {
-  const [selectedType, setSelectedType] = useState<string>('');
+  const { projectTypes, setProjectTypes } = useFilterStore();
+  const selectedType = projectTypes[0] || '';
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  console.log(projectTypes)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -78,12 +81,12 @@ export default function BusinessTypeFilter() {
   }, [isOpen]);
 
   const handleTypeSelect = (type: string) => {
-    setSelectedType(type);
+    setProjectTypes([type]);
     setIsOpen(false);
   };
 
   const handleReset = () => {
-    setSelectedType('');
+    setProjectTypes([]);
     setIsOpen(false);
   };
 

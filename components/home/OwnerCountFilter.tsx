@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import useFilterStore from '@/store/useFilterStore';
 
 const OWNER_COUNT_OPTIONS = [
   { value: 100, label: '100명' },
@@ -13,10 +14,7 @@ const OWNER_COUNT_OPTIONS = [
 ];
 
 export default function OwnerCountFilter() {
-  const [selectedRange, setSelectedRange] = useState<{
-    min: number | null;
-    max: number | null;
-  }>({ min: null, max: null });
+  const { ownerCount: selectedRange, setOwnerCount } = useFilterStore();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -80,34 +78,36 @@ export default function OwnerCountFilter() {
     };
   }, [isOpen]);
 
-  const handleCountClick = useCallback((count: number) => {
-    setSelectedRange((prevRange) => {
-      const { min, max } = prevRange;
+  const handleCountClick = useCallback(
+    (count: number) => {
+      setOwnerCount((prevRange) => {
+        const { ownerCountMin: min, ownerCountMax: max } = prevRange;
 
-      if (!min && !max) {
-        // 첫 번째 클릭: 시작점 설정
-        return { min: count, max: null };
-      } else if (min && !max) {
-        // 두 번째 클릭: 범위 완성
-        if (count >= min) {
-          return { min, max: count };
+        if (!min && !max) {
+          return { ownerCountMin: count, ownerCountMax: null };
+        } else if (min && !max) {
+          if (count >= min) {
+            setIsOpen(false);
+            return { ownerCountMin: min, ownerCountMax: count };
+          } else {
+            setIsOpen(false);
+            return { ownerCountMin: count, ownerCountMax: min };
+          }
         } else {
-          return { min: count, max: min };
+          return { ownerCountMin: count, ownerCountMax: null };
         }
-      } else {
-        // 이미 범위가 설정된 경우: 새로운 시작점으로 리셋
-        return { min: count, max: null };
-      }
-    });
-  }, []);
+      });
+    },
+    [setOwnerCount]
+  );
 
   const handleReset = () => {
-    setSelectedRange({ min: null, max: null });
+    setOwnerCount({ ownerCountMin: null, ownerCountMax: null });
     setIsOpen(false);
   };
 
   const getDisplayText = () => {
-    const { min, max } = selectedRange;
+    const { ownerCountMin: min, ownerCountMax: max } = selectedRange;
     if (!min && !max) return '권리자수';
     if (min && max) return `${min}명~${max}명`;
     if (min) return `${min}명 선택중...`;
@@ -115,14 +115,14 @@ export default function OwnerCountFilter() {
   };
 
   const isInRange = (count: number) => {
-    const { min, max } = selectedRange;
+    const { ownerCountMin: min, ownerCountMax: max } = selectedRange;
     if (!min) return false;
     if (!max) return count === min;
     return count >= min && count <= max;
   };
 
   const isRangeEndpoint = (count: number) => {
-    const { min, max } = selectedRange;
+    const { ownerCountMin: min, ownerCountMax: max } = selectedRange;
     return count === min || count === max;
   };
 
@@ -155,7 +155,7 @@ export default function OwnerCountFilter() {
       {isOpen && isPositioned && (
         <div
           ref={dropdownRef}
-          className="fixed w-80 bg-white border border-gray-200 rounded-md shadow-lg z-[9999]"
+          className="fixed w-80 bg-white border border-gray-200 rounded-md shadow-lg z-9999"
           style={{
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`,
@@ -164,7 +164,7 @@ export default function OwnerCountFilter() {
           <div className="p-4">
             <div className="mb-3">
               <p className="text-sm text-gray-600 text-center">
-                {selectedRange.min && !selectedRange.max
+                {selectedRange.ownerCountMin && !selectedRange.ownerCountMax
                   ? '끝점을 선택하세요'
                   : '시작점을 클릭하고 끝점을 선택하세요'}
               </p>
@@ -189,7 +189,7 @@ export default function OwnerCountFilter() {
               ))}
             </div>
 
-            {(selectedRange.min || selectedRange.max) && (
+            {(selectedRange.ownerCountMin || selectedRange.ownerCountMax) && (
               <>
                 <div className="border-t border-gray-100 my-3"></div>
                 <button

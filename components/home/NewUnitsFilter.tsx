@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import useFilterStore from '@/store/useFilterStore';
 
 const NEW_UNITS_OPTIONS = [
   { value: 100, label: '100세대' },
@@ -13,10 +14,7 @@ const NEW_UNITS_OPTIONS = [
 ];
 
 export default function NewUnitsFilter() {
-  const [selectedRange, setSelectedRange] = useState<{
-    min: number | null;
-    max: number | null;
-  }>({ min: null, max: null });
+  const { newUnits: selectedRange, setNewUnits } = useFilterStore();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -80,49 +78,72 @@ export default function NewUnitsFilter() {
     };
   }, [isOpen]);
 
-  const handleUnitsClick = useCallback((units: number) => {
-    setSelectedRange((prevRange) => {
-      const { min, max } = prevRange;
+  const handleUnitsClick = useCallback(
+    (units: number) => {
+      setNewUnits((prevRange) => {
+        const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } =
+          prevRange;
 
-      if (!min && !max) {
-        // 첫 번째 클릭: 시작점 설정
-        return { min: units, max: null };
-      } else if (min && !max) {
-        // 두 번째 클릭: 범위 완성
-        if (units >= min) {
-          return { min, max: units };
+        if (!min && !max) {
+          return {
+            newConstructionUnitsMin: units,
+            newConstructionUnitsMax: null,
+          };
+        } else if (min && !max) {
+          if (units >= min) {
+            setIsOpen(false);
+            return {
+              newConstructionUnitsMin: min,
+              newConstructionUnitsMax: units,
+            };
+          } else {
+            setIsOpen(false);
+            return {
+              newConstructionUnitsMin: units,
+              newConstructionUnitsMax: min,
+            };
+          }
         } else {
-          return { min: units, max: min };
+          return {
+            newConstructionUnitsMin: units,
+            newConstructionUnitsMax: null,
+          };
         }
-      } else {
-        // 이미 범위가 설정된 경우: 새로운 시작점으로 리셋
-        return { min: units, max: null };
-      }
-    });
-  }, []);
+      });
+    },
+    [setNewUnits]
+  );
 
   const handleReset = () => {
-    setSelectedRange({ min: null, max: null });
+    setNewUnits({
+      newConstructionUnitsMin: null,
+      newConstructionUnitsMax: null,
+    });
     setIsOpen(false);
   };
 
   const getDisplayText = () => {
-    const { min, max } = selectedRange;
-    if (!min && !max) return '신축세대수';
-    if (min && max) return `${min}세대~${max}세대`;
-    if (min) return `${min}세대 선택중...`;
+    const { newConstructionUnitsMin, newConstructionUnitsMax } = selectedRange;
+    if (!newConstructionUnitsMin && !newConstructionUnitsMax)
+      return '신축세대수';
+    if (newConstructionUnitsMin && newConstructionUnitsMax)
+      return `${newConstructionUnitsMin}세대~${newConstructionUnitsMax}세대`;
+    if (newConstructionUnitsMin)
+      return `${newConstructionUnitsMin}세대 선택중...`;
     return '신축세대수';
   };
 
   const isInRange = (units: number) => {
-    const { min, max } = selectedRange;
+    const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } =
+      selectedRange;
     if (!min) return false;
     if (!max) return units === min;
     return units >= min && units <= max;
   };
 
   const isRangeEndpoint = (units: number) => {
-    const { min, max } = selectedRange;
+    const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } =
+      selectedRange;
     return units === min || units === max;
   };
 
@@ -155,7 +176,7 @@ export default function NewUnitsFilter() {
       {isOpen && isPositioned && (
         <div
           ref={dropdownRef}
-          className="fixed w-80 bg-white border border-gray-200 rounded-md shadow-lg z-[9999]"
+          className="fixed w-80 bg-white border border-gray-200 rounded-md shadow-lg z-9999"
           style={{
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`,
@@ -164,7 +185,8 @@ export default function NewUnitsFilter() {
           <div className="p-4">
             <div className="mb-3">
               <p className="text-sm text-gray-600 text-center">
-                {selectedRange.min && !selectedRange.max
+                {selectedRange.newConstructionUnitsMin &&
+                !selectedRange.newConstructionUnitsMax
                   ? '끝점을 선택하세요'
                   : '시작점을 클릭하고 끝점을 선택하세요'}
               </p>
@@ -189,7 +211,8 @@ export default function NewUnitsFilter() {
               ))}
             </div>
 
-            {(selectedRange.min || selectedRange.max) && (
+            {(selectedRange.newConstructionUnitsMin ||
+              selectedRange.newConstructionUnitsMax) && (
               <>
                 <div className="border-t border-gray-100 my-3"></div>
                 <button
