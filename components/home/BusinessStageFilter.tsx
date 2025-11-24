@@ -22,8 +22,6 @@ export default function BusinessStageFilter() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  console.log(selectedStage)
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (

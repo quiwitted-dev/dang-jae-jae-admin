@@ -16,7 +16,6 @@ type ProjectCardProps = {
 const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
   const { id } = item;
   const router = useRouter();
-  // console.log(favoriteId)
 
   const averageLandSharePyeong = () => {
     if (+item.projectAreaM2 === 0 || +item.ownerCount === 0) {

@@ -146,9 +146,6 @@ const ComparePage = () => {
     fetchCompareData();
   }, [compare]);
 
-  console.log(compare1);
-  console.log(compare2);
-
   return (
     <div className="flex flex-row min-h-dvh relative">
       {/* 왼쪽 50% - 그라데이션 */}

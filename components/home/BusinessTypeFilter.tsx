@@ -21,7 +21,6 @@ export default function BusinessTypeFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  console.log(projectTypes)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
