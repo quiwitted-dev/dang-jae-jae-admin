@@ -99,12 +99,16 @@ const mapUserResultToCompare = (data: SubmissionUserDetail) => ({
 });
 
 const ComparePage = () => {
-  const { compare } = useCompareStore();
+  const { compare, removeCompare } = useCompareStore();
   const [compare1, setCompare1] = useState(defaultValue);
   const [compare2, setCompare2] = useState(defaultValue);
 
   useEffect(() => {
     const fetchCompareData = async () => {
+      // 슬랏 초기화 후 현재 compare 상태에 맞춰 다시 채운다.
+      setCompare1(defaultValue);
+      setCompare2(defaultValue);
+
       const nonNullItems = compare
         .map((item, index) => ({ item, index }))
         .filter(
@@ -113,8 +117,6 @@ const ComparePage = () => {
         );
 
       if (nonNullItems.length === 0) {
-        setCompare1(defaultValue);
-        setCompare2(defaultValue);
         return;
       }
 
@@ -157,7 +159,13 @@ const ComparePage = () => {
 
       {/* 좌측 md이상 */}
       <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
-        <X width={34} height={34} strokeWidth={1} />
+        <X
+          width={34}
+          height={34}
+          strokeWidth={1}
+          className="cursor-pointer"
+          onClick={() => removeCompare(0)}
+        />
         <div className="flex flex-col gap-2 text-center pt-4">
           <h3 className="text-[18px] font-bold">{compare1.zoneName}</h3>
           <p className="text-xl font-thin">{compare1.address}</p>
@@ -184,7 +192,12 @@ const ComparePage = () => {
 
       {/* 좌측 모바일 */}
       <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 left-0 w-1/2 h-[300px] z-20">
-        <X width={34} height={34} strokeWidth={1} />
+        <X
+          width={34}
+          height={34}
+          strokeWidth={1}
+          onClick={() => removeCompare(0)}
+        />
         <div className="flex flex-col gap-2 text-center pt-4 w-full">
           <h3 className="text-[18px] font-bold truncate ">
             {compare1.zoneName}
@@ -560,7 +573,13 @@ const ComparePage = () => {
 
       {/* 우측 md이상 */}
       <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
-        <X width={34} height={34} strokeWidth={1} />
+        <X
+          width={34}
+          height={34}
+          strokeWidth={1}
+          className="cursor-pointer"
+          onClick={() => removeCompare(1)}
+        />
         <div className="flex flex-col gap-2 text-center pt-4">
           <h3 className="text-[18px] font-bold">{compare2.zoneName}</h3>
           <p className="text-xl font-thin">{compare2.address}</p>
