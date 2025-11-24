@@ -4,6 +4,7 @@ export type ApprovedSubmissionList = {
   total?: number;
   page?: number;
   limit?: number;
+  pageSize?: number;
   totalPages?: number;
 };
 
