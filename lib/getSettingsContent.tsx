@@ -2,7 +2,6 @@ import TermsContent from '@/components/my/TermsContent';
 import { POLICIES_TERMS, PRIVATE_TERMS } from '@/constants/terms';
 
 export const getSettingsContent = (settingsTab: string) => {
-  console.log(settingsTab)
   switch (settingsTab) {
     case 'privacy':
       return <TermsContent terms={PRIVATE_TERMS} />;

@@ -1,10 +1,10 @@
-import LeftSideBar from '@/components/expected_add/LeftSideBar';
+import ExpectedAddForm from '@/components/expected_add/ExpectedAddForm';
 import Image from 'next/image';
 
 const ExpectedAdd = () => {
   return (
     <div className="flex flex-row">
-      <LeftSideBar />
+      <ExpectedAddForm/>
 
       <div className="hidden md:flex flex-1 items-center justify-center">
         <div className="relative w-full max-w-[390px] aspect-390/194">

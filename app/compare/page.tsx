@@ -1,6 +1,154 @@
+'use client';
+
+import {
+  getSubmissionPublicDetail,
+  getSubmissionUserDetail,
+} from '@/services/submission.api';
+import useCompareStore, { CompareItem } from '@/store/useCompareStore';
+import {
+  SubmissionPublicDetail,
+  SubmissionUserDetail,
+} from '@/types/submission.type';
 import { X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+export const defaultValue = {
+  zoneName: '',
+  address: '',
+  projectArenaM2: '',
+  residentialLandAreaM2: '',
+  price: '',
+  averageLandScale: '',
+  ownerCount: '',
+  associationSaleUnits: '',
+  generalSaleUnits: '',
+  rentalUnits: '',
+  newConstructionUnits: '',
+  newVolumeRatio: '',
+  currentStage: '',
+  businessType: '',
+  businessOperator: '',
+};
+
+const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
+  // 경기/서울 데이터 스키마가 달라서 키 존재 여부로 분기
+  if (data.dataSource === 'GYEONGGI') {
+    return {
+      zoneName: data.imprvZoneNm ?? '',
+      address: data.address ?? '',
+      projectArenaM2: data.projectAreaM2 ?? '',
+      residentialLandAreaM2: '0',
+      price: '0',
+      averageLandScale: `${(
+        (+data.projectAreaM2 / +data.ownerCount) *
+        0.3025
+      ).toFixed(2)}`,
+      ownerCount: `${data.ownerCount ?? ''}`,
+      associationSaleUnits: '0',
+      generalSaleUnits: `${data.generalSaleUnits ?? '0'}`,
+      rentalUnits: `${data.rentalUnits ?? '0'}`,
+      newConstructionUnits: `${+data.totalSaleUnits + +data.rentalUnits}`,
+      newVolumeRatio: data.newVolumeRatio ?? '0',
+      currentStage: data.currentStage ?? '-',
+      businessType: data.projectType ?? '-',
+      businessOperator: '-',
+    };
+  }
+
+  return {
+    zoneName: data.renovationZoneName ?? '-',
+    address: data.representativeLotNumber ?? '-',
+    projectArenaM2: data.projectAreaM2 ?? '0',
+    residentialLandAreaM2: data.residentialLandAreaM2 ?? '0',
+    price: '0',
+    averageLandScale: `${(
+      (+data.projectAreaM2 / +data.ownerCount) *
+      0.3025
+    ).toFixed(2)}`,
+    ownerCount: `${data.ownerCount ?? '0'}`,
+    associationSaleUnits: '0',
+    generalSaleUnits: `${+data.totalSaleUnits - +data.ownerCount}`,
+    rentalUnits: `${data.rentalUnits ?? '0'}`,
+    newConstructionUnits: `${+data.rentalUnits + +data.totalSaleUnits}`,
+    newVolumeRatio: data.volumeRatio ?? '0',
+    currentStage: data.currentStage ?? '',
+    businessType: data.businessType ?? '',
+    businessOperator: '-',
+  };
+};
+
+const mapUserResultToCompare = (data: SubmissionUserDetail) => ({
+  zoneName: data.tempName ?? '-',
+  address: data.location ?? '-',
+  projectArenaM2: data.projectArea ?? '0',
+  residentialLandAreaM2: '0',
+  price: data.priceRange ?? '0',
+  averageLandScale: `${(
+    (+data.projectArea / +data.ownerCount) *
+    0.3025
+  ).toFixed(2)}`,
+  ownerCount: `${data.ownerCount ?? '0'}`,
+  associationSaleUnits: '0',
+  generalSaleUnits: '0',
+  rentalUnits: '0',
+  newConstructionUnits: `${data.expectedNewUnits ?? '0'}`,
+  newVolumeRatio: data.expectedVolumeRatio ?? '0',
+  currentStage: '예정지',
+  businessType: data.businessType ?? '-',
+  businessOperator: data.businessEntity ?? '-',
+});
 
 const ComparePage = () => {
+  const { compare, removeCompare } = useCompareStore();
+  const [compare1, setCompare1] = useState(defaultValue);
+  const [compare2, setCompare2] = useState(defaultValue);
+
+  useEffect(() => {
+    const fetchCompareData = async () => {
+      // 슬랏 초기화 후 현재 compare 상태에 맞춰 다시 채운다.
+      setCompare1(defaultValue);
+      setCompare2(defaultValue);
+
+      const nonNullItems = compare
+        .map((item, index) => ({ item, index }))
+        .filter(
+          (entry): entry is { item: CompareItem; index: number } =>
+            entry.item !== null
+        );
+
+      if (nonNullItems.length === 0) {
+        return;
+      }
+
+      const tasks = nonNullItems.map(({ item }) =>
+        item.dataType === 'PUBLIC'
+          ? getSubmissionPublicDetail(item.id)
+          : getSubmissionUserDetail(item.id)
+      );
+
+      const results = await Promise.all(tasks);
+
+      results.forEach((result, idx) => {
+        const { item, index } = nonNullItems[idx];
+        const mapped =
+          item.dataType === 'PUBLIC'
+            ? mapPublicResultToCompare(result as SubmissionPublicDetail)
+            : mapUserResultToCompare(result as SubmissionUserDetail);
+
+        if (index === 0) {
+          setCompare1(mapped);
+        } else {
+          setCompare2(mapped);
+        }
+      });
+    };
+
+    fetchCompareData();
+  }, [compare]);
+
+  console.log(compare1);
+  console.log(compare2);
+
   return (
     <div className="flex flex-row min-h-dvh relative">
       {/* 왼쪽 50% - 그라데이션 */}
@@ -11,46 +159,61 @@ const ComparePage = () => {
 
       {/* 좌측 md이상 */}
       <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
-        <X width={34} height={34} strokeWidth={1} />
+        <X
+          width={34}
+          height={34}
+          strokeWidth={1}
+          className="cursor-pointer"
+          onClick={() => removeCompare(0)}
+        />
         <div className="flex flex-col gap-2 text-center pt-4">
-          <h3 className="text-[18px] font-bold">
-            한남하이츠아파트 주택재건축정비사업조합
-          </h3>
-          <p className="text-xl font-thin">성동구 옥수동</p>
+          <h3 className="text-[18px] font-bold">{compare1.zoneName}</h3>
+          <p className="text-xl font-thin">{compare1.address}</p>
         </div>
         <div className="flex flex-col gap-3 pt-[60px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
-            <p className="text-xl font-thin">48837.5 m2</p>
+            <p className="text-xl font-thin">{compare1.projectArenaM2} m2</p>
           </div>
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">택지 면적</p>
-            <p className="text-xl font-thin">48837.5 m2</p>
+            <p className="text-xl font-thin">
+              {compare1.residentialLandAreaM2} m2
+            </p>
           </div>
         </div>
 
+        {/* 일반분양수 % */}
         <h3 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-8xl font-extrabold">
-          28<span className="font-light">%</span>
+          {compare1.generalSaleUnits}
+          <span className="font-light">%</span>
         </h3>
       </section>
 
       {/* 좌측 모바일 */}
       <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 left-0 w-1/2 h-[300px] z-20">
-        <X width={34} height={34} strokeWidth={1} />
+        <X
+          width={34}
+          height={34}
+          strokeWidth={1}
+          onClick={() => removeCompare(0)}
+        />
         <div className="flex flex-col gap-2 text-center pt-4 w-full">
           <h3 className="text-[18px] font-bold truncate ">
-            한남하이츠아파트 주택재건축정비사업조합
+            {compare1.zoneName}
           </h3>
-          <p className="text-xl font-thin">성동구 옥수동</p>
+          <p className="text-xl font-thin">{compare1.address}</p>
         </div>
         <div className="flex flex-col gap-3 pt-[60px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
-            <p className="text-xl font-thin">48837.5 m2</p>
+            <p className="text-xl font-thin">{compare1.projectArenaM2} m2</p>
           </div>
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">택지 면적</p>
-            <p className="text-xl font-thin">48837.5 m2</p>
+            <p className="text-xl font-thin">
+              {compare1.residentialLandAreaM2} m2
+            </p>
           </div>
         </div>
       </div>
@@ -92,13 +255,13 @@ const ComparePage = () => {
           {/* 가격 비교 */}
           <div className="flex items-center w-full">
             <div className="flex-1 text-right pr-4">
-              <span className="text-xl font-semibold">26~50억</span>
+              <span className="text-xl font-semibold">{compare1.price}억</span>
             </div>
             <div className="bg-black text-white rounded-full w-[60px] h-[60px] flex items-center justify-center text-sm font-normal shrink-0">
               가격
             </div>
             <div className="flex-1 text-left pl-4">
-              <span className="text-xl font-semibold">10~20억</span>
+              <span className="text-xl font-semibold">{compare2.price}억</span>
             </div>
           </div>
 
@@ -106,7 +269,8 @@ const ComparePage = () => {
           <div className="flex items-center w-full">
             <div className="flex-1 text-right pr-4">
               <span className="text-4xl font-bold">
-                26.19<span className="text-xl">평</span>
+                {compare1.averageLandScale}
+                <span className="text-xl">평</span>
               </span>
             </div>
             <div className="bg-black text-white rounded-full w-[60px] h-[60px] flex items-center justify-center text-sm font-normal text-center shrink-0">
@@ -116,7 +280,8 @@ const ComparePage = () => {
             </div>
             <div className="flex-1 text-left pl-4">
               <span className="text-4xl font-bold">
-                29.92<span className="text-xl">평</span>
+                {compare2.averageLandScale}
+                <span className="text-xl">평</span>
               </span>
             </div>
           </div>
@@ -128,7 +293,7 @@ const ComparePage = () => {
               <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10">
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
-                  style={{ width: `${71}%` }} // 왼쪽 비율
+                  style={{ width: `${0}%` }} // 왼쪽 비율
                 />
               </div>
 
@@ -136,14 +301,16 @@ const ComparePage = () => {
               <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden -z-10">
                 <div
                   className="absolute inset-y-0 left-0 bg-[#61616C] transition-all duration-500 rounded-r-4xl"
-                  style={{ width: `${54}%` }} // 오른쪽 비율
+                  style={{ width: `${0}%` }} // 오른쪽 비율
                 />
               </div>
 
               {/* 위에 올리는 실제 콘텐츠 */}
-              <span>71%</span>
+              <span>0%</span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-4">
-                <span className="text-base font-thin text-white">564명</span>
+                <span className="text-base font-thin text-white">
+                  {compare1.ownerCount}명
+                </span>
               </div>
 
               {/* 가운데 동그라미 */}
@@ -152,9 +319,11 @@ const ComparePage = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-1 pl-4">
-                <span className="text-base font-thin text-white">2,647명</span>
+                <span className="text-base font-thin text-white">
+                  {compare2.ownerCount}명
+                </span>
               </div>
-              <span>54%</span>
+              <span>0%</span>
             </div>
           </div>
 
@@ -165,7 +334,7 @@ const ComparePage = () => {
               <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10">
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
-                  style={{ width: `${71}%` }} // 왼쪽 비율
+                  style={{ width: `${0}%` }} // 왼쪽 비율
                 />
               </div>
 
@@ -173,14 +342,16 @@ const ComparePage = () => {
               <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden -z-10">
                 <div
                   className="absolute inset-y-0 left-0 bg-[#61616C] transition-all duration-500 rounded-r-4xl"
-                  style={{ width: `${81}%` }} // 오른쪽 비율
+                  style={{ width: `${0}%` }} // 오른쪽 비율
                 />
               </div>
 
               {/* 위에 올리는 실제 콘텐츠 */}
-              <span>71%</span>
+              <span>0%</span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-4">
-                <span className="text-base font-thin text-white">564세대</span>
+                <span className="text-base font-thin text-white">
+                  {compare1.associationSaleUnits}세대
+                </span>
               </div>
 
               {/* 가운데 동그라미 */}
@@ -192,10 +363,10 @@ const ComparePage = () => {
 
               <div className="flex items-center gap-2 flex-1 pl-4">
                 <span className="text-base font-thin text-white">
-                  2,647세대
+                  {compare2.associationSaleUnits}세대
                 </span>
               </div>
-              <span>81%</span>
+              <span>0%</span>
             </div>
           </div>
 
@@ -206,7 +377,7 @@ const ComparePage = () => {
               <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10">
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
-                  style={{ width: `${28}%` }} // 왼쪽 비율
+                  style={{ width: `${0}%` }} // 왼쪽 비율
                 />
               </div>
 
@@ -219,9 +390,11 @@ const ComparePage = () => {
               </div>
 
               {/* 위에 올리는 실제 콘텐츠 */}
-              <span>28%</span>
+              <span>0%</span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-4">
-                <span className="text-base font-thin text-white">223세대</span>
+                <span className="text-base font-thin text-white">
+                  {compare1.generalSaleUnits}세대
+                </span>
               </div>
 
               {/* 가운데 동그라미 */}
@@ -232,9 +405,11 @@ const ComparePage = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-1 pl-4">
-                <span className="text-base font-thin text-white">223세대</span>
+                <span className="text-base font-thin text-white">
+                  {compare2.generalSaleUnits}세대
+                </span>
               </div>
-              <span>81%</span>
+              <span>0%</span>
             </div>
           </div>
 
@@ -245,7 +420,7 @@ const ComparePage = () => {
               <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10">
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
-                  style={{ width: `${17}%` }} // 왼쪽 비율
+                  style={{ width: `${0}%` }} // 왼쪽 비율
                 />
               </div>
 
@@ -258,9 +433,11 @@ const ComparePage = () => {
               </div>
 
               {/* 위에 올리는 실제 콘텐츠 */}
-              <span>17%</span>
+              <span>0%</span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-4">
-                <span className="text-base font-thin text-white">223세대</span>
+                <span className="text-base font-thin text-white">
+                  {compare1.rentalUnits}세대
+                </span>
               </div>
 
               {/* 가운데 동그라미 */}
@@ -271,9 +448,11 @@ const ComparePage = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-1 pl-4">
-                <span className="text-base font-thin text-white">223세대</span>
+                <span className="text-base font-thin text-white">
+                  {compare2.rentalUnits}세대
+                </span>
               </div>
-              <span>81%</span>
+              <span>0%</span>
             </div>
           </div>
 
@@ -285,7 +464,7 @@ const ComparePage = () => {
               <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10">
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
-                  style={{ width: `${100}%` }} // 왼쪽 비율
+                  style={{ width: `${0}%` }} // 왼쪽 비율
                 />
               </div>
 
@@ -298,9 +477,11 @@ const ComparePage = () => {
               </div>
 
               {/* 위에 올리는 실제 콘텐츠 */}
-              <span>17%</span>
+              <span>0%</span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-4">
-                <span className="text-base font-thin text-white">223세대</span>
+                <span className="text-base font-thin text-white">
+                  {compare1.newConstructionUnits}세대
+                </span>
               </div>
 
               {/* 가운데 동그라미 */}
@@ -310,16 +491,20 @@ const ComparePage = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-1 pl-4">
-                <span className="text-base font-thin text-white">223세대</span>
+                <span className="text-base font-thin text-white">
+                  {compare2.newConstructionUnits}세대
+                </span>
               </div>
-              <span>81%</span>
+              <span>0%</span>
             </div>
           </div>
 
           {/* 신축용적률 */}
           <div className="flex items-center w-full">
             <div className="flex-1 text-right pr-4">
-              <span className="text-base font-thin text-black">26~50억</span>
+              <span className="text-base font-thin text-black">
+                {compare1.newVolumeRatio}%
+              </span>
             </div>
             <div className="bg-black text-white rounded-full w-[60px] h-[60px] flex items-center justify-center text-center text-sm font-normal shrink-0 whitespace-normal break-keep">
               신축
@@ -327,7 +512,9 @@ const ComparePage = () => {
               용적률
             </div>
             <div className="flex-1 text-left pl-4">
-              <span className="text-base font-thin text-black">265.67%</span>
+              <span className="text-base font-thin text-black">
+                {compare2.newVolumeRatio}%
+              </span>
             </div>
           </div>
 
@@ -335,67 +522,84 @@ const ComparePage = () => {
           <div className="flex items-center w-full">
             <div className="flex-1 text-right pr-4">
               <span className="text-base font-thin text-black">
-                사업시행인가
+                {compare1.currentStage}
               </span>
             </div>
             <div className="bg-black text-white rounded-full w-[60px] h-[60px] flex items-center justify-center text-center text-sm font-normal shrink-0 whitespace-normal break-keep">
               현재단계
             </div>
             <div className="flex-1 text-left pl-4">
-              <span className="text-base font-thin text-black">265.67%</span>
+              <span className="text-base font-thin text-black">
+                {compare2.currentStage}
+              </span>
             </div>
           </div>
 
           {/* 사업성격 */}
           <div className="flex items-center w-full">
             <div className="flex-1 text-right pr-4">
-              <span className="text-base font-thin text-black">재개발</span>
+              <span className="text-base font-thin text-black">
+                {compare1.businessType}
+              </span>
             </div>
             <div className="bg-black text-white rounded-full w-[60px] h-[60px] flex items-center justify-center text-center text-sm font-normal shrink-0 whitespace-normal break-keep">
               사업성격
             </div>
             <div className="flex-1 text-left pl-4">
-              <span className="text-base font-thin text-black">265.67%</span>
+              <span className="text-base font-thin text-black">
+                {compare2.businessType}
+              </span>
             </div>
           </div>
 
           {/* 시행주체 */}
           <div className="flex items-center w-full">
             <div className="flex-1 text-right pr-4">
-              <span className="text-base font-thin text-black">조합</span>
+              <span className="text-base font-thin text-black">
+                {compare1.businessOperator}
+              </span>
             </div>
             <div className="bg-black text-white rounded-full w-[60px] h-[60px] flex items-center justify-center text-center text-sm font-normal shrink-0 whitespace-normal break-keep">
               시행주체
             </div>
             <div className="flex-1 text-left pl-4">
-              <span className="text-base font-thin text-black">265.67%</span>
+              <span className="text-base font-thin text-black">
+                {compare2.businessOperator}
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 좌측 md이상 */}
+      {/* 우측 md이상 */}
       <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
-        <X width={34} height={34} strokeWidth={1} />
+        <X
+          width={34}
+          height={34}
+          strokeWidth={1}
+          className="cursor-pointer"
+          onClick={() => removeCompare(1)}
+        />
         <div className="flex flex-col gap-2 text-center pt-4">
-          <h3 className="text-[18px] font-bold">
-            한남하이츠아파트 주택재건축정비사업조합
-          </h3>
-          <p className="text-xl font-thin">성동구 옥수동</p>
+          <h3 className="text-[18px] font-bold">{compare2.zoneName}</h3>
+          <p className="text-xl font-thin">{compare2.address}</p>
         </div>
         <div className="flex flex-col gap-3 pt-[60px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
-            <p className="text-xl font-thin">48837.5 m2</p>
+            <p className="text-xl font-thin">{compare2.projectArenaM2} m2</p>
           </div>
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">택지 면적</p>
-            <p className="text-xl font-thin">48837.5 m2</p>
+            <p className="text-xl font-thin">
+              {compare2.residentialLandAreaM2} m2
+            </p>
           </div>
         </div>
 
         <h3 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-8xl font-extrabold">
-          28<span className="font-light">%</span>
+          {compare2.generalSaleUnits}
+          <span className="font-light">%</span>
         </h3>
       </section>
     </div>

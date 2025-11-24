@@ -4,11 +4,17 @@ import useStore from '@/store/useStore';
 import { Bookmark, ChevronLeft, icons, MoveRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '../ui/button';
+import { permissionKakao } from '@/services/auth.api';
 
-const Signin = () => {
+const Login = () => {
   const { toggleOpen } = useStore();
+
   const handleModalToggle = () => {
     toggleOpen();
+  };
+
+  const handleKakaoLogin = () => {
+    permissionKakao();
   };
 
   return (
@@ -27,7 +33,7 @@ const Signin = () => {
         onClick={(e) => e.stopPropagation()}
       >
         <Image
-          src={'/signin_background.png'}
+          src={'/login_background.png'}
           fill
           alt="로그인 페이지 배경"
           className="absolute inset-0 object-cover"
@@ -61,6 +67,7 @@ const Signin = () => {
             <Button
               variant={'link'}
               className="w-full text-[25px] font-medium bg-[#FAE100] text-[#3C1F1A] py-8 rounded-full mb-5"
+              onClick={handleKakaoLogin}
             >
               카카오톡으로 로그인
             </Button>
@@ -77,4 +84,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Login;

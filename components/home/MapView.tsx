@@ -2,15 +2,16 @@
 
 import { useEffect, useRef } from 'react';
 
-type DetailRightSideProps = {
+type MapViewProps = {
   address?: string;
 };
 
-const DetailRightSide = ({ address }: DetailRightSideProps) => {
+const MapView = ({ address }: MapViewProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!address || !mapRef.current) return;
+
     let mounted = true;
     let pollId: NodeJS.Timeout | null = null;
 
@@ -65,6 +66,7 @@ const DetailRightSide = ({ address }: DetailRightSideProps) => {
 
   if (!address) return null;
 
-  return <div ref={mapRef} className="w-full h-full min-h-[320px]" />;
+  return <div ref={mapRef} className="w-full h-full min-h-[400px]" />;
 };
-export default DetailRightSide;
+
+export default MapView;
