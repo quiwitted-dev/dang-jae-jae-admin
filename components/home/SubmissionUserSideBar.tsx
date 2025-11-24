@@ -29,10 +29,12 @@ const SubmissionUserSideBar = ({
   const router = useRouter();
   const { id } = submissionData;
 
-  const average_land_share = (
-    (+submissionData.projectArea / +submissionData.ownerCount) *
-    0.3025
-  ).toFixed(2);
+  const projectArea = Number(submissionData.projectArea);
+  const ownerCount = Number(submissionData.ownerCount);
+  const average_land_share =
+    projectArea > 0 && ownerCount > 0
+      ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
+      : '-';
 
   const [min, max] = submissionData.priceRange.match(/\d+/g) || [];
 
