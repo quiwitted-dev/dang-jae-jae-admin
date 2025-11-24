@@ -1,11 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { ApprovedSubmission } from '@/types/submission.type';
 import Bookmark from './Bookmark';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 
 type ProjectCardProps = {
   item: ApprovedSubmission;
@@ -16,6 +16,7 @@ type ProjectCardProps = {
 const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
   const { id } = item;
   const router = useRouter();
+  const mapRef = useRef<HTMLDivElement>(null);
 
   const averageLandSharePyeong = () => {
     if (+item.projectAreaM2 === 0 || +item.ownerCount === 0) {
@@ -34,16 +35,69 @@ const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
   const dong = str[2];
   const locationDetail = str[3];
 
+  useEffect(() => {
+    if (!mapRef.current || !item.address) return;
+
+    let mounted = true;
+    let pollId: NodeJS.Timeout | null = null;
+
+    const initMap = () => {
+      const kakao = (window as any).kakao;
+      if (!kakao || !kakao.maps) return false;
+
+      kakao.maps.load(() => {
+        if (!mounted || !mapRef.current) return;
+
+        mapRef.current.innerHTML = '';
+
+        const defaultCenter = new kakao.maps.LatLng(37.5665, 126.978);
+        const map = new kakao.maps.Map(mapRef.current, {
+          center: defaultCenter,
+          level: 5,
+        });
+
+        map.setDraggable(false);
+        map.setZoomable(false);
+
+        const geocoder = new kakao.maps.services.Geocoder();
+        geocoder.addressSearch(item.address, (result: any[], status: string) => {
+          if (!mounted || status !== kakao.maps.services.Status.OK || !result?.length) {
+            return;
+          }
+
+          const { x, y } = result[0];
+          const coords = new kakao.maps.LatLng(y, x);
+
+          map.setCenter(coords);
+          new kakao.maps.Marker({ map, position: coords });
+        });
+      });
+
+      return true;
+    };
+
+    if (!initMap()) {
+      pollId = setInterval(() => {
+        if (initMap() && pollId) {
+          clearInterval(pollId);
+        }
+      }, 300);
+    }
+
+    return () => {
+      mounted = false;
+      if (pollId) clearInterval(pollId);
+    };
+  }, [item.address]);
+
   return (
     <Card
       className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-300/220 min-w-[350px] max-w-[500px] mx-auto justify-between cursor-pointer"
       onClick={handleCardClick}
     >
-      <Image
-        src={'/temp_location.png'}
-        fill
-        alt="지도"
-        className="object-cover -z-10"
+      <div
+        ref={mapRef}
+        className="absolute inset-0 -z-10"
       />
       <CardHeader className="relative flex flex-row p-0 justify-between pt-2 px-3">
         {item.dataType === 'PUBLIC_DATA' && (
