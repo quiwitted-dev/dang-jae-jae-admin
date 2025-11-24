@@ -1,5 +1,6 @@
 import { SubmissionUserDetail } from '@/types/submission.type';
 import SubmissionUserSideBar from '../SubmissionUserSideBar';
+import DetailRightSide from '../DetailRightSide';
 
 const SubmissionData = ({
   submissionData,
@@ -12,7 +13,7 @@ const SubmissionData = ({
         <SubmissionUserSideBar submissionData={submissionData} />
       </div>
       <div className="flex-1 md:min-h-dvh order-1 md:order-2">
-        {/* <DetailRightSide map={map} /> */}
+        <DetailRightSide address={submissionData.location} />
       </div>
     </>
   );

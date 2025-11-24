@@ -1,8 +1,14 @@
 import { SubmissionPublicDetail } from '@/types/submission.type';
 import GyeonggiSideBar from '../GyeonggiSideBar';
 import SeoulSideBar from '../SeoulSideBar';
+import DetailRightSide from '../DetailRightSide';
 
 const PublicData = ({ publicData }: { publicData: SubmissionPublicDetail }) => {
+  const mapAddress =
+    publicData.dataSource === 'SEOUL'
+      ? `${publicData.district} ${publicData.representativeLotNumber}`
+      : publicData.address;
+
   return (
     <>
       <div className="order-2 md:order-1">
@@ -14,7 +20,7 @@ const PublicData = ({ publicData }: { publicData: SubmissionPublicDetail }) => {
         )}
       </div>
       <div className="flex-1 md:min-h-dvh order-1 md:order-2">
-        {/* <DetailRightSide map={map} /> */}
+        <DetailRightSide address={mapAddress} />
       </div>
     </>
   );
