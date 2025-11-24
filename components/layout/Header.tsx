@@ -34,6 +34,12 @@ const Header = ({ isLoggedIn }: headerProps) => {
     }
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    if (!isLogin && pathname.startsWith('/my')) {
+      router.replace('/');
+    }
+  }, [isLogin, pathname, router]);
+
   const handleLoginToggle = () => {
     toggleOpen();
   };
@@ -51,6 +57,9 @@ const Header = ({ isLoggedIn }: headerProps) => {
     if (data.success === true) {
       setIsLogin(false);
       alert('로그아웃');
+      if (pathname.startsWith('/my')) {
+        router.replace('/');
+      }
     }
   };
 
