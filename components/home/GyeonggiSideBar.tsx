@@ -30,8 +30,12 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
   const router = useRouter();
   const { id } = publicData;
 
+  const projectArea = Number(publicData.projectAreaM2);
+  const ownerCount = Number(publicData.ownerCount);
   const average_land_share =
-    ((+publicData.projectAreaM2 / +publicData.ownerCount) * 0.3025).toFixed(2);
+    projectArea > 0 && ownerCount > 0
+      ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
+      : '-';
 
   const handleGoHome = () => {
     if (id !== undefined) {
