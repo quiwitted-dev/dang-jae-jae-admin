@@ -11,11 +11,33 @@ import {
 } from '@/types/submission.type';
 import { useEffect, useState } from 'react';
 import { getBookmark } from '@/services/bookmark.api';
+import LocationFilter from './LocationFilter';
+import BusinessTypeFilter from './BusinessTypeFilter';
+import BusinessStageFilter from './BusinessStageFilter';
+import PriceFilter from './PriceFilter';
+import OwnerCountFilter from './OwnerCountFilter';
+import NewUnitsFilter from './NewUnitsFilter';
+import { useRef } from 'react';
+import useFilterStore from '@/store/useFilterStore';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
   const submissions = data.submissions.slice(0, 1000);
   const [favorites, setFavorites] = useState<ApprovedSubmission[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+  const dragState = useRef({ isDown: false, startX: 0, scrollLeft: 0 });
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const {
+    locations,
+    projectTypes,
+    currentStage,
+    price,
+    ownerCount,
+    newUnits,
+    reset,
+  } = useFilterStore();
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -33,8 +55,84 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
     favorites.map((f) => [f.referenceId ?? f.id ?? '', f.id])
   );
 
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!filterRef.current) return;
+    dragState.current = {
+      isDown: true,
+      startX: e.pageX - filterRef.current.offsetLeft,
+      scrollLeft: filterRef.current.scrollLeft,
+    };
+  };
+
+  const handleMouseLeave = () => {
+    dragState.current.isDown = false;
+  };
+
+  const handleMouseUp = () => {
+    dragState.current.isDown = false;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!dragState.current.isDown || !filterRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - filterRef.current.offsetLeft;
+    const walk = (x - dragState.current.startX) * 1; // speed factor
+    filterRef.current.scrollLeft = dragState.current.scrollLeft - walk;
+  };
+
+  const handleResetFilters = () => {
+    reset();
+  };
+
+  const handleSearch = () => {
+    const params = new URLSearchParams(searchParams?.toString());
+    const setParam = (key: string, value?: string | number | null) => {
+      if (value === undefined || value === null || value === '') {
+        params.delete(key);
+      } else {
+        params.set(key, String(value));
+      }
+    };
+
+    params.delete('locations');
+    locations.forEach((loc) => params.append('locations', loc));
+
+    params.delete('projectTypes');
+    projectTypes.forEach((type) => params.append('projectTypes', type));
+
+    setParam('currentStage', currentStage);
+    setParam('minPrice', price.minPrice);
+    setParam('maxPrice', price.maxPrice);
+    setParam('ownerCountMin', ownerCount.ownerCountMin);
+    setParam('ownerCountMax', ownerCount.ownerCountMax);
+    setParam('newConstructionUnitsMin', newUnits.newConstructionUnitsMin);
+    setParam('newConstructionUnitsMax', newUnits.newConstructionUnitsMax);
+
+    const query = params.toString();
+    router.push(query ? `?${query}` : '?', { scroll: false });
+  };
+
   return (
     <div className="flex flex-col max-w-[700px] w-full gap-4">
+      <div
+        ref={filterRef}
+        className="flex flex-row py-4 overflow-x-auto md:overflow-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none"
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      >
+        <LocationFilter />
+        <BusinessTypeFilter />
+        <BusinessStageFilter />
+        <PriceFilter />
+        <OwnerCountFilter />
+        <NewUnitsFilter />
+        <Button onClick={handleSearch}>검색</Button>
+        <Button variant="outline" onClick={handleResetFilters}>
+          리셋
+        </Button>
+      </div>
       {/* 목록 */}
       <div className="flex flex-col gap-2 md:px-[120px] px-2">
         {submissions.map((item) => {
