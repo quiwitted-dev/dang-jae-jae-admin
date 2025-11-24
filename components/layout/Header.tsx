@@ -7,9 +7,10 @@ import { ChevronLeft, Home, LogOut, Search, UserRound } from 'lucide-react';
 import useStore from '@/store/useStore';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useAuthStore from '@/store/useAuthStore';
 import { logout } from '@/services/auth.api';
+import { useSearchParams } from 'next/navigation';
 type headerProps = {
   isLoggedIn: boolean;
 };
@@ -21,10 +22,16 @@ const Header = ({ isLoggedIn }: headerProps) => {
   const setIsLogin = useAuthStore((state) => state.setIsLogin);
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [keyword, setKeyword] = useState(searchParams?.get('keyword') ?? '');
 
   useEffect(() => {
     clear();
   }, [pathname]);
+
+  useEffect(() => {
+    setKeyword(searchParams?.get('keyword') ?? '');
+  }, [searchParams]);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -63,6 +70,24 @@ const Header = ({ isLoggedIn }: headerProps) => {
     }
   };
 
+  const performKeywordSearch = () => {
+    const params = new URLSearchParams(searchParams?.toString());
+    if (!keyword.trim()) {
+      params.delete('keyword');
+    } else {
+      params.set('keyword', keyword.trim());
+    }
+    params.set('page', '1');
+    const query = params.toString();
+    router.push(`/${query ? `?${query}` : ''}`, { scroll: false });
+  };
+
+  const handleKeywordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      performKeywordSearch();
+    }
+  };
+
   // Todo : 비교보기 버튼 비교담기 상태에 따라 아이콘 표현 달리하기 (가능한가?)
 
   return (
@@ -70,11 +95,21 @@ const Header = ({ isLoggedIn }: headerProps) => {
       {/* 데스크탑 */}
       <div className="hidden lg:relative lg:flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1">
         <div className="relative text-black max-w-[400px] w-full ">
-          <Input className="bg-white rounded-4xl w-full" />
-          <div className="absolute flex flex-row items-center justify-center gap-3 top-1/2 right-0 -translate-y-1/2">
+          <Input
+            className="bg-white rounded-4xl w-full pr-16"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onKeyDown={handleKeywordKeyDown}
+            placeholder="검색어를 입력하세요"
+          />
+          <Button
+            variant="ghost"
+            className="absolute flex flex-row items-center justify-center gap-2 top-1/2 right-1 -translate-y-1/2 rounded-full px-3"
+            onClick={performKeywordSearch}
+          >
             검색
-            <Search />
-          </div>
+            <Search className="h-4 w-4" />
+          </Button>
         </div>
         <Image
           src={'/logo.png'}
@@ -125,11 +160,21 @@ const Header = ({ isLoggedIn }: headerProps) => {
         {pathname === '/' && (
           <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1">
             <div className="relative text-black max-w-[400px] w-full ">
-              <Input className="bg-white rounded-4xl w-full" />
-              <div className="absolute flex flex-row items-center justify-center gap-3 top-1/2 right-0 -translate-y-1/2">
+              <Input
+                className="bg-white rounded-4xl w-full pr-14"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                onKeyDown={handleKeywordKeyDown}
+                placeholder="검색어를 입력하세요"
+              />
+              <Button
+                variant="ghost"
+                className="absolute flex flex-row items-center justify-center gap-2 top-1/2 right-1 -translate-y-1/2 rounded-full px-2"
+                onClick={performKeywordSearch}
+              >
                 검색
-                <Search />
-              </div>
+                <Search className="h-4 w-4" />
+              </Button>
             </div>
             <div className="relative flex flex-row items-center gap-1 md:gap-2">
               <Button
