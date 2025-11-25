@@ -5,7 +5,6 @@ export async function POST(request: Request) {
   try {
     const cookie = request.headers.get('cookie') || '';
     const form = await request.json();
-    console.log(form);
 
     const backendRes = await fetch(`${API_URL}/api/price`, {
       method: 'POST',
@@ -39,4 +38,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

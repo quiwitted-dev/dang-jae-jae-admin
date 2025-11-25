@@ -34,7 +34,6 @@ export const postPrice = async ({
     }
 
     const data = await res.json();
-    console.log(data);
     return data.data;
   }
   if (dataType === 'SUBMISSION') {

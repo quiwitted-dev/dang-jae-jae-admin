@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
+import useFilterStore from '@/store/useFilterStore';
+import { useSearchParams } from 'next/navigation';
 
 const LOCATION_DATA = {
   서울시: [
@@ -65,8 +67,12 @@ const LOCATION_DATA = {
 };
 
 export default function LocationFilter() {
-  const [selectedRegion, setSelectedRegion] = useState<string>('');
-  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+  const { locations, setLocations } = useFilterStore();
+  const searchParams = useSearchParams();
+  const [selectRegion, setSelectRegion] = useState({
+    region: '',
+    district: '',
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [showDistricts, setShowDistricts] = useState<string>('');
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -133,35 +139,64 @@ export default function LocationFilter() {
   }, [isOpen]);
 
   const handleRegionSelect = (region: string) => {
-    if (selectedRegion === region) {
+    if (selectRegion.region === region) {
       // 같은 지역 클릭시 세부 지역 토글
       setShowDistricts(showDistricts === region ? '' : region);
     } else {
-      setSelectedRegion(region);
-      setSelectedDistrict('');
+      setSelectRegion({
+        region,
+        district: '',
+      });
       setShowDistricts(region);
     }
   };
 
   const handleDistrictSelect = (district: string) => {
-    setSelectedDistrict(district);
+    if (selectRegion.region === '서울시') {
+      setLocations([`${district}구`]);
+    } else {
+      setLocations([`${district}시`]);
+    }
+    setSelectRegion((prev) => ({ ...prev, district }));
     setIsOpen(false);
     setShowDistricts('');
   };
 
   const handleReset = () => {
-    setSelectedRegion('');
-    setSelectedDistrict('');
+    setLocations([]);
+    setSelectRegion({ region: '', district: '' });
     setIsOpen(false);
     setShowDistricts('');
   };
 
-  const getDisplayText = () => {
-    if (selectedDistrict) {
-      return `${selectedRegion} ${selectedDistrict}`;
+  useEffect(() => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    const locs = params.getAll('locations');
+    if (!locs.length) {
+      setLocations([]);
+      setSelectRegion({ region: '', district: '' });
+      return;
     }
-    if (selectedRegion) {
-      return selectedRegion;
+
+    const first = locs[0];
+    const isSeoul = first.endsWith('구');
+    const district = isSeoul
+      ? first.replace(/구$/, '')
+      : first.replace(/시$/, '');
+    setLocations(locs);
+    setSelectRegion({
+      region: isSeoul ? '서울시' : '경기도',
+      district,
+    });
+  }, [searchParams, setLocations]);
+
+  const getDisplayText = () => {
+    if (selectRegion.district) {
+      return `${selectRegion.region} ${selectRegion.district}`;
+    }
+    if (selectRegion.region) {
+      return selectRegion.region;
     }
     return '위치';
   };
@@ -181,7 +216,7 @@ export default function LocationFilter() {
       {isOpen && isPositioned && (
         <div
           ref={dropdownRef}
-          className="fixed w-64 bg-white border border-gray-200 rounded-md shadow-lg z-[9999]"
+          className="fixed w-64 bg-white border border-gray-200 rounded-md shadow-lg z-9999"
           style={{
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`,
@@ -192,7 +227,9 @@ export default function LocationFilter() {
               <div key={region}>
                 <button
                   className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center text-black justify-between ${
-                    selectedRegion === region ? 'bg-blue-50 text-blue-600' : ''
+                    selectRegion.region === region
+                      ? 'bg-blue-50 text-blue-600'
+                      : ''
                   }`}
                   onClick={() => handleRegionSelect(region)}
                 >
@@ -207,7 +244,7 @@ export default function LocationFilter() {
                         <button
                           key={district}
                           className={`px-2 py-1 text-sm rounded text-black hover:bg-gray-200 ${
-                            selectedDistrict === district
+                            selectRegion.district === district
                               ? 'bg-blue-100 text-blue-600'
                               : ''
                           }`}
@@ -222,7 +259,7 @@ export default function LocationFilter() {
               </div>
             ))}
 
-            {(selectedRegion || selectedDistrict) && (
+            {(selectRegion.region || selectRegion.district) && (
               <>
                 <div className="border-t border-gray-100 my-1"></div>
                 <button

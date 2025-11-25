@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import useFilterStore from '@/store/useFilterStore';
+import { useSearchParams } from 'next/navigation';
 
 const PRICE_OPTIONS = [
   { value: 1, label: '1억' },
@@ -18,10 +20,8 @@ const PRICE_OPTIONS = [
 ];
 
 export default function PriceFilter() {
-  const [selectedRange, setSelectedRange] = useState<{
-    min: number | null;
-    max: number | null;
-  }>({ min: null, max: null });
+  const { price: selectedRange, setPrice } = useFilterStore();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -85,50 +85,72 @@ export default function PriceFilter() {
     };
   }, [isOpen]);
 
-  const handlePriceClick = useCallback((price: number) => {
-    setSelectedRange((prevRange) => {
-      const { min, max } = prevRange;
-
-      if (!min && !max) {
-        // 첫 번째 클릭: 시작점 설정
-        return { min: price, max: null };
-      } else if (min && !max) {
-        // 두 번째 클릭: 범위 완성
-        if (price >= min) {
-          return { min, max: price };
-        } else {
-          return { min: price, max: min };
-        }
-      } else {
-        // 이미 범위가 설정된 경우: 새로운 시작점으로 리셋
-        return { min: price, max: null };
-      }
+  useEffect(() => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    const toNumberOrNull = (value: string | null) => {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : null;
+    };
+    setPrice({
+      minPrice: toNumberOrNull(params.get('minPrice')),
+      maxPrice: toNumberOrNull(params.get('maxPrice')),
     });
-  }, []);
+  }, [searchParams, setPrice]);
+
+  const handlePriceClick = useCallback(
+    (price: number) => {
+      const priceWon = price * 100_000_000; // 억 단위를 원으로 변환
+      setPrice((prevRange) => {
+        const { minPrice, maxPrice } = prevRange;
+
+        if (!minPrice && !maxPrice) {
+          return { minPrice: priceWon, maxPrice: null };
+        } else if (minPrice && !maxPrice) {
+          if (priceWon >= minPrice) {
+            setIsOpen(false);
+            return { minPrice, maxPrice: priceWon };
+          } else {
+            setIsOpen(false);
+            return { minPrice: priceWon, maxPrice: minPrice };
+          }
+        } else {
+          return { minPrice: priceWon, maxPrice: null };
+        }
+      });
+    },
+    [setPrice]
+  );
 
   const handleReset = () => {
-    setSelectedRange({ min: null, max: null });
+    setPrice({ minPrice: null, maxPrice: null });
     setIsOpen(false);
   };
 
   const getDisplayText = () => {
-    const { min, max } = selectedRange;
-    if (!min && !max) return '시세';
-    if (min && max) return `${min}억~${max}억`;
-    if (min) return `${min}억 선택중...`;
+    const { minPrice: min, maxPrice: max } = selectedRange;
+    const toEok = (won: number | null) =>
+      won ? Math.round(won / 100_000_000) : null;
+    const minEok = toEok(min);
+    const maxEok = toEok(max);
+    if (!minEok && !maxEok) return '시세';
+    if (minEok && maxEok) return `${minEok}억~${maxEok}억`;
+    if (minEok) return `${minEok}억 선택중...`;
     return '시세';
   };
 
   const isInRange = (price: number) => {
-    const { min, max } = selectedRange;
+    const { minPrice: min, maxPrice: max } = selectedRange;
+    const priceWon = price * 100_000_000;
     if (!min) return false;
-    if (!max) return price === min;
-    return price >= min && price <= max;
+    if (!max) return priceWon === min;
+    return priceWon >= min && priceWon <= max;
   };
 
   const isRangeEndpoint = (price: number) => {
-    const { min, max } = selectedRange;
-    return price === min || price === max;
+    const { minPrice: min, maxPrice: max } = selectedRange;
+    const priceWon = price * 100_000_000;
+    return priceWon === min || priceWon === max;
   };
 
   return (
@@ -160,7 +182,7 @@ export default function PriceFilter() {
       {isOpen && isPositioned && (
         <div
           ref={dropdownRef}
-          className="fixed w-80 bg-white border border-gray-200 rounded-md shadow-lg z-[9999]"
+          className="fixed w-80 bg-white border border-gray-200 rounded-md shadow-lg z-9999"
           style={{
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`,
@@ -169,7 +191,7 @@ export default function PriceFilter() {
           <div className="p-4">
             <div className="mb-3">
               <p className="text-sm text-gray-600 text-center">
-                {selectedRange.min && !selectedRange.max
+                {selectedRange.minPrice && !selectedRange.maxPrice
                   ? '끝점을 선택하세요'
                   : '시작점을 클릭하고 끝점을 선택하세요'}
               </p>
@@ -194,7 +216,7 @@ export default function PriceFilter() {
               ))}
             </div>
 
-            {(selectedRange.min || selectedRange.max) && (
+            {(selectedRange.minPrice || selectedRange.maxPrice) && (
               <>
                 <div className="border-t border-gray-100 my-3"></div>
                 <button

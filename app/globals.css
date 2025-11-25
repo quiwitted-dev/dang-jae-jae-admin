@@ -137,3 +137,13 @@
 .font-playfair {
   font-family: var(--font-playfair-display), serif;
 }
+
+/* 스크롤바 숨김 유틸 (스크롤 기능은 유지) */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
