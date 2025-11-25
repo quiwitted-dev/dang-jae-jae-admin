@@ -89,6 +89,7 @@ export default function PriceFilter() {
     if (!searchParams) return;
     const params = new URLSearchParams(searchParams.toString());
     const toNumberOrNull = (value: string | null) => {
+      if (value === null || value === '') return null;
       const num = Number(value);
       return Number.isFinite(num) ? num : null;
     };
