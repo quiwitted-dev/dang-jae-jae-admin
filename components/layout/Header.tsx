@@ -63,7 +63,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
     const data = await logout();
     if (data.success === true) {
       setIsLogin(false);
-      alert('로그아웃');
+      alert('로그아웃 되었습니다.');
       if (pathname.startsWith('/my')) {
         router.replace('/');
       }
