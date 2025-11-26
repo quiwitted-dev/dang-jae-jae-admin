@@ -1,22 +1,36 @@
+'use client';
+
 import { Button } from '../ui/button';
 import { MoveRight } from 'lucide-react';
 import InfoCard from '../common/InfoCard';
 import { DANGJAEJAE_INFO } from '@/constants/home';
 import { getMainTitle } from '@/services/api';
+import { useEffect, useState } from 'react';
+import { MainTitleResponse } from '@/types/type';
+import useAuthStore from '@/store/useAuthStore';
+import useStore from '@/store/useStore';
 
-const RightSide = async () => {
-  let data;
+const RightSide = () => {
+  const [data, setData] = useState<MainTitleResponse>();
+  const { isLogin } = useAuthStore();
+  const { toggleOpen } = useStore();
 
-  try {
-    data = await getMainTitle();
-  } catch {
-    data = {
-      success: false,
-      mainTitle: {
-        title:
-          '복잡한 정비사업? 데이터로 1분 만에 끝내세요! 친절하고 쉬운 통합 데이터로 딱 핵심만 알려드릴게요. 가장 확실한 투자 독립! 지금 바로 무료로 시작해보세요.',
-      },
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getMainTitle();
+        setData(data);
+      } catch {}
     };
+    fetchData();
+  }, []);
+
+  const handleLoginToggle = () => {
+    toggleOpen();
+  };
+
+  if (!data) {
+    return <div>데이터를 불러오는중...</div>;
   }
 
   return (
@@ -28,10 +42,19 @@ const RightSide = async () => {
       <div className="w-16 border-b-2 mt-8 mb-28" />
 
       <div className="flex flex-row items-center mb-[65px]">
-        <p>아직 회원이 아니시라면, </p>
-        <Button className="rounded-4xl">
-          3초만에 회원가입하기 <MoveRight />
-        </Button>
+        {isLogin ? (
+          <p>환영합니다! 오늘도 당재재와 함께 즐거운 시간 보내세요!</p>
+        ) : (
+          <>
+            <p>아직 회원이 아니시라면, </p>
+            <Button
+              className="rounded-4xl cursor-pointer"
+              onClick={handleLoginToggle}
+            >
+              3초만에 회원가입하기 <MoveRight />
+            </Button>
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-1 md:pb-[140px]">
