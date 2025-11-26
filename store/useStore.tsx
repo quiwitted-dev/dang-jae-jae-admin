@@ -12,6 +12,9 @@ interface StoreState {
     tab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none'
   ) => void;
 
+  address: string;
+  setAddress: (address: string) => void;
+
   // isTermsModalOpen: boolean;
   // setIsTermsModalOpen: () => void;
 
@@ -27,6 +30,9 @@ const useStore = create<StoreState>((set) => ({
 
   settingsTab: 'privacy',
   setSettingsTab: (tab) => set({ settingsTab: tab }),
+
+  address: '',
+  setAddress: (address) => set({ address }),
 
   // isTermsModalOpen: false,
   // setIsTermsModalOpen: () =>
