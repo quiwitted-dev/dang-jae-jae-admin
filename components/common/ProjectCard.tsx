@@ -14,7 +14,6 @@ type ProjectCardProps = {
 };
 
 const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
-  const { id } = item;
   const router = useRouter();
   const mapRef = useRef<HTMLDivElement>(null);
 
@@ -60,17 +59,24 @@ const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
         map.setZoomable(false);
 
         const geocoder = new kakao.maps.services.Geocoder();
-        geocoder.addressSearch(item.address, (result: any[], status: string) => {
-          if (!mounted || status !== kakao.maps.services.Status.OK || !result?.length) {
-            return;
+        geocoder.addressSearch(
+          item.address,
+          (result: any[], status: string) => {
+            if (
+              !mounted ||
+              status !== kakao.maps.services.Status.OK ||
+              !result?.length
+            ) {
+              return;
+            }
+
+            const { x, y } = result[0];
+            const coords = new kakao.maps.LatLng(y, x);
+
+            map.setCenter(coords);
+            new kakao.maps.Marker({ map, position: coords });
           }
-
-          const { x, y } = result[0];
-          const coords = new kakao.maps.LatLng(y, x);
-
-          map.setCenter(coords);
-          new kakao.maps.Marker({ map, position: coords });
-        });
+        );
       });
 
       return true;
@@ -95,10 +101,7 @@ const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
       className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-300/220 min-w-[350px] max-w-[500px] mx-auto justify-between cursor-pointer"
       onClick={handleCardClick}
     >
-      <div
-        ref={mapRef}
-        className="absolute inset-0 -z-10"
-      />
+      <div ref={mapRef} className="absolute inset-0 -z-10" />
       <CardHeader className="relative flex flex-row p-0 justify-between pt-2 px-3">
         {item.dataType === 'PUBLIC_DATA' && (
           <>
@@ -125,12 +128,16 @@ const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
       <CardContent className="flex flex-row justify-between items-center px-3 py-1 flex-1">
         <div className="bg-black text-white flex flex-col text-center text-lg rounded-3xl py-2 px-1.5">
           <div className="flex flex-row items-center">
-            <p className="font-playfair">0</p>
+            <p className="font-playfair">
+              {item.renovationPrice?.minPrice ?? '0'}
+            </p>
             <span className="text-sm">억</span>
           </div>
           <p className="p-0 m-0 font-playfair leading-none text-sm">~</p>
           <div className="flex flex-row items-center">
-            <p className="font-playfair">0</p>
+            <p className="font-playfair">
+              {item.renovationPrice?.maxPrice ?? '0'}
+            </p>
             <span className="text-sm">억</span>
           </div>
         </div>
@@ -155,7 +162,7 @@ const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
               <p className="text-xs">임대 {item.rentalUnits || '-'}</p>
             </div>
             <Bookmark
-              referenceId={id}
+              item={item}
               bookmarkId={favoriteId}
               isFavorite={isFavorite}
             />
@@ -175,7 +182,7 @@ const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
               <p className="text-xs">{`${dong} ${locationDetail}`}</p>
             </div>
             <Bookmark
-              referenceId={id}
+              item={item}
               bookmarkId={favoriteId}
               isFavorite={isFavorite}
             />
