@@ -189,12 +189,15 @@ const ComparePage = () => {
 
       {/* 좌측 모바일 */}
       <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 left-0 w-1/2 h-[300px] z-20">
-        <X
-          width={34}
-          height={34}
-          strokeWidth={1}
-          onClick={() => removeCompare(0)}
-        />
+        <div className="w-full h-[34px]">
+          <X
+            width={34}
+            height={34}
+            strokeWidth={1}
+            onClick={() => removeCompare(0)}
+            className="mx-auto"
+          />
+        </div>
         <div className="flex flex-col gap-2 text-center pt-4 w-full">
           <h3 className="text-[18px] font-bold truncate ">
             {compare1.zoneName}
@@ -217,12 +220,15 @@ const ComparePage = () => {
 
       {/* 우측 모바일 */}
       <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 right-0 w-1/2 h-[300px] z-20">
-        <X
-          width={34}
-          height={34}
-          strokeWidth={1}
-          onClick={() => removeCompare(1)}
-        />
+        <div className="w-full h-[34px]">
+          <X
+            width={34}
+            height={34}
+            strokeWidth={1}
+            onClick={() => removeCompare(1)}
+            className="mx-auto"
+          />
+        </div>
         <div className="flex flex-col gap-2 text-center pt-4 w-full">
           <h3 className="text-[18px] font-bold truncate ">
             {compare2.zoneName}
@@ -294,7 +300,9 @@ const ComparePage = () => {
           <div className="flex items-center w-full">
             <div className="flex-1 text-right pr-4">
               <span className="text-4xl font-bold">
-                {compare1.averageLandScale}
+                {compare1.averageLandScale === 'Infinity'
+                  ? '0'
+                  : compare1.averageLandScale}
                 <span className="text-xl">평</span>
               </span>
             </div>
@@ -305,7 +313,9 @@ const ComparePage = () => {
             </div>
             <div className="flex-1 text-left pl-4">
               <span className="text-4xl font-bold">
-                {compare2.averageLandScale}
+                {compare2.averageLandScale === 'Infinity'
+                  ? '0'
+                  : compare2.averageLandScale}
                 <span className="text-xl">평</span>
               </span>
             </div>
