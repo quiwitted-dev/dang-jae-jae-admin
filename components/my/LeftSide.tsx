@@ -129,13 +129,13 @@ const LeftSide = ({ user }: { user: User }) => {
               >
                 맞춤형 통계 분석 참여 동의
               </h3>
-              <div className="relative">
+              <div className="relative w-[70px] h-[34px]">
                 <Switch
                   checked={checked}
                   onCheckedChange={setChecked}
-                  className={`data-[state=checked]:bg-transparent data-[state=unchecked]:bg-transparent w-[70px] h-[34px] rounded-full border border-black `}
+                  className="peer w-full h-full rounded-full border border-black bg-transparent px-1 data-[state=checked]:bg-transparent data-[state=unchecked]:bg-transparent"
                 />
-                <span className="absolute inset-0 flex items-center justify-center text-black text-sm font-normal pointer-events-none">
+                <span className="pointer-events-none absolute left-1 top-1/2 flex h-7 w-9 -translate-y-1/2 items-center justify-center text-black text-xs font-normal transition-transform duration-200 peer-data-[state=checked]:translate-x-[26px] peer-data-[state=unchecked]:translate-x-0">
                   {checked ? '동의함' : '거절'}
                 </span>
               </div>
