@@ -6,6 +6,7 @@ import {
   postBookmark,
 } from '@/services/bookmark.api';
 import useAuthStore from '@/store/useAuthStore';
+import useStore from '@/store/useStore';
 import { ApprovedSubmission } from '@/types/submission.type';
 import { BookmarkIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
@@ -14,13 +15,20 @@ type BookMarkProps = {
   item: ApprovedSubmission;
   bookmarkId?: string;
   isFavorite: boolean;
+  handleFavoriteChange?: (bookmarkId: string) => void;
 };
 
-const Bookmark = ({ item, bookmarkId, isFavorite }: BookMarkProps) => {
+const Bookmark = ({
+  item,
+  bookmarkId,
+  isFavorite,
+  handleFavoriteChange,
+}: BookMarkProps) => {
   const isLogin = useAuthStore((state) => state.isLogin);
   const [loading, setLoading] = useState(false);
   const [favorite, setFavorite] = useState(isFavorite);
   const [currentBookmarkId, setCurrentBookmarkId] = useState(bookmarkId);
+  const { toggleOpen } = useStore();
 
   useEffect(() => {
     setFavorite(isFavorite);
@@ -36,10 +44,12 @@ const Bookmark = ({ item, bookmarkId, isFavorite }: BookMarkProps) => {
 
   const handleToggleBookmark = async (id: string, e: MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
 
     if (loading) return;
     if (!isLogin) {
       alert('로그인이 필요합니다.');
+      toggleOpen();
       return;
     }
 
@@ -65,6 +75,7 @@ const Bookmark = ({ item, bookmarkId, isFavorite }: BookMarkProps) => {
         if (!data) throw new Error('삭제 실패');
         setFavorite(false);
         setCurrentBookmarkId(undefined);
+        handleFavoriteChange?.(target);
       }
     } catch (err) {
       console.error(err);
