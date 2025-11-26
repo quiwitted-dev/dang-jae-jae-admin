@@ -28,11 +28,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../ui/pagination';
+import useAuthStore from '@/store/useAuthStore';
 
 const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
   const submissions = data.submissions;
   const [favorites, setFavorites] = useState<ApprovedSubmission[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const { isLogin } = useAuthStore();
   const filterRef = useRef<HTMLDivElement>(null);
   const dragState = useRef({ isDown: false, startX: 0, scrollLeft: 0 });
   const router = useRouter();
@@ -100,7 +102,7 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
       setFavorites(data.favorites ?? []);
       setIsLoaded(true);
     };
-    fetchFavorites();
+    if (isLogin) fetchFavorites();
   }, []);
 
   const favoriteSet = new Set(
