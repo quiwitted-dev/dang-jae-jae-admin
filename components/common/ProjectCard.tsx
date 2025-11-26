@@ -11,9 +11,15 @@ type ProjectCardProps = {
   item: ApprovedSubmission;
   isFavorite: boolean;
   favoriteId?: string;
+  handleFavoriteChange?: (bookmarkId: string) => void;
 };
 
-const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
+const ProjectCard = ({
+  item,
+  isFavorite,
+  favoriteId,
+  handleFavoriteChange,
+}: ProjectCardProps) => {
   const router = useRouter();
   const mapRef = useRef<HTMLDivElement>(null);
 
@@ -165,6 +171,7 @@ const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
               item={item}
               bookmarkId={favoriteId}
               isFavorite={isFavorite}
+              handleFavoriteChange={handleFavoriteChange}
             />
             <div className="flex flex-col text-xs text-gray-700 text-right">
               <p>
@@ -185,6 +192,7 @@ const ProjectCard = ({ item, isFavorite, favoriteId }: ProjectCardProps) => {
               item={item}
               bookmarkId={favoriteId}
               isFavorite={isFavorite}
+              handleFavoriteChange={handleFavoriteChange}
             />
             <div className="flex flex-col">
               <p className="text-xs text-black text-right">예정지</p>
