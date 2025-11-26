@@ -26,7 +26,7 @@ export type ApprovedSubmission = {
   ownerCount: number;
   businessOperatorName: string;
   announcementDates: {};
-  renovationPrice: Renovationprice;
+  renovationPrice?: Renovationprice;
   dataSource: string;
   createdAt: string;
   reviewedAt: string;
@@ -146,14 +146,10 @@ export type SubmissionUserDetail = {
 
 export type Renovationprice = {
   id: string;
-  price: string;
+  maxPrice: string;
+  minPrice: string;
   minimumInitialInvestment: string;
   premium: string;
-  status: string;
-  isDisplayed: true;
-  displayedAt: string;
-  createdAt: string;
-  updatedAt: string;
   user: {
     id: string;
     nickname: string;
