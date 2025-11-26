@@ -20,10 +20,13 @@ export const getBookmark = async (): Promise<Favorites> => {
   return data.data;
 };
 
-export const postBookmark = async (id: string) => {
+export const postBookmark = async (
+  id: string,
+  dataType: 'PUBLIC_DATA' | 'SUBMISSION'
+) => {
   const res = await fetch(`/api/favorite`, {
     method: 'POST',
-    body: JSON.stringify({ referenceId: id, dataType: 'PUBLIC_DATA' }),
+    body: JSON.stringify({ referenceId: id, dataType }),
   });
 
   if (res.status === 401) {
