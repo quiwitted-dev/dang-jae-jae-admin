@@ -66,7 +66,9 @@ const MapView = ({ address }: MapViewProps) => {
 
   if (!address) return null;
 
-  return <div ref={mapRef} className="w-full h-full min-h-[400px]" />;
+  return (
+    <div ref={mapRef} className="w-full h-full min-h-[400px] rounded-xl" />
+  );
 };
 
 export default MapView;
