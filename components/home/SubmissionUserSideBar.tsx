@@ -3,18 +3,25 @@
 import {
   ArrowLeft,
   ArrowRight,
-  Bookmark,
+  BookmarkIcon,
   Check,
   Pencil,
   X,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
 import { SubmissionUserDetail } from '@/types/submission.type';
 import useCompareStore from '@/store/useCompareStore';
 import { postPrice } from '@/services/price.api';
+import useAuthStore from '@/store/useAuthStore';
+import {
+  deleteBookmark,
+  getBookmark,
+  postBookmark,
+} from '@/services/bookmark.api';
+import useStore from '@/store/useStore';
 
 const SubmissionUserSideBar = ({
   submissionData,
@@ -25,7 +32,14 @@ const SubmissionUserSideBar = ({
   const [popup, setPopup] = useState(false);
   const [maxPrice, setMaxPrice] = useState('');
   const [minPrice, setMinPrice] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [currentBookmarkId, setCurrentBookmarkId] = useState<
+    string | undefined
+  >(undefined);
   const { setCompare } = useCompareStore();
+  const { isLogin } = useAuthStore();
+  const { toggleOpen, setAddress } = useStore();
   const router = useRouter();
   const { id } = submissionData;
 
@@ -36,14 +50,25 @@ const SubmissionUserSideBar = ({
       ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
       : '-';
 
+  useEffect(() => {
+    (async () => {
+      const data = await getBookmark();
+      const favorite = data.favorites.find((item) => item.referenceId === id);
+      if (favorite) {
+        setIsFavorite(true);
+        setCurrentBookmarkId(favorite.id);
+      } else {
+        setIsFavorite(false);
+        setCurrentBookmarkId(undefined);
+      }
+    })();
+    setAddress(submissionData.location);
+  }, []);
+
   const [min, max] = submissionData.priceRange.match(/\d+/g) || [];
 
   const handleGoHome = () => {
-    if (id !== undefined) {
-      router.push(`/?id=${id}`);
-    } else {
-      router.push('/');
-    }
+    router.push('/');
   };
 
   const handleEdit = () => {
@@ -75,6 +100,48 @@ const SubmissionUserSideBar = ({
       console.error(error);
     }
   };
+
+  const handleToggleBookmark = async (id: string) => {
+    if (loading) return;
+    if (!isLogin) {
+      alert('로그인이 필요합니다.');
+      toggleOpen();
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (!isFavorite) {
+        const created = await postBookmark(submissionData.id, 'SUBMISSION');
+        // post 응답에 id가 없을 때를 대비해 리스트 재조회로 보정
+        let newId = created?.data?.id ?? created?.id;
+        if (!newId) {
+          const { favorites } = await getBookmark();
+          const found = favorites?.find(
+            (fav: any) =>
+              fav.referenceId === submissionData.id ||
+              fav.id === submissionData.id
+          );
+          newId = found?.id ?? submissionData.id;
+        }
+        setCurrentBookmarkId(newId);
+        setIsFavorite(true);
+      } else {
+        const target = currentBookmarkId ?? submissionData.id;
+        const data = await deleteBookmark(target);
+        if (!data) throw new Error('삭제 실패');
+        setIsFavorite(false);
+        setCurrentBookmarkId(undefined);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('북마크 요청이 실패했습니다.'); // 혹은 toast
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="relative bg-linear-to-b from-[#A1ACEB] to-[#FFFEB1] max-w-[700px] md:w-[700px] text-black min-h-dvh">
       <div className="flex flex-row items-center justify-between px-4 py-5">
@@ -114,8 +181,17 @@ const SubmissionUserSideBar = ({
           </div>
 
           <div className="flex flex-row gap-3">
-            <Button className="rounded-full">
-              <Bookmark />
+            <Button
+              className="rounded-full"
+              onClick={(e) => {
+                handleToggleBookmark(submissionData.id);
+              }}
+            >
+              {isFavorite ? (
+                <BookmarkIcon fill="white" size={16} />
+              ) : (
+                <BookmarkIcon size={16} />
+              )}
             </Button>
             <Button
               className="rounded-full"
