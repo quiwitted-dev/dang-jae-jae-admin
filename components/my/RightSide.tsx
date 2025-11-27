@@ -54,10 +54,10 @@ const RightSide = () => {
       {/* Todo : 북마크는 max 3개 */}
       {myPageTab === 'none' && (
         <div className="grid 3xl:grid-cols-3 2xl:grid-cols-2 grid-cols-1 gap-4 mb-16 lg:mb-0">
-          {myBookmark.map((item, index) => (
+          {myBookmark.map((item) => (
             <div
               className="flex flex-col gap-4 text-[#FAFFCE] relative"
-              key={index}
+              key={item.id}
             >
               <h3 className="text-4xl text-center font-medium">
                 {item.address.split(' ').slice(2).join(' ')}
