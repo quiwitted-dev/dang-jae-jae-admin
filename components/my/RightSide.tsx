@@ -13,7 +13,6 @@ const RightSide = () => {
   const myPageTab = useStore((state) => state.myPageTab);
   const settingsTab = useStore((state) => state.settingsTab);
   const [myBookmark, setMyBookmark] = useState<ApprovedSubmission[]>([]);
-  // todo 북마크 가지고 다시 데이터 가져온 후 item으로 넘기기
 
   useEffect(() => {
     (async () => {
@@ -21,6 +20,10 @@ const RightSide = () => {
       setMyBookmark(data.favorites);
     })();
   }, []);
+
+  const handleFavoriteChange = (bookmarkId: string) => {
+    setMyBookmark((prev) => prev.filter((f) => f.id !== bookmarkId));
+  };
 
   const getTabTitle = () => {
     switch (settingsTab) {
@@ -51,17 +54,21 @@ const RightSide = () => {
       {/* Todo : 북마크는 max 3개 */}
       {myPageTab === 'none' && (
         <div className="grid 3xl:grid-cols-3 2xl:grid-cols-2 grid-cols-1 gap-4 mb-16 lg:mb-0">
-          {myBookmark.map((item, index) => (
+          {myBookmark.map((item) => (
             <div
               className="flex flex-col gap-4 text-[#FAFFCE] relative"
-              key={index}
+              key={item.id}
             >
               <h3 className="text-4xl text-center font-medium">
                 {item.address.split(' ').slice(2).join(' ')}
               </h3>
               <Link href={`/${item.referenceId}?type=${item.dataType}`}>
                 <div className="relative z-0 mx-auto">
-                  <ProjectCard item={item} isFavorite={true} />
+                  <ProjectCard
+                    item={item}
+                    isFavorite={true}
+                    handleFavoriteChange={handleFavoriteChange}
+                  />
                 </div>
               </Link>
               {/* <p className="text-center text-base">{item.project_name}</p> */}

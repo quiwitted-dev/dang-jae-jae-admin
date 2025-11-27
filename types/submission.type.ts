@@ -25,8 +25,10 @@ export type ApprovedSubmission = {
   newVolumeRatio: string;
   ownerCount: number;
   businessOperatorName: string;
+  maxPrice: string;
+  minPrice: string;
   announcementDates: {};
-  renovationPrice: Renovationprice;
+  renovationPrice?: Renovationprice;
   dataSource: string;
   createdAt: string;
   reviewedAt: string;
@@ -73,6 +75,8 @@ export type SeoulSubmissionDetail = {
   unitsOver85M2: number; // 85㎡ 초과 분양 세대수
 
   rentalUnits: number; // 임대세대총수
+
+  renovationPrice?: Renovationprice;
 };
 
 export type GyeonggiSubmissionDetail = {
@@ -114,6 +118,8 @@ export type GyeonggiSubmissionDetail = {
   newUnits60To85M2: number; // 60~85㎡
   newUnits85To135M2: number; // 85~135㎡
   newUnitsOver135M2: number; // 135㎡ 이상
+
+  renovationPrice?: Renovationprice;
 };
 
 export type SubmissionUserDetail = {
@@ -137,6 +143,7 @@ export type SubmissionUserDetail = {
   priceRange: string;
   consentRate: string;
   consentContact: string;
+  renovationPrice?: Renovationprice;
 
   notes: string;
 
@@ -146,14 +153,10 @@ export type SubmissionUserDetail = {
 
 export type Renovationprice = {
   id: string;
-  price: string;
+  maxPrice: string;
+  minPrice: string;
   minimumInitialInvestment: string;
   premium: string;
-  status: string;
-  isDisplayed: true;
-  displayedAt: string;
-  createdAt: string;
-  updatedAt: string;
   user: {
     id: string;
     nickname: string;

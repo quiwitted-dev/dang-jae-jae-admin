@@ -19,7 +19,7 @@ const Login = () => {
 
   return (
     <div
-      className="absolute inset-0 flex flex-col items-center justify-center w-full md:h-dvh h-full bg-black/50"
+      className="absolute inset-0 flex flex-col items-center justify-center w-full md:h-dvh h-full bg-black/50 z-9999"
       onClick={handleModalToggle}
     >
       <Button

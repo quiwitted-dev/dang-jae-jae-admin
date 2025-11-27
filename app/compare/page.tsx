@@ -189,12 +189,15 @@ const ComparePage = () => {
 
       {/* 좌측 모바일 */}
       <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 left-0 w-1/2 h-[300px] z-20">
-        <X
-          width={34}
-          height={34}
-          strokeWidth={1}
-          onClick={() => removeCompare(0)}
-        />
+        <div className="w-full h-[34px]">
+          <X
+            width={34}
+            height={34}
+            strokeWidth={1}
+            onClick={() => removeCompare(0)}
+            className="mx-auto"
+          />
+        </div>
         <div className="flex flex-col gap-2 text-center pt-4 w-full">
           <h3 className="text-[18px] font-bold truncate ">
             {compare1.zoneName}
@@ -217,12 +220,15 @@ const ComparePage = () => {
 
       {/* 우측 모바일 */}
       <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 right-0 w-1/2 h-[300px] z-20">
-        <X
-          width={34}
-          height={34}
-          strokeWidth={1}
-          onClick={() => removeCompare(1)}
-        />
+        <div className="w-full h-[34px]">
+          <X
+            width={34}
+            height={34}
+            strokeWidth={1}
+            onClick={() => removeCompare(1)}
+            className="mx-auto"
+          />
+        </div>
         <div className="flex flex-col gap-2 text-center pt-4 w-full">
           <h3 className="text-[18px] font-bold truncate ">
             {compare2.zoneName}
@@ -261,13 +267,33 @@ const ComparePage = () => {
           <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10 ">
             <div
               className="absolute top-1/2 right-0 -translate-y-1/2 bg-radial-[at_75%_30%] from-white/70 to-[#E2D2E0] to-90% transition-all duration-500 rounded-l-full"
-              style={{ width: `${250 / 2}px`, height: `${250}px` }} // 왼쪽 비율
+              style={{
+                width: `${
+                  +(+compare1.projectArenaM2 * 0.3025).toString().slice(0, 3) /
+                  2 /
+                  2
+                }px`,
+                height: `${
+                  +(+compare1.projectArenaM2 * 0.3025).toString().slice(0, 3) /
+                  2
+                }px`,
+              }} // 왼쪽 비율
             />
           </div>
           <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden -z-10 ">
             <div
               className="absolute top-1/2 left-0 -translate-y-1/2 bg-radial-[at_30%_25%] from-white/10 to-[#268F79]/30 to-90% transition-all duration-500 rounded-r-full"
-              style={{ width: `${150 / 2}px`, height: `${150}px` }} // 왼쪽 비율
+              style={{
+                width: `${
+                  +(+compare2.projectArenaM2 * 0.3025).toString().slice(0, 3) /
+                  2 /
+                  2
+                }px`,
+                height: `${
+                  +(+compare2.projectArenaM2 * 0.3025).toString().slice(0, 3) /
+                  2
+                }px`,
+              }} // 오른쪽 비율
             />
           </div>
           <div className="rounded-full flex items-center justify-center mx-auto">
@@ -294,7 +320,9 @@ const ComparePage = () => {
           <div className="flex items-center w-full">
             <div className="flex-1 text-right pr-4">
               <span className="text-4xl font-bold">
-                {compare1.averageLandScale}
+                {compare1.averageLandScale === 'Infinity'
+                  ? '0'
+                  : compare1.averageLandScale}
                 <span className="text-xl">평</span>
               </span>
             </div>
@@ -305,7 +333,9 @@ const ComparePage = () => {
             </div>
             <div className="flex-1 text-left pl-4">
               <span className="text-4xl font-bold">
-                {compare2.averageLandScale}
+                {compare2.averageLandScale === 'Infinity'
+                  ? '0'
+                  : compare2.averageLandScale}
                 <span className="text-xl">평</span>
               </span>
             </div>
@@ -372,7 +402,7 @@ const ComparePage = () => {
               </div>
 
               {/* 위에 올리는 실제 콘텐츠 */}
-              <span>0%</span>
+              <span>0 %</span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-4">
                 <span className="text-base font-thin text-white">
                   {compare1.associationSaleUnits}세대

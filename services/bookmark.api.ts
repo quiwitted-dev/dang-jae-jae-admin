@@ -20,21 +20,28 @@ export const getBookmark = async (): Promise<Favorites> => {
   return data.data;
 };
 
-export const postBookmark = async (id: string) => {
+export const postBookmark = async (
+  id: string,
+  dataType: 'PUBLIC_DATA' | 'SUBMISSION'
+) => {
   const res = await fetch(`/api/favorite`, {
     method: 'POST',
-    body: JSON.stringify({ referenceId: id, dataType: 'PUBLIC_DATA' }),
+    body: JSON.stringify({ referenceId: id, dataType }),
   });
 
   if (res.status === 401) {
     return;
   }
 
-  if (!res.ok) {
-    throw new Error(`북마크 등록 실패${res.status} ${res.statusText}`);
-  }
+  // if (!res.ok) {
+  //   throw new Error(`북마크 등록 실패${res.status} ${res.statusText}`);
+  // }
 
   const data = await res.json();
+
+  if (data.success === false) {
+    throw new Error(data.message || '북마크 등록에 실패했습니다.');
+  }
   return data;
 };
 

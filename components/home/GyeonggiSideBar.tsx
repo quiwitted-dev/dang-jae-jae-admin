@@ -3,18 +3,25 @@
 import {
   ArrowLeft,
   ArrowRight,
-  Bookmark,
+  BookmarkIcon,
   Check,
   Pencil,
   X,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '../ui/input';
 import { GyeonggiSubmissionDetail } from '@/types/submission.type';
 import useCompareStore from '@/store/useCompareStore';
 import { postPrice } from '@/services/price.api';
+import {
+  deleteBookmark,
+  getBookmark,
+  postBookmark,
+} from '@/services/bookmark.api';
+import useAuthStore from '@/store/useAuthStore';
+import useStore from '@/store/useStore';
 
 type GyeonggiSideBarProps = {
   publicData: GyeonggiSubmissionDetail;
@@ -24,9 +31,16 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
   const [isEdit, setIsEdit] = useState(false);
   const [maxPrice, setMaxPrice] = useState('');
   const [minPrice, setMinPrice] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [minimumInitialInvestment, setMinimumInitialInvestment] = useState('');
+  const [currentBookmarkId, setCurrentBookmarkId] = useState<
+    string | undefined
+  >(undefined);
   const [premium, setPremium] = useState('');
   const { setCompare } = useCompareStore();
+  const { isLogin } = useAuthStore();
+  const { toggleOpen, setAddress } = useStore();
   const router = useRouter();
   const { id } = publicData;
 
@@ -37,12 +51,23 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
       ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
       : '-';
 
+  useEffect(() => {
+    (async () => {
+      const data = await getBookmark();
+      const favorite = data.favorites.find((item) => item.referenceId === id);
+      if (favorite) {
+        setIsFavorite(true);
+        setCurrentBookmarkId(favorite.id);
+      } else {
+        setIsFavorite(false);
+        setCurrentBookmarkId(undefined);
+      }
+    })();
+    setAddress(publicData.address);
+  }, []);
+
   const handleGoHome = () => {
-    if (id !== undefined) {
-      router.push(`/?id=${id}`);
-    } else {
-      router.push('/');
-    }
+    router.push('/');
   };
 
   const handleEdit = () => {
@@ -75,7 +100,48 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
         setPremium('');
       }
     } catch (error) {
+      alert((error as Error).message);
       console.error(error);
+    }
+  };
+
+  const handleToggleBookmark = async (id: string) => {
+    if (loading) return;
+    if (!isLogin) {
+      alert('로그인이 필요합니다.');
+      toggleOpen();
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (!isFavorite) {
+        const created = await postBookmark(publicData.id, 'PUBLIC_DATA');
+        // post 응답에 id가 없을 때를 대비해 리스트 재조회로 보정
+        let newId = created?.data?.id ?? created?.id;
+        if (!newId) {
+          const { favorites } = await getBookmark();
+          const found = favorites?.find(
+            (fav: any) =>
+              fav.referenceId === publicData.id || fav.id === publicData.id
+          );
+          newId = found?.id ?? publicData.id;
+        }
+        setCurrentBookmarkId(newId);
+        setIsFavorite(true);
+      } else {
+        const target = currentBookmarkId ?? publicData.id;
+        const data = await deleteBookmark(target);
+        if (!data) throw new Error('삭제 실패');
+        setIsFavorite(false);
+        setCurrentBookmarkId(undefined);
+      }
+    } catch (err) {
+      console.error(err);
+      alert((err as Error).message); // 혹은 toast
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,8 +179,17 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
           </div>
 
           <div className="flex flex-row gap-3">
-            <Button className="rounded-full">
-              <Bookmark />
+            <Button
+              className="rounded-full"
+              onClick={(e) => {
+                handleToggleBookmark(publicData.id);
+              }}
+            >
+              {isFavorite ? (
+                <BookmarkIcon fill="white" size={16} />
+              ) : (
+                <BookmarkIcon size={16} />
+              )}
             </Button>
             <Button
               className="rounded-full"
@@ -153,14 +228,16 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 {isEdit ? (
                   <Input
                     className="text-right"
-                    placeholder=""
+                    placeholder={publicData.renovationPrice?.minPrice ?? '0'}
                     required
                     onChange={(e) => {
                       setMinPrice(e.target.value);
                     }}
                   />
                 ) : (
-                  <span className="font-playfair">0</span>
+                  <span className="font-playfair">
+                    {publicData.renovationPrice?.minPrice ?? '0'}
+                  </span>
                 )}
                 억
               </div>
@@ -169,14 +246,16 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 {isEdit ? (
                   <Input
                     className="text-right"
-                    placeholder=""
+                    placeholder={publicData.renovationPrice?.maxPrice ?? '0'}
                     required
                     onChange={(e) => {
                       setMaxPrice(e.target.value);
                     }}
                   />
                 ) : (
-                  <span className="font-playfair">0</span>
+                  <span className="font-playfair">
+                    {publicData.renovationPrice?.maxPrice ?? '0'}
+                  </span>
                 )}
                 억
               </div>
@@ -206,14 +285,20 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                   {isEdit ? (
                     <Input
                       className="text-right"
-                      placeholder=""
+                      placeholder={
+                        publicData.renovationPrice?.minimumInitialInvestment ??
+                        '0'
+                      }
                       required
                       onChange={(e) => {
                         setMinimumInitialInvestment(e.target.value);
                       }}
                     />
                   ) : (
-                    <span className="font-playfair">0</span>
+                    <span className="font-playfair">
+                      {publicData.renovationPrice?.minimumInitialInvestment ??
+                        '0'}
+                    </span>
                   )}
                   억
                 </div>
@@ -224,14 +309,16 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                   {isEdit ? (
                     <Input
                       className="text-right"
-                      placeholder=""
+                      placeholder={publicData.renovationPrice?.premium ?? '0'}
                       required
                       onChange={(e) => {
                         setPremium(e.target.value);
                       }}
                     />
                   ) : (
-                    <span className="font-playfair">0</span>
+                    <span className="font-playfair">
+                      {publicData.renovationPrice?.premium ?? '0'}
+                    </span>
                   )}
                   억
                 </div>

@@ -5,6 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 export async function POST(request: Request) {
   const body = await request.json();
   const code = body?.code;
+  const origin = request.headers.get('origin');
 
   if (!code) {
     return NextResponse.json({ message: 'code is required' }, { status: 400 });
@@ -13,7 +14,10 @@ export async function POST(request: Request) {
   // 1. 백엔드로 요청
   const backendRes = await fetch(`${API_URL}/api/auth/kakao/callback`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(origin ? { Origin: origin } : {}),
+    },
     body: JSON.stringify({ code }),
     credentials: 'include',
     // redirect: 'manual',
