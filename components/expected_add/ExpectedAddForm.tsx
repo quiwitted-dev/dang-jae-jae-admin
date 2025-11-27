@@ -18,6 +18,7 @@ import useAuthStore from '@/store/useAuthStore';
 const ExpectedAddForm = () => {
   const router = useRouter();
   const [user, setUser] = useState<User>();
+  const { isLogin } = useAuthStore();
   const {
     register,
     handleSubmit,
@@ -28,8 +29,10 @@ const ExpectedAddForm = () => {
     resolver: zodResolver(expectedSchema),
     mode: 'onChange',
   });
+
   const numberInputClass =
     'text-end text-[20px] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none';
+
   const handleBack = () => {
     router.back();
   };
@@ -43,7 +46,7 @@ const ExpectedAddForm = () => {
         router.push('/');
       }
     })();
-  }, []);
+  }, [isLogin, router]);
 
   const formatPhoneNumber = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
