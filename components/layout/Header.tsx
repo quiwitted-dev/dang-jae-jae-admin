@@ -19,6 +19,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
   const toggleOpen = useStore((state) => state.toggleOpen);
   const clear = useStore((state) => state.clear);
   const isLogin = useAuthStore((state) => state.isLogin);
+  const setAddress = useStore((state) => state.setAddress);
   const setIsLogin = useAuthStore((state) => state.setIsLogin);
   const pathname = usePathname();
   const router = useRouter();
@@ -63,6 +64,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
     const data = await logout();
     if (data.success === true) {
       setIsLogin(false);
+      setAddress('');
       alert('로그아웃 되었습니다.');
       if (pathname.startsWith('/my')) {
         router.replace('/');
