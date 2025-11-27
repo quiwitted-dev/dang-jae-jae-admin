@@ -33,11 +33,15 @@ export const postBookmark = async (
     return;
   }
 
-  if (!res.ok) {
-    throw new Error(`북마크 등록 실패${res.status} ${res.statusText}`);
-  }
+  // if (!res.ok) {
+  //   throw new Error(`북마크 등록 실패${res.status} ${res.statusText}`);
+  // }
 
   const data = await res.json();
+
+  if (data.success === false) {
+    throw new Error(data.message || '북마크 등록에 실패했습니다.');
+  }
   return data;
 };
 
