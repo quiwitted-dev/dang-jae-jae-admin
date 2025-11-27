@@ -79,7 +79,7 @@ const Bookmark = ({
       }
     } catch (err) {
       console.error(err);
-      alert('북마크 요청이 실패했습니다.'); // 혹은 toast
+      alert((err as Error).message); // 혹은 toast
     } finally {
       setLoading(false);
     }
