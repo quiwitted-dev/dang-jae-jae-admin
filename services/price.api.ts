@@ -29,6 +29,12 @@ export const postPrice = async ({
       }),
     });
 
+    if (res.status === 429) {
+      throw new Error(
+        `가격 입력 실패: 동일 사업건에는 24시간 이후에 다시 가격을 등록할 수 있습니다`
+      );
+    }
+
     if (!res.ok) {
       throw new Error(`가격 입력 실패 ${res.status} ${res.statusText}`);
     }
@@ -46,6 +52,12 @@ export const postPrice = async ({
         maxPrice: form.maxPrice,
       }),
     });
+
+    if (res.status === 429) {
+      throw new Error(
+        `가격 입력 실패: 동일 사업건에는 24시간 이후에 다시 가격을 등록할 수 있습니다`
+      );
+    }
 
     if (!res.ok) {
       throw new Error(`가격 입력 실패 ${res.status} ${res.statusText}`);
