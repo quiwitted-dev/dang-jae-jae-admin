@@ -135,14 +135,14 @@ const ProjectCard = ({
         <div className="bg-black text-white flex flex-col text-center text-lg rounded-3xl py-2 px-1.5">
           <div className="flex flex-row items-center">
             <p className="font-playfair">
-              {item.renovationPrice?.minPrice ?? '0'}
+              {item.renovationPrice?.minPrice ?? item.minPrice ?? '0'}
             </p>
             <span className="text-sm">억</span>
           </div>
           <p className="p-0 m-0 font-playfair leading-none text-sm">~</p>
           <div className="flex flex-row items-center">
             <p className="font-playfair">
-              {item.renovationPrice?.maxPrice ?? '0'}
+              {item.renovationPrice?.maxPrice ?? item.maxPrice ?? '0'}
             </p>
             <span className="text-sm">억</span>
           </div>
