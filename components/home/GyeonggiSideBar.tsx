@@ -100,6 +100,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
         setPremium('');
       }
     } catch (error) {
+      alert((error as Error).message);
       console.error(error);
     }
   };
@@ -138,7 +139,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
       }
     } catch (err) {
       console.error(err);
-      alert('북마크 요청이 실패했습니다.'); // 혹은 toast
+      alert((err as Error).message); // 혹은 toast
     } finally {
       setLoading(false);
     }
@@ -227,14 +228,16 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 {isEdit ? (
                   <Input
                     className="text-right"
-                    placeholder=""
+                    placeholder={publicData.renovationPrice?.minPrice ?? '0'}
                     required
                     onChange={(e) => {
                       setMinPrice(e.target.value);
                     }}
                   />
                 ) : (
-                  <span className="font-playfair">0</span>
+                  <span className="font-playfair">
+                    {publicData.renovationPrice?.minPrice ?? '0'}
+                  </span>
                 )}
                 억
               </div>
@@ -243,14 +246,16 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 {isEdit ? (
                   <Input
                     className="text-right"
-                    placeholder=""
+                    placeholder={publicData.renovationPrice?.maxPrice ?? '0'}
                     required
                     onChange={(e) => {
                       setMaxPrice(e.target.value);
                     }}
                   />
                 ) : (
-                  <span className="font-playfair">0</span>
+                  <span className="font-playfair">
+                    {publicData.renovationPrice?.maxPrice ?? '0'}
+                  </span>
                 )}
                 억
               </div>
@@ -280,14 +285,20 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                   {isEdit ? (
                     <Input
                       className="text-right"
-                      placeholder=""
+                      placeholder={
+                        publicData.renovationPrice?.minimumInitialInvestment ??
+                        '0'
+                      }
                       required
                       onChange={(e) => {
                         setMinimumInitialInvestment(e.target.value);
                       }}
                     />
                   ) : (
-                    <span className="font-playfair">0</span>
+                    <span className="font-playfair">
+                      {publicData.renovationPrice?.minimumInitialInvestment ??
+                        '0'}
+                    </span>
                   )}
                   억
                 </div>
@@ -298,14 +309,16 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                   {isEdit ? (
                     <Input
                       className="text-right"
-                      placeholder=""
+                      placeholder={publicData.renovationPrice?.premium ?? '0'}
                       required
                       onChange={(e) => {
                         setPremium(e.target.value);
                       }}
                     />
                   ) : (
-                    <span className="font-playfair">0</span>
+                    <span className="font-playfair">
+                      {publicData.renovationPrice?.premium ?? '0'}
+                    </span>
                   )}
                   억
                 </div>

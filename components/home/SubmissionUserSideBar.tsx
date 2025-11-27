@@ -97,6 +97,7 @@ const SubmissionUserSideBar = ({
         setMinPrice('');
       }
     } catch (error) {
+      alert((error as Error).message);
       console.error(error);
     }
   };
@@ -114,6 +115,7 @@ const SubmissionUserSideBar = ({
     try {
       if (!isFavorite) {
         const created = await postBookmark(submissionData.id, 'SUBMISSION');
+
         // post 응답에 id가 없을 때를 대비해 리스트 재조회로 보정
         let newId = created?.data?.id ?? created?.id;
         if (!newId) {
@@ -136,7 +138,7 @@ const SubmissionUserSideBar = ({
       }
     } catch (err) {
       console.error(err);
-      alert('북마크 요청이 실패했습니다.'); // 혹은 toast
+      alert((err as Error).message); // 혹은 toast
     } finally {
       setLoading(false);
     }
@@ -209,7 +211,7 @@ const SubmissionUserSideBar = ({
               요즘시세
             </h4>
             <p className="text-xs font-medium text-gray-500 whitespace-pre-line break-keep">
-              <span className="text-gray-700">{`-님이 올려주신 시세입니다.`}</span>
+              <span className="text-gray-700">{`${submissionData.renovationPrice?.user.nickname}님이 올려주신 시세입니다.`}</span>
               {`\n시세의 대략적인 정보이며 사용자 누구나 올리실 수 있습니다. 당신의 정보력을 보여주세요!`}
             </p>
           </div>
@@ -230,14 +232,18 @@ const SubmissionUserSideBar = ({
                 {isEdit ? (
                   <Input
                     className="text-right"
-                    placeholder=""
+                    placeholder={
+                      submissionData.renovationPrice?.minPrice ?? min ?? '0'
+                    }
                     required
                     onChange={(e) => {
                       setMinPrice(e.target.value);
                     }}
                   />
                 ) : (
-                  <span className="font-playfair">{min}</span>
+                  <span className="font-playfair">
+                    {submissionData.renovationPrice?.minPrice ?? min ?? '0'}
+                  </span>
                 )}
                 억
               </div>
@@ -246,14 +252,18 @@ const SubmissionUserSideBar = ({
                 {isEdit ? (
                   <Input
                     className="text-right"
-                    placeholder=""
+                    placeholder={
+                      submissionData.renovationPrice?.maxPrice ?? max ?? '0'
+                    }
                     required
                     onChange={(e) => {
                       setMaxPrice(e.target.value);
                     }}
                   />
                 ) : (
-                  <span className="font-playfair">{max}</span>
+                  <span className="font-playfair">
+                    {submissionData.renovationPrice?.maxPrice ?? max ?? '0'}
+                  </span>
                 )}
                 억
               </div>
