@@ -22,6 +22,7 @@ import {
   postBookmark,
 } from '@/services/bookmark.api';
 import useStore from '@/store/useStore';
+import { useQueryParams } from '@/lib/useQueryParams';
 
 type SeoulSideBarProps = {
   publicData: SeoulSubmissionDetail;
@@ -43,7 +44,8 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
   const { toggleOpen, setAddress } = useStore();
   const router = useRouter();
   const { id } = publicData;
-  console.log(publicData);
+  const query = useQueryParams();
+  const { type, ...restQuery } = query;
 
   const projectArea = Number(publicData.projectAreaM2);
   const ownerCount = Number(publicData.ownerCount);
@@ -68,7 +70,11 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
   }, []);
 
   const handleGoHome = () => {
-    router.push('/');
+    const qs = new URLSearchParams({
+      ...restQuery,
+    }).toString();
+    console.log(qs);
+    router.push(`/?${qs}`);
   };
 
   const handleEdit = () => {

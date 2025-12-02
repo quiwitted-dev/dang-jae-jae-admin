@@ -22,6 +22,7 @@ import {
   postBookmark,
 } from '@/services/bookmark.api';
 import useStore from '@/store/useStore';
+import { useQueryParams } from '@/lib/useQueryParams';
 
 const SubmissionUserSideBar = ({
   submissionData,
@@ -42,6 +43,8 @@ const SubmissionUserSideBar = ({
   const { toggleOpen, setAddress } = useStore();
   const router = useRouter();
   const { id } = submissionData;
+  const query = useQueryParams();
+  const { type, ...restQuery } = query;
 
   const projectArea = Number(submissionData.projectArea);
   const ownerCount = Number(submissionData.ownerCount);
@@ -68,7 +71,11 @@ const SubmissionUserSideBar = ({
   const [min, max] = submissionData.priceRange.match(/\d+/g) || [];
 
   const handleGoHome = () => {
-    router.push('/');
+    const qs = new URLSearchParams({
+      ...restQuery,
+    }).toString();
+    console.log(qs);
+    router.push(`/?${qs}`);
   };
 
   const handleEdit = () => {
@@ -211,7 +218,10 @@ const SubmissionUserSideBar = ({
               요즘시세
             </h4>
             <p className="text-xs font-medium text-gray-500 whitespace-pre-line break-keep">
-              <span className="text-gray-700">{`${submissionData.renovationPrice?.user.nickname}님이 올려주신 시세입니다.`}</span>
+              <span className="text-gray-700">{`${
+                submissionData.renovationPrice?.user.nickname ??
+                submissionData.user.nickname
+              }님이 올려주신 시세입니다.`}</span>
               {`\n시세의 대략적인 정보이며 사용자 누구나 올리실 수 있습니다. 당신의 정보력을 보여주세요!`}
             </p>
           </div>

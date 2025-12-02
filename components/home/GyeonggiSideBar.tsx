@@ -22,6 +22,7 @@ import {
 } from '@/services/bookmark.api';
 import useAuthStore from '@/store/useAuthStore';
 import useStore from '@/store/useStore';
+import { useQueryParams } from '@/lib/useQueryParams';
 
 type GyeonggiSideBarProps = {
   publicData: GyeonggiSubmissionDetail;
@@ -43,6 +44,8 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
   const { toggleOpen, setAddress } = useStore();
   const router = useRouter();
   const { id } = publicData;
+  const query = useQueryParams();
+  const { type, ...restQuery } = query;
 
   const projectArea = Number(publicData.projectAreaM2);
   const ownerCount = Number(publicData.ownerCount);
@@ -67,7 +70,11 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
   }, []);
 
   const handleGoHome = () => {
-    router.push('/');
+    const qs = new URLSearchParams({
+      ...restQuery,
+    }).toString();
+    console.log(qs);
+    router.push(`/?${qs}`);
   };
 
   const handleEdit = () => {
