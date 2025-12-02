@@ -32,20 +32,21 @@ export default async function RootLayout({
         className={`${playfairDisplay.variable} antialiased bg-black text-white font-sans`}
       >
         <Header isLoggedIn={isLoggedIn} />
-        {children}
+        <main className="pt-16">{children}</main>
         <ModalProvider />
         <script
           type="text/javascript"
           src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0dacc0c4e114487ed38c366e80cd1d4b&autoload=false&libraries=services"
         ></script>
       </body>
-    <footer className='text-center my-2'>
-      당신의재재<br/>
-      사업자등록번호 | 475-46-01292
-      대표 | 이필순<br/>
-      주소 | 경기도 용인시 수지구 용구대로2790번길 7, 3층 302호 <br/>
-      연락처 | 010 2465 9954
-    </footer>
+      <footer className="text-center my-2">
+        당신의재재
+        <br />
+        사업자등록번호 | 475-46-01292 대표 | 이필순
+        <br />
+        주소 | 경기도 용인시 수지구 용구대로2790번길 7, 3층 302호 <br />
+        연락처 | 010 2465 9954
+      </footer>
     </html>
   );
 }
