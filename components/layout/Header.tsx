@@ -3,7 +3,14 @@
 import Image from 'next/image';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { ChevronLeft, Home, LogOut, Search, UserRound } from 'lucide-react';
+import {
+  Bookmark,
+  ChevronLeft,
+  Home,
+  LogOut,
+  Search,
+  UserRound,
+} from 'lucide-react';
 import useStore from '@/store/useStore';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -93,9 +100,9 @@ const Header = ({ isLoggedIn }: headerProps) => {
   // Todo : 비교보기 버튼 비교담기 상태에 따라 아이콘 표현 달리하기 (가능한가?)
 
   return (
-    <>
+    <div className="fixed top-0 left-0 right-0 z-50 bg-black">
       {/* 데스크탑 */}
-      <div className="hidden lg:relative lg:flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1">
+      <div className="hidden lg:relative lg:flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1 ">
         <div className="relative text-black max-w-[400px] w-full ">
           <Input
             className="bg-white rounded-4xl w-full pr-16"
@@ -123,19 +130,20 @@ const Header = ({ isLoggedIn }: headerProps) => {
         />
         <div className="relative flex flex-row items-center gap-1 md:gap-2">
           <Button
-            className="hidden md:flex flex-row"
+            className="hidden md:flex flex-row h-10"
             variant={'white'}
             onClick={() => {
               isLogin ? handleLink('/my') : handleLoginToggle();
             }}
           >
-            <UserRound fill="black" />
+            {isLogin ? <Bookmark fill="black" /> : <UserRound fill="black" />}
+
             {isLogin ? <></> : <p>로그인</p>}
           </Button>
 
           {isLogin && (
             <Button
-              className="hidden md:flex flex-row"
+              className="hidden md:flex flex-row w-10 h-10"
               variant={'white'}
               onClick={handleLogout}
             >
@@ -144,14 +152,17 @@ const Header = ({ isLoggedIn }: headerProps) => {
           )}
 
           <Link href={'/compare'}>
-            <Button variant={'white'}>
+            <Button
+              variant={'white'}
+              className="flex items-center h-10 flex-row justify-center"
+            >
               <Image
                 src={'/Compare.png'}
                 alt="비교보기 아이콘"
                 width={27}
                 height={27}
               />
-              비교보기
+              <p>비교보기</p>
             </Button>
           </Link>
         </div>
@@ -180,16 +191,28 @@ const Header = ({ isLoggedIn }: headerProps) => {
             </div>
             <div className="relative flex flex-row items-center gap-1 md:gap-2">
               <Button
-                className="flex flex-row"
+                className="flex flex-row w-10 h-10"
                 variant={'white'}
                 onClick={() => {
                   isLogin ? handleLink('/my') : handleLoginToggle();
                 }}
               >
-                <UserRound fill="black" />
+                <Bookmark fill="black" />
               </Button>
               <Link href={'/compare'}>
-                <Button variant={'white'}>비교보기</Button>
+                <Button
+                  variant={'white'}
+                  className="flex items-center h-10 flex-row justify-center"
+                >
+                  {' '}
+                  <Image
+                    src={'/Compare.png'}
+                    alt="비교보기 아이콘"
+                    width={27}
+                    height={27}
+                  />
+                  <p>비교보기</p>
+                </Button>
               </Link>
             </div>
           </div>
@@ -246,7 +269,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
