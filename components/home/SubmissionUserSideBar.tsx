@@ -74,7 +74,6 @@ const SubmissionUserSideBar = ({
     const qs = new URLSearchParams({
       ...restQuery,
     }).toString();
-    console.log(qs);
     router.push(`/?${qs}`);
   };
 
@@ -145,7 +144,8 @@ const SubmissionUserSideBar = ({
       }
     } catch (err) {
       console.error(err);
-      alert((err as Error).message); // 혹은 toast
+      const message = JSON.parse((err as Error).message).error;
+      alert(message); // 혹은 toast
     } finally {
       setLoading(false);
     }
