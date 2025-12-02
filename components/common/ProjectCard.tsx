@@ -4,8 +4,9 @@ import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { ApprovedSubmission } from '@/types/submission.type';
 import Bookmark from './Bookmark';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { useQueryParams } from '@/lib/useQueryParams';
 
 type ProjectCardProps = {
   item: ApprovedSubmission;
@@ -22,6 +23,7 @@ const ProjectCard = ({
 }: ProjectCardProps) => {
   const router = useRouter();
   const mapRef = useRef<HTMLDivElement>(null);
+  const query = useQueryParams();
 
   const averageLandSharePyeong = () => {
     if (+item.projectAreaM2 === 0 || +item.ownerCount === 0) {
@@ -31,7 +33,11 @@ const ProjectCard = ({
   };
 
   const handleCardClick = () => {
-    router.push(`/${item.id}?type=${item.dataType}`);
+    const qs = new URLSearchParams({
+      ...query,
+      type: item.dataType,
+    }).toString();
+    router.push(`/${item.id}?${qs}`);
   };
 
   const str = item.address.split(' ');
