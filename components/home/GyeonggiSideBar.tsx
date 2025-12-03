@@ -106,8 +106,9 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
         setPremium('');
       }
     } catch (error) {
-      alert((error as Error).message);
       console.error(error);
+      const message = JSON.parse((error as Error).message).error;
+      alert(message);
     }
   };
 

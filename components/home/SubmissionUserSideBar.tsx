@@ -52,7 +52,7 @@ const SubmissionUserSideBar = ({
     projectArea > 0 && ownerCount > 0
       ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
       : '-';
-
+  console.log(submissionData);
   useEffect(() => {
     (async () => {
       const data = await getBookmark();
@@ -68,7 +68,7 @@ const SubmissionUserSideBar = ({
     setAddress(submissionData.location);
   }, []);
 
-  const [min, max] = submissionData.priceRange.match(/\d+/g) || [];
+  const [min, max] = submissionData.priceRange?.match(/\d+/g) ?? [];
 
   const handleGoHome = () => {
     const qs = new URLSearchParams({
@@ -103,8 +103,9 @@ const SubmissionUserSideBar = ({
         setMinPrice('');
       }
     } catch (error) {
-      alert((error as Error).message);
       console.error(error);
+      const message = JSON.parse((error as Error).message).error;
+      alert(message);
     }
   };
 
