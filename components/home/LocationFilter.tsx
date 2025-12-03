@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import useFilterStore from '@/store/useFilterStore';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const LOCATION_DATA = {
   서울시: [
@@ -67,7 +68,15 @@ const LOCATION_DATA = {
 };
 
 export default function LocationFilter() {
-  const { locations, setLocations } = useFilterStore();
+  const {
+    locations,
+    projectTypes,
+    currentStage,
+    price,
+    ownerCount,
+    newUnits,
+    setLocations,
+  } = useFilterStore();
   const searchParams = useSearchParams();
   const [selectRegion, setSelectRegion] = useState({
     region: '',
@@ -79,6 +88,8 @@ export default function LocationFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const handleFilter = useHandleFilter();
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -160,6 +171,7 @@ export default function LocationFilter() {
     setSelectRegion((prev) => ({ ...prev, district }));
     setIsOpen(false);
     setShowDistricts('');
+    handleFilter({ data: `${district}구`, filter: 'locations' });
   };
 
   const handleReset = () => {

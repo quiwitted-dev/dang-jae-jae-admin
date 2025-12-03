@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import useFilterStore from '@/store/useFilterStore';
 import { useSearchParams } from 'next/navigation';
+import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const BUSINESS_TYPES = [
   '재건축',
@@ -23,6 +24,7 @@ export default function BusinessTypeFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const handleFilter = useHandleFilter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -90,6 +92,7 @@ export default function BusinessTypeFilter() {
 
   const handleTypeSelect = (type: string) => {
     setProjectTypes([type]);
+    handleFilter({ data: [type], filter: 'projectTypes' });
     setIsOpen(false);
   };
 

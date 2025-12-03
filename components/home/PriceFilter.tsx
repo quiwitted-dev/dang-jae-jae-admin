@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import useFilterStore from '@/store/useFilterStore';
 import { useSearchParams } from 'next/navigation';
+import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const PRICE_OPTIONS = [
   { value: 1, label: '1억' },
@@ -27,6 +28,7 @@ export default function PriceFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const handleFilter = useHandleFilter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -101,6 +103,7 @@ export default function PriceFilter() {
 
   const handlePriceClick = useCallback(
     (price: number) => {
+      console.log(price);
       const priceWon = price * 100_000_000; // 억 단위를 원으로 변환
       setPrice((prevRange) => {
         const { minPrice, maxPrice } = prevRange;
@@ -110,12 +113,24 @@ export default function PriceFilter() {
         } else if (minPrice && !maxPrice) {
           if (priceWon >= minPrice) {
             setIsOpen(false);
+            handleFilter({
+              data: [String(minPrice), String(priceWon)],
+              filter: 'price',
+            });
             return { minPrice, maxPrice: priceWon };
           } else {
             setIsOpen(false);
+            handleFilter({
+              data: [String(priceWon), String(minPrice)],
+              filter: 'price',
+            });
             return { minPrice: priceWon, maxPrice: minPrice };
           }
         } else {
+          handleFilter({
+            data: [String(priceWon), ''],
+            filter: 'price',
+          });
           return { minPrice: priceWon, maxPrice: null };
         }
       });
