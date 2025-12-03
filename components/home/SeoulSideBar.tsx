@@ -54,6 +54,8 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
       ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
       : '-';
 
+  console.log(publicData);
+
   useEffect(() => {
     (async () => {
       const data = await getBookmark();
@@ -210,7 +212,9 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
               요즘시세
             </h4>
             <p className="text-xs font-medium text-gray-500 whitespace-pre-line break-keep">
-              <span className="text-gray-700">{` - 님이 올려주신 시세입니다.`}</span>
+              <span className="text-gray-700">{` ${
+                publicData.renovationPrice?.user.nickname ?? '-'
+              } 님이 올려주신 시세입니다.`}</span>
               {`\n시세의 대략적인 정보이며 사용자 누구나 올리실 수 있습니다. 당신의 정보력을 보여주세요!`}
             </p>
           </div>
