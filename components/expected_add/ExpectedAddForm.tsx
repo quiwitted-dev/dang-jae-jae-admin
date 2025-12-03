@@ -45,8 +45,9 @@ const ExpectedAddForm = () => {
         alert('로그인이 필요한 서비스입니다.');
         router.push('/');
       }
+      setValue('name', res.nickname);
     })();
-  }, [isLogin, router]);
+  }, [isLogin, router, setValue]);
 
   const formatPhoneNumber = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
