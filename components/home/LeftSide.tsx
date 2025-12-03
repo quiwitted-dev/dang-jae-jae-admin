@@ -205,7 +205,7 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
         </div>
       </div>
       {/* 목록 */}
-      <div className="flex flex-col gap-2 md:px-[120px] px-2">
+      <div className="flex flex-col gap-2 mx-auto px-2">
         {submissions.map((item) => {
           const isFavorite = isLoaded ? favoriteSet.has(item.id) : false;
           const favoriteId = favoriteIdMap.get(item.id);
