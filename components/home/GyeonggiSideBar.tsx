@@ -153,6 +153,13 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
     }
   };
 
+  const dateFormatter = (date: string) => {
+    if (!date) return '-';
+    const translateDate = new Date(date.replace(' ', 'T'));
+    const year = String(translateDate.getFullYear());
+    return year;
+  };
+
   return (
     <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] max-w-[700px] md:w-[700px] text-black min-h-dvh">
       <div className="flex flex-row items-center justify-between px-4 py-5">
@@ -347,12 +354,13 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
           )}
 
           <div className="mt-6 px-5 md:px-0">
-            <div className="mb-4 text-sm font-normal text-[#49454F]">
+            <div className="mb-4 text-sm font-bold text-[#49454F]">
               <div>
                 <p>
                   사업예정기간 :{' '}
                   <span className="text-black">
-                    {publicData.projectedStartDate ?? '-'}
+                    {dateFormatter(publicData.projectedStartDate)}~
+                    {dateFormatter(publicData.projectedEndDate)}
                   </span>
                 </p>
               </div>
@@ -378,7 +386,10 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 <ArrowRight />
                 <p>
                   신축세대수 :{' '}
-                  <span className="text-black font-extrabold">-</span> 세대
+                  <span className="text-black font-extrabold">
+                    {publicData.totalSaleUnits}
+                  </span>{' '}
+                  세대
                 </p>
               </div>
               <div className="flex flex-row justify-between">
