@@ -168,9 +168,7 @@ const ProjectCard = ({
         {item.dataType === 'PUBLIC_DATA' ? (
           <>
             <div className="flex flex-col gap-1 font-bold">
-              <p className="text-lg">
-                {item.newConstructionUnits || '-'} 신축세대
-              </p>
+              <p className="text-lg">{item.totalSaleUnits || '-'} 신축세대</p>
               <p className="text-xs">임대 {item.rentalUnits || '-'}</p>
             </div>
             <Bookmark
