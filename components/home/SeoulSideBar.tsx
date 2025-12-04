@@ -171,7 +171,11 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="text-3xl font-normal">
             <h3>
-              일반분양 세대수 <span className="font-extrabold">-</span> 세대
+              일반분양 세대수{' '}
+              <span className="font-extrabold">
+                {publicData.totalSaleUnits}
+              </span>{' '}
+              세대
             </h3>
             <h3>
               평균 대지지분{' '}
@@ -360,18 +364,22 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
                 <p className="font-bold">
                   용적률{' '}
                   <span className="text-black font-extrabold">
-                    {publicData.volumeRatio ?? '-'}
-                  </span>
+                    {publicData.buildingCoverageRatio ?? '-'}
+                  </span>{' '}
+                  %
                 </p>
               </div>
               <div className="flex flex-row justify-between">
                 {/* 용도지역 예)제3종 일반주거지역 */}
-                <p className="text-black font-bold">-</p>
+                <p className="text-black font-bold truncate max-w-[250px]">
+                  {publicData.usageZone}
+                </p>
                 <p className="font-bold">
                   건폐율{' '}
                   <span className="text-black font-extrabold">
-                    {publicData.buildingCoverageRatio ?? '-'}
-                  </span>
+                    {publicData.volumeRatio ?? '-'}
+                  </span>{' '}
+                  %
                 </p>
               </div>
               <div className="flex flex-row justify-between">
