@@ -6,7 +6,7 @@ import DetailRightSide from '../DetailRightSide';
 const PublicData = ({ publicData }: { publicData: SubmissionPublicDetail }) => {
   const mapAddress =
     publicData.dataSource === 'SEOUL'
-      ? `${publicData.district} ${publicData.representativeLotNumber}`
+      ? `${publicData.representativeLotNumber}`
       : publicData.address;
 
   return (
