@@ -42,11 +42,10 @@ export const useHandleFilter = () => {
     params.delete('projectTypes');
     if (filter === 'projectTypes') {
       const type = Array.isArray(data) ? data : [data];
-      type.forEach((loc) => params.append('projectTypes', loc));
+      type.forEach((typ) => params.append('projectTypes', typ));
     } else {
-      locations.forEach((loc) => params.append('projectTypes', loc));
+      projectTypes.forEach((typ) => params.append('projectTypes', typ));
     }
-    // projectTypes.forEach((type) => params.append('projectTypes', type));
 
     if (filter === 'currentStage') {
       setParam('currentStage', data as string);
@@ -54,14 +53,8 @@ export const useHandleFilter = () => {
       setParam('currentStage', currentStage);
     }
 
-    if (filter === 'price') {
-      setParam('minPrice', data[0]);
-      setParam('maxPrice', data[1]);
-    } else {
-      setParam('minPrice', price.minPrice);
-      setParam('maxPrice', price.maxPrice);
-    }
-
+    setParam('minPrice', price.minPrice);
+    setParam('maxPrice', price.maxPrice);
     setParam('ownerCountMin', ownerCount.ownerCountMin);
     setParam('ownerCountMax', ownerCount.ownerCountMax);
     setParam('newConstructionUnitsMin', newUnits.newConstructionUnitsMin);
