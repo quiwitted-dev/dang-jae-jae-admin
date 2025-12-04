@@ -171,12 +171,14 @@ const ProjectCard = ({
               <p className="text-lg">{item.totalSaleUnits || '-'} 신축세대</p>
               <p className="text-xs">임대 {item.rentalUnits || '-'}</p>
             </div>
-            <Bookmark
-              item={item}
-              bookmarkId={favoriteId}
-              isFavorite={isFavorite}
-              handleFavoriteChange={handleFavoriteChange}
-            />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <Bookmark
+                item={item}
+                bookmarkId={favoriteId}
+                isFavorite={isFavorite}
+                handleFavoriteChange={handleFavoriteChange}
+              />
+            </div>
             <div className="flex flex-col text-xs text-gray-700 text-right">
               <p>
                 소유자 수{' '}
