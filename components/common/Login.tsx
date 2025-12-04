@@ -19,7 +19,7 @@ const Login = () => {
 
   return (
     <div
-      className="absolute inset-0 flex flex-col items-center justify-center w-full md:h-dvh h-full bg-black/50 z-9999"
+      className="fixed inset-0 flex flex-col items-center justify-center w-full md:h-dvh h-full bg-black/50 z-9999"
       onClick={handleModalToggle}
     >
       <Button
@@ -73,7 +73,10 @@ const Login = () => {
             </Button>
             <div className="flex flex-row items-center text-sm font-light">
               <p>아직 회원이 아니시라면, </p>
-              <Button className="rounded-4xl bg-white/20">
+              <Button
+                className="rounded-4xl bg-white/20"
+                onClick={handleKakaoLogin}
+              >
                 3초만에 회원가입하기 <MoveRight />
               </Button>
             </div>
