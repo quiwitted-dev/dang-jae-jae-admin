@@ -171,7 +171,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
       {/* 모바일 */}
       <div className="lg:hidden">
         {pathname === '/' && (
-          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1">
+          <div className="relative flex flex-row px-2 justify-between items-center py-1 gap-1">
             <div className="relative text-black max-w-[400px] w-full ">
               <Input
                 className="bg-white rounded-4xl w-full pr-14"
@@ -197,7 +197,11 @@ const Header = ({ isLoggedIn }: headerProps) => {
                   isLogin ? handleLink('/my') : handleLoginToggle();
                 }}
               >
-                <Bookmark fill="black" />
+                {isLogin ? (
+                  <Bookmark fill="black" />
+                ) : (
+                  <UserRound fill="black" />
+                )}
               </Button>
               <Link href={'/compare'}>
                 <Button
