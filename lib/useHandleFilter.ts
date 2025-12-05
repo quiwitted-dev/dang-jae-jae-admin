@@ -3,16 +3,14 @@
 import useFilterStore from '@/store/useFilterStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-type parameter = {
-  data: string | string[];
-  filter:
-    | 'locations'
-    | 'projectTypes'
-    | 'currentStage'
-    | 'price'
-    | 'ownerCount'
-    | 'newConstructionUnits';
-};
+type PriceRange = { minPrice: number | null; maxPrice: number | null };
+
+type Parameter =
+  | { filter: 'locations'; data: string | string[] }
+  | { filter: 'projectTypes'; data: string | string[] }
+  | { filter: 'currentStage'; data: string }
+  | { filter: 'price'; data: PriceRange }
+  | { filter: 'ownerCount' | 'newConstructionUnits'; data?: undefined };
 
 export const useHandleFilter = () => {
   const router = useRouter();
@@ -20,7 +18,7 @@ export const useHandleFilter = () => {
   const { locations, projectTypes, currentStage, price, ownerCount, newUnits } =
     useFilterStore();
 
-  return ({ data, filter }: parameter) => {
+  return ({ data, filter }: Parameter) => {
     const params = new URLSearchParams(searchParams?.toString());
 
     const setParam = (key: string, value?: string | number | null) => {
@@ -52,9 +50,14 @@ export const useHandleFilter = () => {
     } else {
       setParam('currentStage', currentStage);
     }
+    if (filter === 'price') {
+      setParam('minPrice', data.minPrice);
+      setParam('maxPrice', data.maxPrice);
+    } else {
+      setParam('minPrice', price.minPrice);
+      setParam('maxPrice', price.maxPrice);
+    }
 
-    setParam('minPrice', price.minPrice);
-    setParam('maxPrice', price.maxPrice);
     setParam('ownerCountMin', ownerCount.ownerCountMin);
     setParam('ownerCountMax', ownerCount.ownerCountMax);
     setParam('newConstructionUnitsMin', newUnits.newConstructionUnitsMin);
