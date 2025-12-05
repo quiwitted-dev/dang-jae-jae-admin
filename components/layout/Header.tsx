@@ -14,7 +14,7 @@ import {
 import useStore from '@/store/useStore';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useAuthStore from '@/store/useAuthStore';
 import { logout } from '@/services/auth.api';
 import { useSearchParams } from 'next/navigation';
@@ -32,6 +32,8 @@ const Header = ({ isLoggedIn }: headerProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [keyword, setKeyword] = useState(searchParams?.get('keyword') ?? '');
+  const [showHeader, setShowHeader] = useState(true);
+  const lastY = useRef(0);
 
   useEffect(() => {
     clear();
@@ -54,6 +56,24 @@ const Header = ({ isLoggedIn }: headerProps) => {
       router.replace('/');
     }
   }, [isLogin, pathname, router]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      const goingUp = y < lastY.current;
+      // 일정 높이 이상 내려갔을 때만 숨김 처리
+      if (y > 80) setShowHeader(goingUp);
+      else setShowHeader(true);
+      lastY.current = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    const height = showHeader ? '48px' /* 헤더 실제 높이 */ : '0px';
+    document.documentElement.style.setProperty('--header-offset', height);
+  }, [showHeader]);
 
   const handleLoginToggle = () => {
     toggleOpen();
@@ -100,7 +120,11 @@ const Header = ({ isLoggedIn }: headerProps) => {
   // Todo : 비교보기 버튼 비교담기 상태에 따라 아이콘 표현 달리하기 (가능한가?)
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-black">
+    <div
+      className={`sticky top-0 z-50 bg-black ${
+        showHeader ? 'translate-y-0' : '-translate-y-full'
+      }`}
+    >
       {/* 데스크탑 */}
       <div className="hidden lg:relative lg:flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1 ">
         <div className="relative text-black max-w-[400px] w-full ">

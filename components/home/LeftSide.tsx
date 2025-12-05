@@ -143,10 +143,11 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
   };
 
   return (
-    <div className="flex flex-col max-w-[550px] w-full gap-4">
+    <div className="flex flex-col relative max-w-[550px] w-full">
       <div
         ref={filterRef}
-        className="flex flex-row overflow-x-auto md:overflow-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none"
+        className="sticky top-0 flex flex-row overflow-x-auto md:overflow-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none z-30 bg-black py-2"
+        style={{ top: 'var(--header-offset, 0px)' }}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
@@ -161,7 +162,7 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
         <div className="flex flex-row gap-1">
           <Button
             onClick={handleResetFilters}
-            className="bg-[#AAA4A9] text-black rounded-4xl"
+            className="bg-[#532f4d] text-black rounded-4xl"
             variant={'ghost'}
           >
             리셋
