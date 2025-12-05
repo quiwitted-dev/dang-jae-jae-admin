@@ -140,7 +140,9 @@ const ProjectCard = ({
           <>
             <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-semibold">{item.address}</p>
+              <p className="text-xs font-semibold">
+                {gugun} {dong} {locationDetail}
+              </p>
               <h3 className="text-lg font-bold truncate w-40">
                 {item.projectName}
               </h3>
