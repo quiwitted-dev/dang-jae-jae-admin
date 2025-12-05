@@ -8,13 +8,18 @@ type OwnerCountRange = {
   ownerCountMin: number | null;
   ownerCountMax: number | null;
 };
+type newConstructionUnitRange = {
+  newConstructionUnitsMin: number | null;
+  newConstructionUnitsMax: number | null;
+};
 
 type Parameter =
   | { filter: 'locations'; data: string | string[] }
   | { filter: 'projectTypes'; data: string | string[] }
   | { filter: 'currentStage'; data: string }
   | { filter: 'price'; data: PriceRange }
-  | { filter: 'ownerCount'; data: OwnerCountRange };
+  | { filter: 'ownerCount'; data: OwnerCountRange }
+  | { filter: 'newConstructionUnits'; data: newConstructionUnitRange };
 
 export const useHandleFilter = () => {
   const router = useRouter();
@@ -54,6 +59,7 @@ export const useHandleFilter = () => {
     } else {
       setParam('currentStage', currentStage);
     }
+
     if (filter === 'price') {
       setParam('minPrice', data.minPrice);
       setParam('maxPrice', data.maxPrice);
@@ -61,6 +67,7 @@ export const useHandleFilter = () => {
       setParam('minPrice', price.minPrice);
       setParam('maxPrice', price.maxPrice);
     }
+
     if (filter === 'ownerCount') {
       setParam('ownerCountMin', data.ownerCountMin);
       setParam('ownerCountMax', data.ownerCountMax);
@@ -69,8 +76,14 @@ export const useHandleFilter = () => {
       setParam('ownerCountMax', ownerCount.ownerCountMax);
     }
 
-    setParam('newConstructionUnitsMin', newUnits.newConstructionUnitsMin);
-    setParam('newConstructionUnitsMax', newUnits.newConstructionUnitsMax);
+    if (filter === 'newConstructionUnits') {
+      setParam('newConstructionUnitsMin', data.newConstructionUnitsMin);
+      setParam('newConstructionUnitsMax', data.newConstructionUnitsMax);
+    } else {
+      setParam('newConstructionUnitsMin', newUnits.newConstructionUnitsMin);
+      setParam('newConstructionUnitsMax', newUnits.newConstructionUnitsMax);
+    }
+
     params.set('page', '1');
 
     const query = params.toString();

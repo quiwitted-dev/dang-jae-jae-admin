@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import useFilterStore from '@/store/useFilterStore';
 import { useSearchParams } from 'next/navigation';
+import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const NEW_UNITS_OPTIONS = [
   { value: 100, label: '100세대' },
@@ -22,6 +23,7 @@ export default function NewUnitsFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const handleFilter = useHandleFilter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -105,6 +107,13 @@ export default function NewUnitsFilter() {
           prevRange;
 
         if (!min && !max) {
+          handleFilter({
+            filter: 'newConstructionUnits',
+            data: {
+              newConstructionUnitsMin: units,
+              newConstructionUnitsMax: null,
+            },
+          });
           return {
             newConstructionUnitsMin: units,
             newConstructionUnitsMax: null,
@@ -112,18 +121,39 @@ export default function NewUnitsFilter() {
         } else if (min && !max) {
           if (units >= min) {
             setIsOpen(false);
+            handleFilter({
+              filter: 'newConstructionUnits',
+              data: {
+                newConstructionUnitsMin: min,
+                newConstructionUnitsMax: units,
+              },
+            });
             return {
               newConstructionUnitsMin: min,
               newConstructionUnitsMax: units,
             };
           } else {
             setIsOpen(false);
+            handleFilter({
+              filter: 'newConstructionUnits',
+              data: {
+                newConstructionUnitsMin: units,
+                newConstructionUnitsMax: min,
+              },
+            });
             return {
               newConstructionUnitsMin: units,
               newConstructionUnitsMax: min,
             };
           }
         } else {
+          handleFilter({
+            filter: 'newConstructionUnits',
+            data: {
+              newConstructionUnitsMin: units,
+              newConstructionUnitsMax: null,
+            },
+          });
           return {
             newConstructionUnitsMin: units,
             newConstructionUnitsMax: null,
@@ -138,6 +168,13 @@ export default function NewUnitsFilter() {
     setNewUnits({
       newConstructionUnitsMin: null,
       newConstructionUnitsMax: null,
+    });
+    handleFilter({
+      filter: 'newConstructionUnits',
+      data: {
+        newConstructionUnitsMin: null,
+        newConstructionUnitsMax: null,
+      },
     });
     setIsOpen(false);
   };
