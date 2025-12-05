@@ -12,12 +12,14 @@ import { postSubmissionUser } from '@/services/submission.api';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { getUser } from '@/services/user.api.client';
 import { User } from '@/types/user.type';
-import useStore from '@/store/useStore';
 import useAuthStore from '@/store/useAuthStore';
 
 const ExpectedAddForm = () => {
   const router = useRouter();
   const [user, setUser] = useState<User>();
+  const [selectLocation, setSelectLocation] = useState<'SEOUL' | 'GYEONGGI'>(
+    'SEOUL'
+  );
   const { isLogin } = useAuthStore();
   const {
     register,
@@ -31,7 +33,7 @@ const ExpectedAddForm = () => {
   });
 
   const numberInputClass =
-    'text-end text-[20px] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none';
+    'text-end text-base [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none';
 
   const handleBack = () => {
     router.back();
@@ -83,6 +85,7 @@ const ExpectedAddForm = () => {
       setError('root', { type: 'serverSignupError', message });
     }
   };
+  console.log(selectLocation);
 
   return (
     <div className="max-w-[700px] md:w-[700px] bg-[#A7B1E8] text-black min-h-dvh">
@@ -106,12 +109,26 @@ const ExpectedAddForm = () => {
           당신의 정보력,
           <br /> 예정지 정보를 제공해 주세요
         </h2>
+        <div className="w-full">
+          <select
+            className="w-full bg-white h-7 rounded-md"
+            value={selectLocation}
+            onChange={(e) =>
+              setSelectLocation(e.target.value as 'SEOUL' | 'GYEONGGI')
+            }
+          >
+            <option value="SEOUL">서울</option>
+            <option value="GYEONGGI">경기</option>
+          </select>
+        </div>
         <div className="flex flex-col gap-3 w-full">
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">가칭*</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              가칭*
+            </h3>
             <Input
               {...register('tempName')}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               placeholder="서울1구역"
             />
           </div>
@@ -119,36 +136,44 @@ const ExpectedAddForm = () => {
             <p className="text-red-600">{errors.tempName.message}</p>
           )}
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">위치*</h3>
-            <div className="flex flex-row gap-2">
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              위치*
+            </h3>
+            <div className="md:flex md:flex-row items-center grid grid-cols-2 gap-2">
               <div className="items-center">
                 <Input
                   {...register('sido')}
-                  className="w-[50px] text-end text-[20px] bg-white"
-                  placeholder="서울"
+                  className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
+                  placeholder={`${
+                    selectLocation === 'SEOUL' ? '서울' : '경기'
+                  }`}
                 />
                 시
               </div>
               <div className="flex flex-row items-center">
                 <Input
                   {...register('gugun')}
-                  className="w-[50px] text-end text-[20px] bg-white"
-                  placeholder="서울"
+                  className="md:w-[50px] w-[70px] text-end text-base bg-white h-7"
+                  placeholder={`${
+                    selectLocation === 'SEOUL' ? '서울' : '경기'
+                  }`}
                 />
                 구
               </div>
               <div className="flex flex-row items-center">
                 <Input
                   {...register('dong')}
-                  className="w-[50px] text-end text-[20px] bg-white"
-                  placeholder="서울"
+                  className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
+                  placeholder={`${
+                    selectLocation === 'SEOUL' ? '서울' : '경기'
+                  }`}
                 />
                 동
               </div>
               <div className="flex flex-row items-center">
                 <Input
                   {...register('locationDetail')}
-                  className="w-[70px] text-end text-[20px] bg-white"
+                  className="w-[70px] text-end  text-base bg-white h-7"
                   placeholder="000-1"
                 />
                 일대
@@ -178,25 +203,27 @@ const ExpectedAddForm = () => {
             </p>
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
               동의서 징구 안내처
             </h3>
             <Input
               {...register('consentContact', {
                 onChange: (event) => handlePhoneChange(event, 'consentContact'),
               })}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               placeholder="000-0000-0000"
             />
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">가격대(시세)</h3>
-            <div className="w-3/5 flex flex-row gap-5 justify-between text-[20px]">
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              가격대(시세)
+            </h3>
+            <div className="w-3/5 flex flex-row gap-5 justify-between md:text-[20px] text-base">
               <div className="flex flex-row items-center gap-3">
                 <Input
                   type="number"
                   {...register('minPrice', { valueAsNumber: true })}
-                  className={`w-14 ${numberInputClass} bg-white`}
+                  className={`w-14 ${numberInputClass} bg-white h-7`}
                   placeholder="1"
                 />
                 <p>억</p>
@@ -206,7 +233,7 @@ const ExpectedAddForm = () => {
                 <Input
                   type="number"
                   {...register('maxPrice', { valueAsNumber: true })}
-                  className={`w-14 ${numberInputClass} bg-white`}
+                  className={`w-14 ${numberInputClass} bg-white h-7 text-base`}
                   placeholder="100"
                 />
                 <p>억</p>
@@ -214,110 +241,122 @@ const ExpectedAddForm = () => {
             </div>
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">소유자 수</h3>
-            <div className="w-3/5 flex flex-row items-center gap-5 text-[20px] justify-between">
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              소유자 수
+            </h3>
+            <div className="w-3/5 flex flex-row items-center gap-5 md:text-[20px] text-base justify-between">
               <Input
                 type="number"
                 {...register('ownerCount', { valueAsNumber: true })}
-                className={`w-4/5 ${numberInputClass} bg-white`}
+                className={`w-4/5 ${numberInputClass} bg-white h-7`}
                 placeholder="000000"
               />
               명
             </div>
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
               기대 신축 세대수
             </h3>
-            <div className="w-3/5 flex flex-row items-center gap-5 text-[20px] justify-between">
+            <div className="w-3/5 flex flex-row items-center gap-5 md:text-[20px] text-base justify-between">
               <Input
                 type="number"
                 {...register('expectedNewUnits', { valueAsNumber: true })}
-                className={`w-4/5 ${numberInputClass} bg-white`}
+                className={`w-4/5 ${numberInputClass} bg-white h-7`}
                 placeholder="000000"
               />
               <p className="shrink-0">세대</p>
             </div>
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">사업지 면적</h3>
-            <div className="w-3/5 flex flex-row items-center gap-5 text-[20px] justify-between">
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              사업지 면적
+            </h3>
+            <div className="w-3/5 flex flex-row items-center gap-5 md:text-[20px] text-base justify-between">
               <Input
                 type="number"
                 {...register('projectArea', { valueAsNumber: true })}
-                className={`w-4/5 ${numberInputClass} bg-white`}
+                className={`w-4/5 ${numberInputClass} bg-white h-7`}
                 placeholder="000000"
               />
               <p className="shrink-0">m2</p>
             </div>
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">현재 용적률</h3>
-            <div className="w-3/5 flex flex-row items-center gap-5 text-[20px] justify-between">
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              현재 용적률
+            </h3>
+            <div className="w-3/5 flex flex-row items-center gap-5 md:text-[20px] text-base justify-between">
               <Input
                 type="number"
                 {...register('currentVolumeRatio', { valueAsNumber: true })}
-                className={`w-4/5 ${numberInputClass} bg-white`}
+                className={`w-4/5 ${numberInputClass} bg-white h-7`}
                 placeholder="200"
               />
               <p className="shrink-0">%</p>
             </div>
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
               미래(기대) 용적률
             </h3>
-            <div className="w-3/5 flex flex-row items-center gap-5 text-[20px] justify-between">
+            <div className="w-3/5 flex flex-row items-center gap-5 md:text-[20px] text-base justify-between">
               <Input
                 type="number"
                 {...register('expectedVolumeRatio', { valueAsNumber: true })}
-                className={`w-4/5 ${numberInputClass} bg-white`}
+                className={`w-4/5 ${numberInputClass} bg-white h-7`}
                 placeholder="200"
               />
               <p className="shrink-0">%</p>
             </div>
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
               건축년도(노후도)
             </h3>
-            <div className="w-3/5 flex flex-row items-center gap-3 justify-end text-[20px]">
+            <div className="w-3/5 flex flex-row items-center gap-3 justify-end md:text-[20px] text-base">
               <Input
                 type="number"
                 {...register('constructionYearStart', { valueAsNumber: true })}
-                className={`w-20 ${numberInputClass} bg-white`}
+                className={`w-20 ${numberInputClass} bg-white h-7`}
                 placeholder="1980"
               />
               ~
               <Input
                 type="number"
                 {...register('constructionYearEnd', { valueAsNumber: true })}
-                className={`w-20 ${numberInputClass} bg-white`}
+                className={`w-20 ${numberInputClass} bg-white h-7`}
                 placeholder="1988"
               />
             </div>
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">주용도</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              주용도
+            </h3>
             <Input
               {...register('mainUsage')}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               placeholder="공공주택"
             />
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">용도지역</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              용도지역
+            </h3>
             <Input
               {...register('usageZone')}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               placeholder="3종일반주거"
             />
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">적용가능 정책*</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              적용가능 정책*
+            </h3>
             <Input
               {...register('applicablePolicy')}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               placeholder="역세권특별법"
             />
           </div>
@@ -325,10 +364,12 @@ const ExpectedAddForm = () => {
             <p className="text-red-600">{errors.applicablePolicy.message}</p>
           )}
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">사업주체*</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              사업주체*
+            </h3>
             <Input
               {...register('businessEntity')}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               placeholder="조합"
             />
           </div>
@@ -336,10 +377,12 @@ const ExpectedAddForm = () => {
             <p className="text-red-600">{errors.businessEntity.message}</p>
           )}
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">사업성격*</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              사업성격*
+            </h3>
             <Input
               {...register('businessType')}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               placeholder="재개발"
             />
           </div>
@@ -347,42 +390,50 @@ const ExpectedAddForm = () => {
             <p className="text-red-600">{errors.businessType.message}</p>
           )}
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">동의율</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              동의율
+            </h3>
             <div className="flex flex-row gap-2 justify-end items-center">
               대략 ~
               <Input
                 {...register('consentRateStr')}
-                className="w-1/5 text-end text-[20px] bg-white"
+                className="w-1/5 text-end text-base bg-white h-7"
                 placeholder="40"
               />
               %
             </div>
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">기타사항</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              기타사항
+            </h3>
             <Input
               {...register('notes')}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               placeholder="재개발"
             />
           </div>
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">작성자 성함*</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              작성자 성함*
+            </h3>
             <Input
               {...register('name')}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               defaultValue={user?.nickname}
               placeholder={user?.nickname || '이름'}
             />
           </div>
           {errors.name && <p className="text-red-600">{errors.name.message}</p>}
           <div className="flex flex-row justify-between gap-5">
-            <h3 className="text-[20px] font-medium shrink-0">작성자 연락처*</h3>
+            <h3 className="md:text-[20px] text-base font-medium shrink-0">
+              작성자 연락처*
+            </h3>
             <Input
               {...register('phone', {
                 onChange: (event) => handlePhoneChange(event, 'phone'),
               })}
-              className="w-3/5 text-end text-[20px] bg-white"
+              className="w-3/5 text-end text-base bg-white h-7"
               placeholder="전화번호"
             />
           </div>
