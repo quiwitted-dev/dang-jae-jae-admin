@@ -15,6 +15,7 @@ import { putUser } from '@/services/user.api.server';
 import { logout } from '@/services/auth.api';
 import useAuthStore from '@/store/useAuthStore';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const LeftSide = ({ user }: { user: User }) => {
   const myPageTab = useStore((state) => state.myPageTab);
@@ -31,6 +32,15 @@ const LeftSide = ({ user }: { user: User }) => {
   const pathname = usePathname();
   const router = useRouter();
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
   const handleSettingTabs = (
     tab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none'
   ) => {
@@ -41,6 +51,11 @@ const LeftSide = ({ user }: { user: User }) => {
     tab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none'
   ) => {
     const isActive = settingsTab === tab;
+
+    // 모바일에서는 활성 스타일을 적용하지 않는다
+    if (isMobile) {
+      return 'text-xl font-semibold';
+    }
 
     if (isActive) {
       return 'text-xl font-semibold relative inline-block after:absolute after:w-0 after:h-[2px] after:left-0 after:bottom-0 after:bg-[#0700DB] after:transition-all after:duration-300 hover:after:w-full underline underline-offset-4 decoration-2 decoration-[#0700DB]';
@@ -80,7 +95,7 @@ const LeftSide = ({ user }: { user: User }) => {
   return (
     <div className="pt-16 lg:px-16">
       {myPageTab === 'none' && (
-        <div className="flex flex-row justify-between gap-4 mb-16 lg:mb-0">
+        <div className="flex flex-row justify-between gap-4 mb-16 lg:mb-0 ">
           <h2 className="text-4xl font-extralight leading-snug">
             안녕하세요!
             <br />
@@ -124,7 +139,7 @@ const LeftSide = ({ user }: { user: User }) => {
                   isEdit ? handleNicknameSubmit(editNickname) : setIsEdit(true);
                 }}
               >
-                <Pencil />
+                {!isEdit && <Pencil />}
                 <p>{isEdit ? '확인' : '수정'}</p>
               </Button>
             </div>
