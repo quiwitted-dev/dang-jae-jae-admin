@@ -209,7 +209,9 @@ export default function NewUnitsFilter() {
       <Button
         ref={buttonRef}
         variant="ghost"
-        className="flex items-center gap-2"
+        className={`flex items-center gap-2 rounded-4xl rounded-full ${
+          isOpen && 'bg-gray-100 text-black'
+        }`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <p className="text-2xl font-bold">{getDisplayText()}</p>

@@ -94,7 +94,7 @@ export default function BusinessStageFilter() {
     setCurrentStage(stage);
     setIsOpen(false);
   };
-  
+
   const handleReset = () => {
     setCurrentStage('');
     handleFilter({ data: null, filter: 'currentStage' });
@@ -110,7 +110,9 @@ export default function BusinessStageFilter() {
       <Button
         ref={buttonRef}
         variant="ghost"
-        className="flex items-center gap-2"
+        className={`flex items-center gap-2 rounded-full ${
+          isOpen && 'bg-gray-100 text-black'
+        }`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <p className="text-2xl font-bold">{getDisplayText()}</p>
