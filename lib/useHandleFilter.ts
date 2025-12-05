@@ -4,13 +4,17 @@ import useFilterStore from '@/store/useFilterStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 type PriceRange = { minPrice: number | null; maxPrice: number | null };
+type OwnerCountRange = {
+  ownerCountMin: number | null;
+  ownerCountMax: number | null;
+};
 
 type Parameter =
   | { filter: 'locations'; data: string | string[] }
   | { filter: 'projectTypes'; data: string | string[] }
   | { filter: 'currentStage'; data: string }
   | { filter: 'price'; data: PriceRange }
-  | { filter: 'ownerCount' | 'newConstructionUnits'; data?: undefined };
+  | { filter: 'ownerCount'; data: OwnerCountRange };
 
 export const useHandleFilter = () => {
   const router = useRouter();
@@ -57,9 +61,14 @@ export const useHandleFilter = () => {
       setParam('minPrice', price.minPrice);
       setParam('maxPrice', price.maxPrice);
     }
+    if (filter === 'ownerCount') {
+      setParam('ownerCountMin', data.ownerCountMin);
+      setParam('ownerCountMax', data.ownerCountMax);
+    } else {
+      setParam('ownerCountMin', ownerCount.ownerCountMin);
+      setParam('ownerCountMax', ownerCount.ownerCountMax);
+    }
 
-    setParam('ownerCountMin', ownerCount.ownerCountMin);
-    setParam('ownerCountMax', ownerCount.ownerCountMax);
     setParam('newConstructionUnitsMin', newUnits.newConstructionUnitsMin);
     setParam('newConstructionUnitsMax', newUnits.newConstructionUnitsMax);
     params.set('page', '1');
