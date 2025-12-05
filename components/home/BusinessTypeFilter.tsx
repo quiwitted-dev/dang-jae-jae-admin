@@ -24,6 +24,7 @@ export default function BusinessTypeFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const [selectAll, setSelectAll] = useState(false);
   const handleFilter = useHandleFilter();
 
   useEffect(() => {
@@ -91,19 +92,21 @@ export default function BusinessTypeFilter() {
   }, [searchParams, setProjectTypes]);
 
   const handleTypeSelect = (type: string) => {
+    setSelectAll(false);
     setProjectTypes([type]);
     handleFilter({ data: [type], filter: 'projectTypes' });
     setIsOpen(false);
   };
 
-  const handleReset = () => {
+  const handleSelectAll = () => {
     setProjectTypes([]);
+    setSelectAll(true);
     handleFilter({ data: [], filter: 'projectTypes' });
     setIsOpen(false);
   };
 
   const getDisplayText = () => {
-    return selectedType || '사업성격';
+    return selectAll ? '전체' : selectedType || '사업성격';
   };
 
   return (
@@ -111,9 +114,7 @@ export default function BusinessTypeFilter() {
       <Button
         ref={buttonRef}
         variant="ghost"
-        className={`flex items-center gap-2 rounded-full ${
-          isOpen && 'bg-gray-100 text-black'
-        }`}
+        className="flex items-center gap-2"
         onClick={() => setIsOpen(!isOpen)}
       >
         <p className="text-2xl font-bold">{getDisplayText()}</p>
@@ -149,7 +150,7 @@ export default function BusinessTypeFilter() {
                 <button
                   key={type}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedType === type
+                    selectedType === type || selectAll === true
                       ? 'bg-blue-100 text-blue-600 border border-blue-300'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
@@ -160,17 +161,13 @@ export default function BusinessTypeFilter() {
               ))}
             </div>
 
-            {selectedType && (
-              <>
-                <div className="border-t border-gray-100 my-3"></div>
-                <button
-                  className="w-full text-left px-2 py-2 text-red-600 hover:bg-red-50 rounded"
-                  onClick={handleReset}
-                >
-                  선택 초기화
-                </button>
-              </>
-            )}
+            <div className="border-t border-gray-100 my-3"></div>
+            <button
+              className="w-full text-center px-2 py-2 bg-blue-100 text-blue-600 hover:bg-blue-200 rounded-4xl"
+              onClick={handleSelectAll}
+            >
+              전체
+            </button>
           </div>
         </div>
       )}
