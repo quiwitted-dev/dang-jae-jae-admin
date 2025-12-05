@@ -147,6 +147,13 @@ export type SubmissionUserDetail = {
 
   notes: string;
 
+  user: {
+    id: string;
+    nickname: string;
+    email: string;
+    phoneNumber: string;
+  };
+
   createdAt: string;
   updatedAt: string;
 };

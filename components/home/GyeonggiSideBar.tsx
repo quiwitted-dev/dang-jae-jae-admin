@@ -22,6 +22,7 @@ import {
 } from '@/services/bookmark.api';
 import useAuthStore from '@/store/useAuthStore';
 import useStore from '@/store/useStore';
+import { useQueryParams } from '@/lib/useQueryParams';
 
 type GyeonggiSideBarProps = {
   publicData: GyeonggiSubmissionDetail;
@@ -43,6 +44,8 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
   const { toggleOpen, setAddress } = useStore();
   const router = useRouter();
   const { id } = publicData;
+  const query = useQueryParams();
+  const { type, ...restQuery } = query;
 
   const projectArea = Number(publicData.projectAreaM2);
   const ownerCount = Number(publicData.ownerCount);
@@ -67,7 +70,10 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
   }, []);
 
   const handleGoHome = () => {
-    router.push('/');
+    const qs = new URLSearchParams({
+      ...restQuery,
+    }).toString();
+    router.push(`/?${qs}`);
   };
 
   const handleEdit = () => {
@@ -100,8 +106,9 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
         setPremium('');
       }
     } catch (error) {
-      alert((error as Error).message);
       console.error(error);
+      const message = JSON.parse((error as Error).message).error;
+      alert(message);
     }
   };
 
@@ -139,14 +146,22 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
       }
     } catch (err) {
       console.error(err);
-      alert((err as Error).message); // 혹은 toast
+      const message = JSON.parse((err as Error).message).error;
+      alert(message); // 혹은 toast
     } finally {
       setLoading(false);
     }
   };
 
+  const dateFormatter = (date: string) => {
+    if (!date) return '-';
+    const translateDate = new Date(date.replace(' ', 'T'));
+    const year = String(translateDate.getFullYear());
+    return year;
+  };
+
   return (
-    <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] max-w-[700px] md:w-[700px] text-black min-h-dvh">
+    <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] text-black min-h-dvh whitespace-normal break-keep">
       <div className="flex flex-row items-center justify-between px-4 py-5">
         <div className="flex flex-row gap-4 text-[18px] font-bold">
           <button onClick={handleGoHome} className="cursor-pointer">
@@ -158,7 +173,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
           <X />
         </button>
       </div>
-      <div className="flex max-w-[400px] mx-auto">
+      <div className="flex max-w-[400px] mx-auto px-4">
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="text-3xl font-normal">
             <h3>
@@ -207,7 +222,9 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               요즘시세
             </h4>
             <p className="text-xs font-medium text-gray-500 whitespace-pre-line break-keep">
-              <span className="text-gray-700">{`-님이 올려주신 시세입니다.`}</span>
+              <span className="text-gray-700">{`${
+                publicData.renovationPrice?.user.nickname ?? '-'
+              }님이 올려주신 시세입니다.`}</span>
               {`\n시세의 대략적인 정보이며 사용자 누구나 올리실 수 있습니다. 당신의 정보력을 보여주세요!`}
             </p>
           </div>
@@ -337,12 +354,13 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
           )}
 
           <div className="mt-6 px-5 md:px-0">
-            <div className="mb-4 text-sm font-normal text-[#49454F]">
+            <div className="mb-4 text-sm font-bold text-[#49454F]">
               <div>
                 <p>
                   사업예정기간 :{' '}
                   <span className="text-black">
-                    {publicData.projectedStartDate ?? '-'}
+                    {dateFormatter(publicData.projectedStartDate)}~
+                    {dateFormatter(publicData.projectedEndDate)}
                   </span>
                 </p>
               </div>
@@ -368,7 +386,10 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 <ArrowRight />
                 <p>
                   신축세대수 :{' '}
-                  <span className="text-black font-extrabold">-</span> 세대
+                  <span className="text-black font-extrabold">
+                    {publicData.totalSaleUnits}
+                  </span>{' '}
+                  세대
                 </p>
               </div>
               <div className="flex flex-row justify-between">

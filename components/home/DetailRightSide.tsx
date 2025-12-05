@@ -65,6 +65,6 @@ const DetailRightSide = ({ address }: DetailRightSideProps) => {
 
   if (!address) return null;
 
-  return <div ref={mapRef} className="w-full h-full min-h-[320px]" />;
+  return <div ref={mapRef} className="w-full h-full min-h-80" />;
 };
 export default DetailRightSide;

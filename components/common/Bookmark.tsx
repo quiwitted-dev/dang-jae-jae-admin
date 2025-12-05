@@ -79,7 +79,8 @@ const Bookmark = ({
       }
     } catch (err) {
       console.error(err);
-      alert((err as Error).message); // 혹은 toast
+      const message = JSON.parse((err as Error).message).error;
+      alert(message); // 혹은 toast
     } finally {
       setLoading(false);
     }

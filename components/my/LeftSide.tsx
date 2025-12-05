@@ -86,12 +86,20 @@ const LeftSide = ({ user }: { user: User }) => {
                 <Input
                   placeholder="변경하고 싶은 닉네임 입력"
                   onChange={(e) => setEditNickname(e.target.value)}
+                  onKeyDown={(e) => {
+                    e.key === 'Enter' && handleNicknameSubmit(editNickname);
+                  }}
+                  onBlur={() => {
+                    handleNicknameSubmit(editNickname);
+                  }}
                 />
               )}
 
               <Button
                 className="py-2 px-3 rounded-4xl bg-[#D5B3CB] text-black hover:bg-[#F5B3CB] hover:cursor-pointer"
+                id="nickname-save-btn"
                 size={'none'}
+                type="submit"
                 onClick={() => {
                   isEdit ? handleNicknameSubmit(editNickname) : setIsEdit(true);
                 }}

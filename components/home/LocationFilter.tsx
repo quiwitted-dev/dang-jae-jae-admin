@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import useFilterStore from '@/store/useFilterStore';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const LOCATION_DATA = {
   서울시: [
@@ -67,7 +68,15 @@ const LOCATION_DATA = {
 };
 
 export default function LocationFilter() {
-  const { locations, setLocations } = useFilterStore();
+  const {
+    locations,
+    projectTypes,
+    currentStage,
+    price,
+    ownerCount,
+    newUnits,
+    setLocations,
+  } = useFilterStore();
   const searchParams = useSearchParams();
   const [selectRegion, setSelectRegion] = useState({
     region: '',
@@ -79,6 +88,8 @@ export default function LocationFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const handleFilter = useHandleFilter();
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -160,11 +171,13 @@ export default function LocationFilter() {
     setSelectRegion((prev) => ({ ...prev, district }));
     setIsOpen(false);
     setShowDistricts('');
+    handleFilter({ data: `${district}구`, filter: 'locations' });
   };
 
   const handleReset = () => {
     setLocations([]);
     setSelectRegion({ region: '', district: '' });
+    handleFilter({ data: [], filter: 'locations' });
     setIsOpen(false);
     setShowDistricts('');
   };
@@ -206,11 +219,27 @@ export default function LocationFilter() {
       <Button
         ref={buttonRef}
         variant="ghost"
-        className="flex items-center gap-2"
+        className={`flex items-center gap-2 rounded-full ${
+          isOpen && 'bg-gray-100 text-black'
+        }`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <p className="text-2xl font-bold">{getDisplayText()}</p>
-        <ChevronDown />
+        <svg
+          className={`h-4 w-4 transition-transform ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
       </Button>
 
       {isOpen && isPositioned && (
@@ -234,7 +263,21 @@ export default function LocationFilter() {
                   onClick={() => handleRegionSelect(region)}
                 >
                   <span className="font-medium">{region}</span>
-                  <ChevronDown />
+                  <svg
+                    className={`h-4 w-4 transition-transform ${
+                      showDistricts === region ? 'rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </button>
 
                 {showDistricts === region && (

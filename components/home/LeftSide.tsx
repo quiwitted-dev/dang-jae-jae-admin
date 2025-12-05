@@ -142,40 +142,11 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
     router.push('?', { scroll: false });
   };
 
-  const handleSearch = () => {
-    const params = new URLSearchParams(searchParams?.toString());
-    const setParam = (key: string, value?: string | number | null) => {
-      if (value === undefined || value === null || value === '') {
-        params.delete(key);
-      } else {
-        params.set(key, String(value));
-      }
-    };
-
-    params.delete('locations');
-    locations.forEach((loc) => params.append('locations', loc));
-
-    params.delete('projectTypes');
-    projectTypes.forEach((type) => params.append('projectTypes', type));
-
-    setParam('currentStage', currentStage);
-    setParam('minPrice', price.minPrice);
-    setParam('maxPrice', price.maxPrice);
-    setParam('ownerCountMin', ownerCount.ownerCountMin);
-    setParam('ownerCountMax', ownerCount.ownerCountMax);
-    setParam('newConstructionUnitsMin', newUnits.newConstructionUnitsMin);
-    setParam('newConstructionUnitsMax', newUnits.newConstructionUnitsMax);
-    params.set('page', '1');
-
-    const query = params.toString();
-    router.push(query ? `?${query}` : '?', { scroll: false });
-  };
-
   return (
     <div className="flex flex-col max-w-[550px] w-full gap-4">
       <div
         ref={filterRef}
-        className="flex flex-row py-4 overflow-x-auto md:overflow-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none"
+        className="flex flex-row overflow-x-auto md:overflow-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none"
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
@@ -189,13 +160,6 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
         <NewUnitsFilter />
         <div className="flex flex-row gap-1">
           <Button
-            onClick={handleSearch}
-            className="bg-[#AAA4A9] text-black rounded-4xl"
-            variant={'ghost'}
-          >
-            검색
-          </Button>
-          <Button
             onClick={handleResetFilters}
             className="bg-[#AAA4A9] text-black rounded-4xl"
             variant={'ghost'}
@@ -205,7 +169,7 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
         </div>
       </div>
       {/* 목록 */}
-      <div className="flex flex-col gap-2 md:px-[120px] px-2">
+      <div className="flex flex-col gap-2 mx-auto px-2">
         {submissions.map((item) => {
           const isFavorite = isLoaded ? favoriteSet.has(item.id) : false;
           const favoriteId = favoriteIdMap.get(item.id);

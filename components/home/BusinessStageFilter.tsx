@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import useFilterStore from '@/store/useFilterStore';
 import { useSearchParams } from 'next/navigation';
+import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const BUSINESS_STAGES = [
   '공식승인 전 단계',
@@ -23,6 +24,7 @@ export default function BusinessStageFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const handleFilter = useHandleFilter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,12 +90,14 @@ export default function BusinessStageFilter() {
   }, [searchParams, setCurrentStage]);
 
   const handleStageSelect = (stage: string) => {
+    handleFilter({ data: stage, filter: 'currentStage' });
     setCurrentStage(stage);
     setIsOpen(false);
   };
 
   const handleReset = () => {
     setCurrentStage('');
+    handleFilter({ data: null, filter: 'currentStage' });
     setIsOpen(false);
   };
 
@@ -106,7 +110,9 @@ export default function BusinessStageFilter() {
       <Button
         ref={buttonRef}
         variant="ghost"
-        className="flex items-center gap-2"
+        className={`flex items-center gap-2 rounded-full ${
+          isOpen && 'bg-gray-100 text-black'
+        }`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <p className="text-2xl font-bold">{getDisplayText()}</p>

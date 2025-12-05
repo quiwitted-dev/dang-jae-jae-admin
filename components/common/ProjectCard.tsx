@@ -4,8 +4,9 @@ import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { ApprovedSubmission } from '@/types/submission.type';
 import Bookmark from './Bookmark';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { useQueryParams } from '@/lib/useQueryParams';
 
 type ProjectCardProps = {
   item: ApprovedSubmission;
@@ -22,6 +23,10 @@ const ProjectCard = ({
 }: ProjectCardProps) => {
   const router = useRouter();
   const mapRef = useRef<HTMLDivElement>(null);
+  const query = useQueryParams();
+  const [isMapVisible, setIsMapVisible] = useState(false);
+  const [mapMaskMessage, setMapMaskMessage] = useState<string | null>(null);
+  const hasAddress = !!item.address?.trim();
 
   const averageLandSharePyeong = () => {
     if (+item.projectAreaM2 === 0 || +item.ownerCount === 0) {
@@ -31,7 +36,11 @@ const ProjectCard = ({
   };
 
   const handleCardClick = () => {
-    router.push(`/${item.id}?type=${item.dataType}`);
+    const qs = new URLSearchParams({
+      ...query,
+      type: item.dataType,
+    }).toString();
+    router.push(`/${item.id}?${qs}`);
   };
 
   const str = item.address.split(' ');
@@ -41,7 +50,14 @@ const ProjectCard = ({
   const locationDetail = str[3];
 
   useEffect(() => {
-    if (!mapRef.current || !item.address) return;
+    if (!mapRef.current) return;
+
+    if (!hasAddress) {
+      mapRef.current.innerHTML = '';
+      setIsMapVisible(false);
+      setMapMaskMessage('주소 정보 없음');
+      return;
+    }
 
     let mounted = true;
     let pollId: NodeJS.Timeout | null = null;
@@ -58,7 +74,7 @@ const ProjectCard = ({
         const defaultCenter = new kakao.maps.LatLng(37.5665, 126.978);
         const map = new kakao.maps.Map(mapRef.current, {
           center: defaultCenter,
-          level: 5,
+          level: 6,
         });
 
         map.setDraggable(false);
@@ -73,6 +89,10 @@ const ProjectCard = ({
               status !== kakao.maps.services.Status.OK ||
               !result?.length
             ) {
+              setIsMapVisible(false);
+              setMapMaskMessage(
+                `${item.address} 는 카카오맵에 존재하지 않는 주소입니다`
+              );
               return;
             }
 
@@ -81,6 +101,8 @@ const ProjectCard = ({
 
             map.setCenter(coords);
             new kakao.maps.Marker({ map, position: coords });
+            setIsMapVisible(true);
+            setMapMaskMessage(null);
           }
         );
       });
@@ -100,21 +122,28 @@ const ProjectCard = ({
       mounted = false;
       if (pollId) clearInterval(pollId);
     };
-  }, [item.address]);
+  }, [item.address, hasAddress]);
 
   return (
     <Card
-      className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-300/220 min-w-[350px] max-w-[500px] mx-auto justify-between cursor-pointer"
+      className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-390/230 min-w-[390px] max-w-[500px] mx-auto justify-between cursor-pointer"
       onClick={handleCardClick}
     >
       <div ref={mapRef} className="absolute inset-0 -z-10" />
-      <CardHeader className="relative flex flex-row p-0 justify-between pt-2 px-3">
+      {!isMapVisible && mapMaskMessage && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/50 text-white text-sm font-bold z-10">
+          {mapMaskMessage}
+        </div>
+      )}
+      <CardHeader className="relative flex flex-row p-0 justify-between pt-4 px-4">
         {item.dataType === 'PUBLIC_DATA' && (
           <>
             <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-semibold">{item.address}</p>
-              <h3 className="text-sm font-bold truncate w-40">
+              <p className="text-xs font-semibold">
+                {gugun} {dong} {locationDetail}
+              </p>
+              <h3 className="text-lg font-bold truncate w-40">
                 {item.projectName}
               </h3>
             </div>
@@ -131,7 +160,7 @@ const ProjectCard = ({
           </Badge>
         )}
       </CardHeader>
-      <CardContent className="flex flex-row justify-between items-center px-3 py-1 flex-1">
+      <CardContent className="flex flex-row justify-between items-center px-4 flex-1">
         <div className="bg-black text-white flex flex-col text-center text-lg rounded-3xl py-2 px-1.5">
           <div className="flex flex-row items-center">
             <p className="font-playfair">
@@ -157,22 +186,22 @@ const ProjectCard = ({
         </div>
       </CardContent>
 
-      <CardFooter className="relative flex flex-row justify-between py-2 px-3">
+      <CardFooter className="relative flex flex-row justify-between px-4 pb-4">
         <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
         {item.dataType === 'PUBLIC_DATA' ? (
           <>
             <div className="flex flex-col gap-1 font-bold">
-              <p className="text-sm">
-                {item.newConstructionUnits || '-'} 신축세대
-              </p>
+              <p className="text-lg">{item.totalSaleUnits || '-'} 신축세대</p>
               <p className="text-xs">임대 {item.rentalUnits || '-'}</p>
             </div>
-            <Bookmark
-              item={item}
-              bookmarkId={favoriteId}
-              isFavorite={isFavorite}
-              handleFavoriteChange={handleFavoriteChange}
-            />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <Bookmark
+                item={item}
+                bookmarkId={favoriteId}
+                isFavorite={isFavorite}
+                handleFavoriteChange={handleFavoriteChange}
+              />
+            </div>
             <div className="flex flex-col text-xs text-gray-700 text-right">
               <p>
                 소유자 수{' '}
@@ -188,12 +217,14 @@ const ProjectCard = ({
               <p className="text-xs">{item.projectName}</p>
               <p className="text-xs">{`${dong} ${locationDetail}`}</p>
             </div>
-            <Bookmark
-              item={item}
-              bookmarkId={favoriteId}
-              isFavorite={isFavorite}
-              handleFavoriteChange={handleFavoriteChange}
-            />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <Bookmark
+                item={item}
+                bookmarkId={favoriteId}
+                isFavorite={isFavorite}
+                handleFavoriteChange={handleFavoriteChange}
+              />
+            </div>
             <div className="flex flex-col">
               <p className="text-xs text-black text-right">예정지</p>
             </div>
