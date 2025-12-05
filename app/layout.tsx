@@ -36,7 +36,7 @@ export default async function RootLayout({
         <ModalProvider />
         <script
           type="text/javascript"
-          src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6d905d8b087267b63d28b411765e6994&autoload=false&libraries=services"
+          src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0dacc0c4e114487ed38c366e80cd1d4b&autoload=false&libraries=services"
         ></script>
         <footer className="text-center my-2">
           당신의재재
