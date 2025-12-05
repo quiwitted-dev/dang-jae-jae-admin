@@ -32,6 +32,8 @@ const ExpectedAddForm = () => {
     mode: 'onChange',
   });
 
+  const isSeoul = selectLocation === 'SEOUL';
+
   const numberInputClass =
     'text-end text-base [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none';
 
@@ -85,7 +87,6 @@ const ExpectedAddForm = () => {
       setError('root', { type: 'serverSignupError', message });
     }
   };
-  console.log(selectLocation);
 
   return (
     <div className="max-w-[700px] md:w-[700px] bg-[#A7B1E8] text-black min-h-dvh">
@@ -144,31 +145,25 @@ const ExpectedAddForm = () => {
                 <Input
                   {...register('sido')}
                   className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
-                  placeholder={`${
-                    selectLocation === 'SEOUL' ? '서울' : '경기'
-                  }`}
+                  placeholder={`${isSeoul ? '서울' : '경기'}`}
                 />
-                시
+                {isSeoul ? '시*' : '시/군*'}
               </div>
               <div className="flex flex-row items-center">
                 <Input
                   {...register('gugun')}
                   className="md:w-[50px] w-[70px] text-end text-base bg-white h-7"
-                  placeholder={`${
-                    selectLocation === 'SEOUL' ? '서울' : '경기'
-                  }`}
+                  placeholder={`${isSeoul ? '서울' : '경기'}`}
                 />
-                구
+                {isSeoul ? '구*' : '구'}
               </div>
               <div className="flex flex-row items-center">
                 <Input
                   {...register('dong')}
                   className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
-                  placeholder={`${
-                    selectLocation === 'SEOUL' ? '서울' : '경기'
-                  }`}
+                  placeholder={`${isSeoul ? '서울' : '경기'}`}
                 />
-                동
+                {isSeoul ? '동*' : '읍/면/동/리'}
               </div>
               <div className="flex flex-row items-center">
                 <Input
@@ -176,7 +171,7 @@ const ExpectedAddForm = () => {
                   className="w-[70px] text-end  text-base bg-white h-7"
                   placeholder="000-1"
                 />
-                일대
+                일대*
               </div>
             </div>
           </div>
