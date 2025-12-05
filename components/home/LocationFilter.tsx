@@ -223,7 +223,21 @@ export default function LocationFilter() {
         onClick={() => setIsOpen(!isOpen)}
       >
         <p className="text-2xl font-bold">{getDisplayText()}</p>
-        <ChevronDown />
+        <svg
+          className={`h-4 w-4 transition-transform ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
       </Button>
 
       {isOpen && isPositioned && (
@@ -247,7 +261,21 @@ export default function LocationFilter() {
                   onClick={() => handleRegionSelect(region)}
                 >
                   <span className="font-medium">{region}</span>
-                  <ChevronDown />
+                  <svg
+                    className={`h-4 w-4 transition-transform ${
+                      showDistricts === region ? 'rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </button>
 
                 {showDistricts === region && (
