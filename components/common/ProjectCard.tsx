@@ -126,7 +126,7 @@ const ProjectCard = ({
 
   return (
     <Card
-      className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-390/230 min-w-[390px] max-w-[500px] mx-auto justify-between cursor-pointer"
+      className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-390/230 md:min-w-[390px] w-[340px] mx-auto justify-between cursor-pointer"
       onClick={handleCardClick}
     >
       <div ref={mapRef} className="absolute inset-0 -z-10" />
