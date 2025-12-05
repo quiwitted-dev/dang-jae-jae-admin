@@ -28,6 +28,7 @@ export default function PriceFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const [range, setRagnge] = useState<'less' | 'more'>('less');
   const handleFilter = useHandleFilter();
 
   useEffect(() => {
@@ -103,34 +104,29 @@ export default function PriceFilter() {
 
   const handlePriceClick = useCallback(
     (price: number) => {
-      console.log(price);
-      const priceWon = price * 100_000_000; // 억 단위를 원으로 변환
+      const priceWon = price; // 억 단위를 원으로 변환
       setPrice((prevRange) => {
         const { minPrice, maxPrice } = prevRange;
 
-        if (!minPrice && !maxPrice) {
-          return { minPrice: priceWon, maxPrice: null };
-        } else if (minPrice && !maxPrice) {
-          if (priceWon >= minPrice) {
-            setIsOpen(false);
-            handleFilter({
-              data: [String(minPrice), String(priceWon)],
-              filter: 'price',
-            });
+        if (minPrice && !maxPrice) {
+          if (priceWon > minPrice) {
             return { minPrice, maxPrice: priceWon };
+          } else if (priceWon === minPrice) {
+            return { minPrice, maxPrice: null };
           } else {
-            setIsOpen(false);
-            handleFilter({
-              data: [String(priceWon), String(minPrice)],
-              filter: 'price',
-            });
+            return { minPrice: priceWon, maxPrice: minPrice };
+          }
+        } else if (minPrice && maxPrice) {
+          if (priceWon > maxPrice) {
+            return { minPrice, maxPrice: priceWon };
+          } else if (priceWon < maxPrice && priceWon > minPrice) {
+            return { minPrice, maxPrice: priceWon };
+          } else if (priceWon === minPrice || priceWon === maxPrice) {
+            return { minPrice: priceWon, maxPrice: null };
+          } else {
             return { minPrice: priceWon, maxPrice: minPrice };
           }
         } else {
-          handleFilter({
-            data: [String(priceWon), ''],
-            filter: 'price',
-          });
           return { minPrice: priceWon, maxPrice: null };
         }
       });
@@ -138,15 +134,42 @@ export default function PriceFilter() {
     [setPrice]
   );
 
+  const handleSubmit = () => {
+    if (!selectedRange.maxPrice && range === 'less') {
+      handleFilter({
+        data: {
+          minPrice: 0,
+          maxPrice: selectedRange.minPrice,
+        },
+        filter: 'price',
+      });
+    } else if (!selectedRange.maxPrice && range === 'more') {
+      handleFilter({
+        data: {
+          minPrice: selectedRange.minPrice,
+          maxPrice: 60,
+        },
+        filter: 'price',
+      });
+    } else {
+      handleFilter({
+        data: {
+          minPrice: selectedRange.minPrice,
+          maxPrice: selectedRange.maxPrice,
+        },
+        filter: 'price',
+      });
+    }
+    setIsOpen(false);
+  };
+
   const handleReset = () => {
     setPrice({ minPrice: null, maxPrice: null });
-    setIsOpen(false);
   };
 
   const getDisplayText = () => {
     const { minPrice: min, maxPrice: max } = selectedRange;
-    const toEok = (won: number | null) =>
-      won ? Math.round(won / 100_000_000) : null;
+    const toEok = (won: number | null) => (won ? Math.round(won) : null);
     const minEok = toEok(min);
     const maxEok = toEok(max);
     if (!minEok && !maxEok) return '시세';
@@ -157,7 +180,7 @@ export default function PriceFilter() {
 
   const isInRange = (price: number) => {
     const { minPrice: min, maxPrice: max } = selectedRange;
-    const priceWon = price * 100_000_000;
+    const priceWon = price;
     if (!min) return false;
     if (!max) return priceWon === min;
     return priceWon >= min && priceWon <= max;
@@ -165,7 +188,7 @@ export default function PriceFilter() {
 
   const isRangeEndpoint = (price: number) => {
     const { minPrice: min, maxPrice: max } = selectedRange;
-    const priceWon = price * 100_000_000;
+    const priceWon = price;
     return priceWon === min || priceWon === max;
   };
 
@@ -214,7 +237,7 @@ export default function PriceFilter() {
             </div>
 
             {/* 세로 슬라이더 형태 */}
-            <div className="flex flex-col space-y-1">
+            <div className="grid grid-cols-2 gap-1 space-y-1">
               {PRICE_OPTIONS.map((option) => (
                 <button
                   key={option.value}
@@ -232,17 +255,60 @@ export default function PriceFilter() {
               ))}
             </div>
 
-            {(selectedRange.minPrice || selectedRange.maxPrice) && (
-              <>
-                <div className="border-t border-gray-100 my-3"></div>
-                <button
-                  className="w-full text-left px-2 py-2 text-red-600 hover:bg-red-50 rounded"
-                  onClick={handleReset}
-                >
-                  선택 초기화
-                </button>
-              </>
-            )}
+            {/* Todo : 하나만 선택했을 때 이상 이하 나오게 하기 */}
+            {selectedRange.maxPrice === null &&
+              selectedRange.minPrice !== null && (
+                <div className="border-t flex flex-row justify-around items-center border-gray-100 pt-3">
+                  <div>
+                    <input
+                      type="radio"
+                      name="priceRange"
+                      id="less"
+                      checked={range === 'less'}
+                      onChange={() => setRagnge('less')}
+                    />
+                    <label
+                      htmlFor="less"
+                      className="text-black"
+                      onChange={() => setRagnge('less')}
+                    >
+                      이하
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="priceRange"
+                      id="more"
+                      className=""
+                      checked={range === 'more'}
+                      onChange={() => setRagnge('more')}
+                    />
+                    <label
+                      htmlFor="more"
+                      className="text-black"
+                      onChange={() => setRagnge('more')}
+                    >
+                      이상
+                    </label>
+                  </div>
+                </div>
+              )}
+
+            <div className="border-t flex flex-row border-gray-100 my-3">
+              <button
+                className="w-1/2 text-center px-2 py-2 text-red-600 hover:bg-red-50 rounded cursor-pointer"
+                onClick={handleReset}
+              >
+                선택 초기화
+              </button>
+              <button
+                className="w-1/2 text-center px-2 py-2 text-blue-600 hover:bg-red-50 rounded cursor-pointer"
+                onClick={handleSubmit}
+              >
+                적용
+              </button>
+            </div>
           </div>
         </div>
       )}
