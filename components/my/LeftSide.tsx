@@ -12,6 +12,9 @@ import { Switch } from '../ui/switch';
 import { User } from '@/types/user.type';
 import { Input } from '../ui/input';
 import { putUser } from '@/services/user.api.server';
+import { logout } from '@/services/auth.api';
+import useAuthStore from '@/store/useAuthStore';
+import { usePathname, useRouter } from 'next/navigation';
 
 const LeftSide = ({ user }: { user: User }) => {
   const myPageTab = useStore((state) => state.myPageTab);
@@ -22,6 +25,11 @@ const LeftSide = ({ user }: { user: User }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [editNickname, setEditNickname] = useState('');
   const [nickname, setNickname] = useState(user.nickname);
+  const isLogin = useAuthStore((state) => state.isLogin);
+  const setIsLogin = useAuthStore((state) => state.setIsLogin);
+  const setAddress = useStore((state) => state.setAddress);
+  const pathname = usePathname();
+  const router = useRouter();
 
   const handleSettingTabs = (
     tab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none'
@@ -54,6 +62,18 @@ const LeftSide = ({ user }: { user: User }) => {
       if (data) setNickname(data?.nickname);
     } finally {
       setIsEdit(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    const data = await logout();
+    if (data.success === true) {
+      setIsLogin(false);
+      setAddress('');
+      alert('로그아웃 되었습니다.');
+      if (pathname.startsWith('/my')) {
+        router.replace('/');
+      }
     }
   };
 
@@ -108,9 +128,11 @@ const LeftSide = ({ user }: { user: User }) => {
                 <p>{isEdit ? '확인' : '수정'}</p>
               </Button>
             </div>
-            <p className="text-sm font-extralight text-[#F5B3CB]">
-              {/* todo : 여기 카카오 아이디(ex : 4549379906)인데 뭐로 해야하지?  */}
-              유저 아이디
+            <p
+              className="text-sm font-normal text-[#F5B3CB]"
+              onClick={handleLogout}
+            >
+              로그아웃
             </p>
           </div>
 
