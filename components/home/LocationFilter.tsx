@@ -165,13 +165,14 @@ export default function LocationFilter() {
   const handleDistrictSelect = (district: string) => {
     if (selectRegion.region === '서울시') {
       setLocations([`${district}구`]);
+      handleFilter({ data: `${district}구`, filter: 'locations' });
     } else {
       setLocations([`${district}시`]);
+      handleFilter({ data: `${district}시`, filter: 'locations' });
     }
     setSelectRegion((prev) => ({ ...prev, district }));
     setIsOpen(false);
     setShowDistricts('');
-    handleFilter({ data: `${district}구`, filter: 'locations' });
   };
 
   const handleReset = () => {
