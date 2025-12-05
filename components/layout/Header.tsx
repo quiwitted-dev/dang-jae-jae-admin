@@ -25,8 +25,8 @@ type headerProps = {
 const Header = ({ isLoggedIn }: headerProps) => {
   const toggleOpen = useStore((state) => state.toggleOpen);
   const clear = useStore((state) => state.clear);
-  const isLogin = useAuthStore((state) => state.isLogin);
   const setAddress = useStore((state) => state.setAddress);
+  const isLogin = useAuthStore((state) => state.isLogin);
   const setIsLogin = useAuthStore((state) => state.setIsLogin);
   const pathname = usePathname();
   const router = useRouter();
@@ -196,13 +196,12 @@ const Header = ({ isLoggedIn }: headerProps) => {
       <div className="lg:hidden">
         {pathname === '/' && (
           <div className="relative flex flex-row px-2 justify-between items-center py-1 gap-1">
-            <div className="relative text-black max-w-[400px] w-full ">
+            <div className="relative text-black md:max-w-[400px] max-w-[180px] w-full ">
               <Input
-                className="bg-white rounded-4xl w-full pr-14"
+                className="bg-white rounded-4xl w-full pr-14 md:text-base text-sm"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={handleKeywordKeyDown}
-                placeholder="검색어를 입력하세요"
               />
               <Button
                 variant="ghost"
@@ -230,7 +229,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
               <Link href={'/compare'}>
                 <Button
                   variant={'white'}
-                  className="flex items-center h-10 flex-row justify-center"
+                  className="flex items-center h-10 flex-row justify-center p-2"
                 >
                   {' '}
                   <Image
@@ -253,17 +252,19 @@ const Header = ({ isLoggedIn }: headerProps) => {
               <Home onClick={() => handleLink('/')} />
             </div>
             <div className="relative flex flex-row items-center gap-1">
-              {/* <Button variant={'white'}>
-                <Bookmark fill="black" />
-              </Button> */}
               <Link href={'/compare'}>
-                <Button variant={'white'}>
+                <Button
+                  variant={'white'}
+                  className="flex items-center h-10 flex-row justify-center p-2"
+                >
+                  {' '}
                   <Image
                     src={'/Compare.png'}
                     alt="비교보기 아이콘"
                     width={27}
                     height={27}
                   />
+                  <p>비교보기</p>
                 </Button>
               </Link>
             </div>
