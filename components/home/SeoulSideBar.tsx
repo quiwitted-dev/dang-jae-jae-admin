@@ -155,7 +155,7 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
   };
 
   return (
-    <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] max-w-[700px] md:w-[700px] text-black min-h-dvh">
+    <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] text-black min-h-dvh whitespace-normal break-keep">
       <div className="flex flex-row items-center justify-between px-4 py-5">
         <div className="flex flex-row gap-4 text-[18px] font-bold">
           <button onClick={handleGoHome} className="cursor-pointer">
@@ -167,7 +167,7 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
           <X />
         </button>
       </div>
-      <div className="flex max-w-[400px] mx-auto">
+      <div className="flex max-w-[400px] mx-auto px-4">
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="text-3xl font-normal">
             <h3>
