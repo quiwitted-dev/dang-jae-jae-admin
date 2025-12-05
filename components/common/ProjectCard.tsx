@@ -24,6 +24,9 @@ const ProjectCard = ({
   const router = useRouter();
   const mapRef = useRef<HTMLDivElement>(null);
   const query = useQueryParams();
+  const [isMapVisible, setIsMapVisible] = useState(false);
+  const [mapMaskMessage, setMapMaskMessage] = useState<string | null>(null);
+  const hasAddress = !!item.address?.trim();
 
   const averageLandSharePyeong = () => {
     if (+item.projectAreaM2 === 0 || +item.ownerCount === 0) {
@@ -47,7 +50,14 @@ const ProjectCard = ({
   const locationDetail = str[3];
 
   useEffect(() => {
-    if (!mapRef.current || !item.address) return;
+    if (!mapRef.current) return;
+
+    if (!hasAddress) {
+      mapRef.current.innerHTML = '';
+      setIsMapVisible(false);
+      setMapMaskMessage('주소 정보 없음');
+      return;
+    }
 
     let mounted = true;
     let pollId: NodeJS.Timeout | null = null;
@@ -64,7 +74,7 @@ const ProjectCard = ({
         const defaultCenter = new kakao.maps.LatLng(37.5665, 126.978);
         const map = new kakao.maps.Map(mapRef.current, {
           center: defaultCenter,
-          level: 5,
+          level: 6,
         });
 
         map.setDraggable(false);
@@ -79,6 +89,10 @@ const ProjectCard = ({
               status !== kakao.maps.services.Status.OK ||
               !result?.length
             ) {
+              setIsMapVisible(false);
+              setMapMaskMessage(
+                `${item.address} 는 카카오맵에 존재하지 않는 주소입니다`
+              );
               return;
             }
 
@@ -87,6 +101,8 @@ const ProjectCard = ({
 
             map.setCenter(coords);
             new kakao.maps.Marker({ map, position: coords });
+            setIsMapVisible(true);
+            setMapMaskMessage(null);
           }
         );
       });
@@ -106,7 +122,7 @@ const ProjectCard = ({
       mounted = false;
       if (pollId) clearInterval(pollId);
     };
-  }, [item.address]);
+  }, [item.address, hasAddress]);
 
   return (
     <Card
@@ -114,6 +130,11 @@ const ProjectCard = ({
       onClick={handleCardClick}
     >
       <div ref={mapRef} className="absolute inset-0 -z-10" />
+      {!isMapVisible && mapMaskMessage && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/50 text-white text-sm font-bold z-10">
+          {mapMaskMessage}
+        </div>
+      )}
       <CardHeader className="relative flex flex-row p-0 justify-between pt-4 px-4">
         {item.dataType === 'PUBLIC_DATA' && (
           <>
