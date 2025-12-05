@@ -224,6 +224,7 @@ const ExpectedAddForm = () => {
                   type="number"
                   {...register('minPrice', { valueAsNumber: true })}
                   className={`w-14 ${numberInputClass} bg-white h-7`}
+                  inputMode="numeric"
                   placeholder="1"
                 />
                 <p>억</p>
@@ -234,6 +235,7 @@ const ExpectedAddForm = () => {
                   type="number"
                   {...register('maxPrice', { valueAsNumber: true })}
                   className={`w-14 ${numberInputClass} bg-white h-7 text-base`}
+                  inputMode="numeric"
                   placeholder="100"
                 />
                 <p>억</p>
@@ -249,6 +251,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('ownerCount', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="000000"
               />
               명
@@ -263,6 +266,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('expectedNewUnits', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="000000"
               />
               <p className="shrink-0">세대</p>
@@ -277,6 +281,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('projectArea', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="000000"
               />
               <p className="shrink-0">m2</p>
@@ -291,6 +296,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('currentVolumeRatio', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="200"
               />
               <p className="shrink-0">%</p>
@@ -305,6 +311,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('expectedVolumeRatio', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="200"
               />
               <p className="shrink-0">%</p>
@@ -319,6 +326,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('constructionYearStart', { valueAsNumber: true })}
                 className={`w-20 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="1980"
               />
               ~
@@ -326,6 +334,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('constructionYearEnd', { valueAsNumber: true })}
                 className={`w-20 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="1988"
               />
             </div>
@@ -397,7 +406,9 @@ const ExpectedAddForm = () => {
               대략 ~
               <Input
                 {...register('consentRateStr')}
-                className="w-1/5 text-end text-base bg-white h-7"
+                className={`w-1/5 text-end text-base bg-white h-7 ${numberInputClass}`}
+                type="number"
+                inputMode="numeric"
                 placeholder="40"
               />
               %
