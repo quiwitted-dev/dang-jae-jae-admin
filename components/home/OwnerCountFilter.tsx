@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import useFilterStore from '@/store/useFilterStore';
 import { useSearchParams } from 'next/navigation';
+import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const OWNER_COUNT_OPTIONS = [
   { value: 100, label: '100명' },
@@ -22,6 +23,7 @@ export default function OwnerCountFilter() {
   const [isPositioned, setIsPositioned] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const handleFilter = useHandleFilter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -99,17 +101,27 @@ export default function OwnerCountFilter() {
       setOwnerCount((prevRange) => {
         const { ownerCountMin: min, ownerCountMax: max } = prevRange;
 
-        if (!min && !max) {
-          return { ownerCountMin: count, ownerCountMax: null };
-        } else if (min && !max) {
+        if (min && !max) {
           if (count >= min) {
             setIsOpen(false);
+            handleFilter({
+              filter: 'ownerCount',
+              data: { ownerCountMin: min, ownerCountMax: count },
+            });
             return { ownerCountMin: min, ownerCountMax: count };
           } else {
             setIsOpen(false);
+            handleFilter({
+              filter: 'ownerCount',
+              data: { ownerCountMin: count, ownerCountMax: min },
+            });
             return { ownerCountMin: count, ownerCountMax: min };
           }
         } else {
+          handleFilter({
+            filter: 'ownerCount',
+            data: { ownerCountMin: count, ownerCountMax: null },
+          });
           return { ownerCountMin: count, ownerCountMax: null };
         }
       });
