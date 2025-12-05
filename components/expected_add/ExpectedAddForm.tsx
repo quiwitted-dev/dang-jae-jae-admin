@@ -222,7 +222,15 @@ const ExpectedAddForm = () => {
               <div className="flex flex-row items-center gap-3">
                 <Input
                   type="number"
-                  {...register('minPrice', { valueAsNumber: true })}
+                  {...register('minPrice', {
+                    valueAsNumber: true,
+                  })}
+                  onInput={(e) => {
+                    const trimmed = e.currentTarget.value
+                      .replace(/\D/g, '')
+                      .slice(0, 4);
+                    e.currentTarget.value = trimmed;
+                  }}
                   className={`w-14 ${numberInputClass} bg-white h-7`}
                   inputMode="numeric"
                   placeholder="1"
@@ -234,6 +242,12 @@ const ExpectedAddForm = () => {
                 <Input
                   type="number"
                   {...register('maxPrice', { valueAsNumber: true })}
+                  onInput={(e) => {
+                    const trimmed = e.currentTarget.value
+                      .replace(/\D/g, '')
+                      .slice(0, 4);
+                    e.currentTarget.value = trimmed;
+                  }}
                   className={`w-14 ${numberInputClass} bg-white h-7 text-base`}
                   inputMode="numeric"
                   placeholder="100"
@@ -389,11 +403,17 @@ const ExpectedAddForm = () => {
             <h3 className="md:text-[20px] text-base font-medium shrink-0">
               사업성격*
             </h3>
-            <Input
+            <select
               {...register('businessType')}
-              className="w-3/5 text-end text-base bg-white h-7"
-              placeholder="재개발"
-            />
+              className="w-3/5 text-end text-sm bg-white h-7 rounded-md"
+            >
+              <option value="재건축">재건축</option>
+              <option value="재개발">재개발</option>
+              <option value="리모델링">리모델링</option>
+              <option value="재정비촉진구역">재정비촉진구역</option>
+              <option value="지역주택">지역주택</option>
+              <option value="가로주택정비">가로주택정비</option>
+            </select>
           </div>
           {errors.businessType && (
             <p className="text-red-600">{errors.businessType.message}</p>
