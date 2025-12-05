@@ -32,7 +32,7 @@ export default async function RootLayout({
         className={`${playfairDisplay.variable} antialiased bg-black text-white font-sans`}
       >
         <Header isLoggedIn={isLoggedIn} />
-        <main className="pt-16">{children}</main>
+        <main>{children}</main>
         <ModalProvider />
         <script
           type="text/javascript"
