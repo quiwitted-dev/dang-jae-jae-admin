@@ -15,8 +15,8 @@ type newConstructionUnitRange = {
 
 type Parameter =
   | { filter: 'locations'; data: string | string[] }
-  | { filter: 'projectTypes'; data: string | string[] }
-  | { filter: 'currentStage'; data: string }
+  | { filter: 'projectTypes'; data: string[] }
+  | { filter: 'currentStage'; data: string | null }
   | { filter: 'price'; data: PriceRange }
   | { filter: 'ownerCount'; data: OwnerCountRange }
   | { filter: 'newConstructionUnits'; data: newConstructionUnitRange };

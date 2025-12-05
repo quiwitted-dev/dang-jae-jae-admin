@@ -98,6 +98,7 @@ export default function BusinessTypeFilter() {
 
   const handleReset = () => {
     setProjectTypes([]);
+    handleFilter({ data: [], filter: 'projectTypes' });
     setIsOpen(false);
   };
 

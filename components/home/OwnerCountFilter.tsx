@@ -131,6 +131,10 @@ export default function OwnerCountFilter() {
 
   const handleReset = () => {
     setOwnerCount({ ownerCountMin: null, ownerCountMax: null });
+    handleFilter({
+      filter: 'ownerCount',
+      data: { ownerCountMin: null, ownerCountMax: null },
+    });
     setIsOpen(false);
   };
 

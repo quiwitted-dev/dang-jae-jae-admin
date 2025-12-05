@@ -94,9 +94,10 @@ export default function BusinessStageFilter() {
     setCurrentStage(stage);
     setIsOpen(false);
   };
-
+  
   const handleReset = () => {
     setCurrentStage('');
+    handleFilter({ data: null, filter: 'currentStage' });
     setIsOpen(false);
   };
 

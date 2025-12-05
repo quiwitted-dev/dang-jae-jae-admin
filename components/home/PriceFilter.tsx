@@ -165,6 +165,13 @@ export default function PriceFilter() {
 
   const handleReset = () => {
     setPrice({ minPrice: null, maxPrice: null });
+    handleFilter({
+      data: {
+        minPrice: null,
+        maxPrice: null,
+      },
+      filter: 'price',
+    });
   };
 
   const getDisplayText = () => {

@@ -177,6 +177,7 @@ export default function LocationFilter() {
   const handleReset = () => {
     setLocations([]);
     setSelectRegion({ region: '', district: '' });
+    handleFilter({ data: [], filter: 'locations' });
     setIsOpen(false);
     setShowDistricts('');
   };
