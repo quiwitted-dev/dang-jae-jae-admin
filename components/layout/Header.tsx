@@ -126,7 +126,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
       }`}
     >
       {/* 데스크탑 */}
-      <div className="hidden lg:relative lg:flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1 ">
+      <div className="hidden md:relative md:flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1 ">
         <div className="relative text-black max-w-[400px] w-full ">
           <Input
             className="bg-white rounded-4xl w-full pr-16"
@@ -150,7 +150,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
           width={80}
           height={40}
           onClick={() => handleLink('/')}
-          className="hidden lg:block lg:absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 hover:cursor-pointer"
+          className="hidden lg:block md:absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 hover:cursor-pointer"
         />
         <div className="relative flex flex-row items-center gap-1 md:gap-2">
           <Button
@@ -181,7 +181,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
               className="flex items-center h-10 flex-row justify-center"
             >
               <Image
-                src={'/Compare.png'}
+                src={'/black-compare.png'}
                 alt="비교보기 아이콘"
                 width={27}
                 height={27}
@@ -193,7 +193,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
       </div>
 
       {/* 모바일 */}
-      <div className="lg:hidden">
+      <div className="md:hidden">
         {pathname === '/' && (
           <div className="relative flex flex-row px-2 justify-between items-center py-1 gap-1">
             <div className="relative text-black md:max-w-[400px] max-w-[180px] w-full ">
@@ -233,7 +233,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 >
                   {' '}
                   <Image
-                    src={'/Compare.png'}
+                    src={'/black-compare.png'}
                     alt="비교보기 아이콘"
                     width={27}
                     height={27}
@@ -259,7 +259,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 >
                   {' '}
                   <Image
-                    src={'/Compare.png'}
+                    src={'/black-compare.png'}
                     alt="비교보기 아이콘"
                     width={27}
                     height={27}
@@ -287,7 +287,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
                   className="border border-black rounded-full p-1"
                 >
                   <Image
-                    src={'/Compare.png'}
+                    src={'/black-compare.png'}
                     alt="비교보기 아이콘"
                     width={27}
                     height={27}
