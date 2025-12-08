@@ -73,11 +73,13 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
     }
   };
 
+  const isValid = !!minPrice && !!maxPrice;
+
   return (
     <div>
       <form
         id="price-form"
-        className="border-2 relative border-black rounded-4xl flex flex-row p-3 gap-8 mx-2 md:mx-0"
+        className="border-2 relative border-black rounded-4xl flex flex-row p-3 mx-2 gap-4 md:mx-0"
         onSubmit={handleSave}
       >
         <div
@@ -90,11 +92,12 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
             <Pencil className="text-white" size={15} />
           )}
         </div>
-        <div className="text-[40px] font-normal text-center">
-          <div className="flex flex-row items-center">
+        <div className="text-[40px] font-normal text-center min-w-[100px]">
+          <div className="flex flex-row items-center justify-center">
             {isEdit ? (
               <Input
-                className="text-right"
+                className="text-right w-[60px] border-red-700 focus-visible:border-red-700 focus-visible:ring-red-200 shadow-none"
+                maxLength={4}
                 placeholder={data.renovationPrice?.minPrice ?? min ?? '0'}
                 required
                 onChange={(e) => {
@@ -109,10 +112,10 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
             억
           </div>
           <p>~</p>
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center justify-center">
             {isEdit ? (
               <Input
-                className="text-right"
+                className="text-right w-[60px] border-red-700 focus-visible:border-red-700 focus-visible:ring-red-200 shadow-none "
                 placeholder={data.renovationPrice?.maxPrice ?? max ?? '0'}
                 required
                 onChange={(e) => {
@@ -153,7 +156,8 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
                 <div className="flex flex-row items-end">
                   {isEdit ? (
                     <Input
-                      className="text-right"
+                      className="text-right w-[60px]"
+                      maxLength={4}
                       placeholder={
                         data.renovationPrice?.minimumInitialInvestment ?? '0'
                       }
@@ -174,7 +178,8 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
                 <div className="flex flex-row items-end">
                   {isEdit ? (
                     <Input
-                      className="text-right"
+                      className="text-right w-[60px]"
+                      maxLength={4}
                       placeholder={data.renovationPrice?.premium ?? '0'}
                       onChange={(e) => {
                         setPremium(e.target.value);
@@ -209,6 +214,7 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
           className="rounded-4xl font-medium items-center flex flex-row cursor-pointer mx-auto mt-4"
           type="submit"
           form="price-form"
+          disabled={!isValid}
         >
           <Check />
           완료
