@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 export type CompareItem = {
   id: string;
-  dataType: 'PUBLIC' | 'SUBMISSON';
+  dataType: 'PUBLIC_DATA' | 'SUBMISSION';
 };
 
 type CompareStore = {

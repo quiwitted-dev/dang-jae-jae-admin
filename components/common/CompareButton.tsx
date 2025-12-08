@@ -4,9 +4,10 @@ import Image from 'next/image';
 
 type Props = {
   id: string;
+  type: 'PUBLIC_DATA' | 'SUBMISSION';
 };
 
-const CompareButton = ({ id }: Props) => {
+const CompareButton = ({ id, type }: Props) => {
   const { compare, setCompare } = useCompareStore();
   const hasId = compare.some((compareId) => compareId?.id === id);
 
@@ -14,7 +15,7 @@ const CompareButton = ({ id }: Props) => {
     if (hasId) {
       alert('비교하기에 이미 담았습니다.');
     } else {
-      setCompare({ id, dataType: 'SUBMISSON' });
+      setCompare({ id, dataType: type });
       alert('비교하기에 담았습니다.');
     }
   };

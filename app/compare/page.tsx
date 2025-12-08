@@ -102,6 +102,7 @@ const ComparePage = () => {
   const { compare, removeCompare } = useCompareStore();
   const [compare1, setCompare1] = useState(defaultValue);
   const [compare2, setCompare2] = useState(defaultValue);
+  console.log(compare);
 
   useEffect(() => {
     const fetchCompareData = async () => {
@@ -121,7 +122,7 @@ const ComparePage = () => {
       }
 
       const tasks = nonNullItems.map(({ item }) =>
-        item.dataType === 'PUBLIC'
+        item.dataType === 'PUBLIC_DATA'
           ? getSubmissionPublicDetail(item.id)
           : getSubmissionUserDetail(item.id)
       );
@@ -131,7 +132,7 @@ const ComparePage = () => {
       results.forEach((result, idx) => {
         const { item, index } = nonNullItems[idx];
         const mapped =
-          item.dataType === 'PUBLIC'
+          item.dataType === 'PUBLIC_DATA'
             ? mapPublicResultToCompare(result as SubmissionPublicDetail)
             : mapUserResultToCompare(result as SubmissionUserDetail);
 

@@ -98,7 +98,7 @@ const BookmarkCompareGroup = ({ id, type, address }: Props) => {
           <BookmarkIcon size={16} />
         )}
       </Button>
-      <CompareButton id={id} />
+      <CompareButton id={id} type={type} />
     </div>
   );
 };
