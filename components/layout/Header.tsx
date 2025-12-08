@@ -154,7 +154,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
         />
         <div className="relative flex flex-row items-center gap-1 md:gap-2">
           <Button
-            className="hidden md:flex flex-row h-10"
+            className="hidden md:flex flex-row h-10 cursor-pointer"
             variant={'white'}
             onClick={() => {
               isLogin ? handleLink('/my') : handleLoginToggle();
@@ -167,7 +167,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
 
           {isLogin && (
             <Button
-              className="hidden md:flex flex-row w-10 h-10"
+              className="hidden md:flex flex-row w-10 h-10 cursor-pointer"
               variant={'white'}
               onClick={handleLogout}
             >
@@ -178,7 +178,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
           <Link href={'/compare'}>
             <Button
               variant={'white'}
-              className="flex items-center h-10 flex-row justify-center"
+              className="flex items-center h-10 flex-row justify-center cursor-pointer"
             >
               <Image
                 src={'/black-compare.png'}
@@ -214,7 +214,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
             </div>
             <div className="relative flex flex-row items-center gap-1 md:gap-2">
               <Button
-                className="flex flex-row w-10 h-10"
+                className="flex flex-row w-10 h-10 cursor-pointer"
                 variant={'white'}
                 onClick={() => {
                   isLogin ? handleLink('/my') : handleLoginToggle();
@@ -229,7 +229,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
               <Link href={'/compare'}>
                 <Button
                   variant={'white'}
-                  className="flex items-center h-10 flex-row justify-center p-2"
+                  className="flex items-center h-10 flex-row justify-center p-2 cursor-pointer"
                 >
                   {' '}
                   <Image
@@ -248,14 +248,17 @@ const Header = ({ isLoggedIn }: headerProps) => {
         {pathname === '/my' && (
           <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-[#212138]">
             <div className="flex flex-row items-center justify-center gap-7">
-              <ChevronLeft onClick={handleBack} />
-              <Home onClick={() => handleLink('/')} />
+              <ChevronLeft onClick={handleBack} className="cursor-pointer" />
+              <Home
+                onClick={() => handleLink('/')}
+                className="cursor-pointer"
+              />
             </div>
             <div className="relative flex flex-row items-center gap-1">
               <Link href={'/compare'}>
                 <Button
                   variant={'white'}
-                  className="flex items-center h-10 flex-row justify-center p-2"
+                  className="flex items-center h-10 flex-row justify-center p-2 cursor-pointer"
                 >
                   {' '}
                   <Image
@@ -274,17 +277,30 @@ const Header = ({ isLoggedIn }: headerProps) => {
         {pathname === '/compare' && (
           <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-[#F8F4F1] text-black">
             <div className="flex flex-row items-center justify-center gap-7">
-              <ChevronLeft onClick={handleBack} />
-              <Home onClick={() => handleLink('/')} />
+              <ChevronLeft onClick={handleBack} className="cursor-pointer" />
+              <Home
+                onClick={() => handleLink('/')}
+                className="cursor-pointer"
+              />
             </div>
             <div className="relative flex flex-row items-center gap-1">
-              {/* <Button variant={'white'}>
-                <Bookmark fill="black" />
-              </Button> */}
+              <Button
+                className="flex flex-row w-10 h-10 cursor-pointer"
+                variant={'white'}
+                onClick={() => {
+                  isLogin ? handleLink('/my') : handleLoginToggle();
+                }}
+              >
+                {isLogin ? (
+                  <Bookmark fill="black" />
+                ) : (
+                  <UserRound fill="black" />
+                )}
+              </Button>
               <Link href={'/compare'}>
                 <Button
                   variant={'white'}
-                  className="border border-black rounded-full p-1"
+                  className="border border-black rounded-full p-1 cursor-pointer"
                 >
                   <Image
                     src={'/black-compare.png'}
