@@ -272,7 +272,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
         )}
 
         {pathname === '/compare' && (
-          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-white text-black">
+          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-[#F8F4F1] text-black">
             <div className="flex flex-row items-center justify-center gap-7">
               <ChevronLeft onClick={handleBack} />
               <Home onClick={() => handleLink('/')} />
