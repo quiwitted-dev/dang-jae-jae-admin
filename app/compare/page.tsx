@@ -9,7 +9,8 @@ import {
   SubmissionPublicDetail,
   SubmissionUserDetail,
 } from '@/types/submission.type';
-import { X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export const defaultValue = {
@@ -102,7 +103,7 @@ const ComparePage = () => {
   const { compare, removeCompare } = useCompareStore();
   const [compare1, setCompare1] = useState(defaultValue);
   const [compare2, setCompare2] = useState(defaultValue);
-  console.log(compare);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCompareData = async () => {
@@ -147,6 +148,12 @@ const ComparePage = () => {
     fetchCompareData();
   }, [compare]);
 
+  const handleGoHome = () => {
+    router.push('/');
+  };
+
+  console.log(compare);
+
   return (
     <div className="flex flex-row min-h-dvh relative">
       {/* 왼쪽 50% - 그라데이션 */}
@@ -157,26 +164,37 @@ const ComparePage = () => {
 
       {/* 좌측 md이상 */}
       <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
-        <X
-          width={34}
-          height={34}
-          strokeWidth={1}
-          className="cursor-pointer"
-          onClick={() => removeCompare(0)}
-        />
-        <div className="flex flex-col gap-2 text-center pt-4">
+        {compare[0] ? (
+          <X
+            width={34}
+            height={34}
+            strokeWidth={1}
+            className="cursor-pointer"
+            onClick={() => removeCompare(0)}
+          />
+        ) : (
+          <Plus
+            width={34}
+            height={34}
+            strokeWidth={1}
+            className="cursor-pointer"
+            onClick={() => handleGoHome()}
+          />
+        )}
+
+        <div className="flex flex-col gap-2 text-center pt-4 h-20 ">
           <h3 className="text-[18px] font-bold">{compare1.zoneName}</h3>
           <p className="text-xl font-thin">{compare1.address}</p>
         </div>
         <div className="flex flex-col gap-3 pt-[60px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
-            <p className="text-xl font-thin">{compare1.projectArenaM2} m2</p>
+            <p className="text-xl font-thin">{compare1.projectArenaM2} m²</p>
           </div>
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">택지 면적</p>
             <p className="text-xl font-thin">
-              {compare1.residentialLandAreaM2} m2
+              {compare1.residentialLandAreaM2} m²
             </p>
           </div>
         </div>
@@ -191,15 +209,25 @@ const ComparePage = () => {
       {/* 좌측 모바일 */}
       <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 left-0 w-1/2 h-[300px] z-20">
         <div className="w-full h-[34px]">
-          <X
-            width={34}
-            height={34}
-            strokeWidth={1}
-            onClick={() => removeCompare(0)}
-            className="mx-auto"
-          />
+          {compare[0] ? (
+            <X
+              width={34}
+              height={34}
+              strokeWidth={1}
+              className="cursor-pointer mx-auto"
+              onClick={() => removeCompare(0)}
+            />
+          ) : (
+            <Plus
+              width={34}
+              height={34}
+              strokeWidth={1}
+              className="cursor-pointer mx-auto"
+              onClick={() => handleGoHome()}
+            />
+          )}
         </div>
-        <div className="flex flex-col gap-2 text-center pt-4 w-full">
+        <div className="flex flex-col gap-2 text-center pt-4 w-full h-20">
           <h3 className="text-[18px] font-bold truncate ">
             {compare1.zoneName}
           </h3>
@@ -208,12 +236,12 @@ const ComparePage = () => {
         <div className="flex flex-col gap-3 pt-[60px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
-            <p className="text-xl font-thin">{compare1.projectArenaM2} m2</p>
+            <p className="text-xl font-thin">{compare1.projectArenaM2} m²</p>
           </div>
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">택지 면적</p>
             <p className="text-xl font-thin">
-              {compare1.residentialLandAreaM2} m2
+              {compare1.residentialLandAreaM2} m²
             </p>
           </div>
         </div>
@@ -222,15 +250,25 @@ const ComparePage = () => {
       {/* 우측 모바일 */}
       <div className="absolute md:hidden flex flex-col text-black items-center pt-4 top-0 right-0 w-1/2 h-[300px] z-20">
         <div className="w-full h-[34px]">
-          <X
-            width={34}
-            height={34}
-            strokeWidth={1}
-            onClick={() => removeCompare(1)}
-            className="mx-auto"
-          />
+          {compare[1] ? (
+            <X
+              width={34}
+              height={34}
+              strokeWidth={1}
+              className="cursor-pointer mx-auto"
+              onClick={() => removeCompare(1)}
+            />
+          ) : (
+            <Plus
+              width={34}
+              height={34}
+              strokeWidth={1}
+              className="cursor-pointer mx-auto"
+              onClick={() => handleGoHome()}
+            />
+          )}
         </div>
-        <div className="flex flex-col gap-2 text-center pt-4 w-full">
+        <div className="flex flex-col gap-2 text-center pt-4 w-full h-20">
           <h3 className="text-[18px] font-bold truncate ">
             {compare2.zoneName}
           </h3>
@@ -239,12 +277,12 @@ const ComparePage = () => {
         <div className="flex flex-col gap-3 pt-[60px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
-            <p className="text-xl font-thin">{compare2.projectArenaM2} m2</p>
+            <p className="text-xl font-thin">{compare2.projectArenaM2} m²</p>
           </div>
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">택지 면적</p>
             <p className="text-xl font-thin">
-              {compare2.residentialLandAreaM2} m2
+              {compare2.residentialLandAreaM2} m²
             </p>
           </div>
         </div>
@@ -265,9 +303,9 @@ const ComparePage = () => {
         {/* 면적 Bubble */}
         {/* Todo : 면적도 계산할 수 있으면 계산 (가능할 듯?) */}
         <div className="relative flex w-full h-[250px]">
-          <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10 ">
+          <div className="absolute inset-y-0 left-0 w-1/2 -z-10 ">
             <div
-              className="absolute top-1/2 right-0 -translate-y-1/2 bg-radial-[at_75%_30%] from-white/70 to-[#E2D2E0] to-90% transition-all duration-500 rounded-l-full"
+              className="absolute top-1/2 right-0 -translate-y-1/2 bg-radial-[at_75%_50%] from-[##D5B3CB00] to-[#98b6af] transition-all duration-500 rounded-l-full"
               style={{
                 width: `${
                   +(+compare1.projectArenaM2 * 0.3025).toString().slice(0, 3) /
@@ -280,10 +318,27 @@ const ComparePage = () => {
                 }px`,
               }} // 왼쪽 비율
             />
-          </div>
-          <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden -z-10 ">
             <div
-              className="absolute top-1/2 left-0 -translate-y-1/2 bg-radial-[at_30%_25%] from-white/10 to-[#268F79]/30 to-90% transition-all duration-500 rounded-r-full"
+              className="absolute top-1/2 right-0 -translate-y-1/2 bg-radial-[at_75%_50%] from-[#f3eae9] to-[#c4a9dc] transition-all duration-500 rounded-l-full"
+              style={{
+                width: `${
+                  +(+compare1.residentialLandAreaM2 * 0.3025)
+                    .toString()
+                    .slice(0, 3) /
+                  2 /
+                  2
+                }px`,
+                height: `${
+                  +(+compare1.residentialLandAreaM2 * 0.3025)
+                    .toString()
+                    .slice(0, 3) / 2
+                }px`,
+              }} // 왼쪽 비율
+            />
+          </div>
+          <div className="absolute inset-y-0 right-0 w-1/2 -z-10 ">
+            <div
+              className="absolute top-1/2 left-0 -translate-y-1/2 bg-radial-[at_25%_50%] from-[#D5B3CB00] to-[#98b6af]  transition-all duration-500 rounded-r-full"
               style={{
                 width: `${
                   +(+compare2.projectArenaM2 * 0.3025).toString().slice(0, 3) /
@@ -293,6 +348,23 @@ const ComparePage = () => {
                 height: `${
                   +(+compare2.projectArenaM2 * 0.3025).toString().slice(0, 3) /
                   2
+                }px`,
+              }} // 오른쪽 비율
+            />
+            <div
+              className="absolute top-1/2 left-0 -translate-y-1/2 bg-radial-[at_25%_50%] from-[#f3eae9] to-[#c4a9dc]  transition-all duration-500 rounded-r-full"
+              style={{
+                width: `${
+                  +(+compare2.residentialLandAreaM2 * 0.3025)
+                    .toString()
+                    .slice(0, 3) /
+                  2 /
+                  2
+                }px`,
+                height: `${
+                  +(+compare2.residentialLandAreaM2 * 0.3025)
+                    .toString()
+                    .slice(0, 3) / 2
                 }px`,
               }} // 오른쪽 비율
             />
@@ -629,13 +701,23 @@ const ComparePage = () => {
 
       {/* 우측 md이상 */}
       <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
-        <X
-          width={34}
-          height={34}
-          strokeWidth={1}
-          className="cursor-pointer"
-          onClick={() => removeCompare(1)}
-        />
+        {compare[1] ? (
+          <X
+            width={34}
+            height={34}
+            strokeWidth={1}
+            className="cursor-pointer"
+            onClick={() => removeCompare(1)}
+          />
+        ) : (
+          <Plus
+            width={34}
+            height={34}
+            strokeWidth={1}
+            className="cursor-pointer"
+            onClick={() => handleGoHome()}
+          />
+        )}
         <div className="flex flex-col gap-2 text-center pt-4">
           <h3 className="text-[18px] font-bold">{compare2.zoneName}</h3>
           <p className="text-xl font-thin">{compare2.address}</p>
@@ -643,12 +725,12 @@ const ComparePage = () => {
         <div className="flex flex-col gap-3 pt-[60px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
-            <p className="text-xl font-thin">{compare2.projectArenaM2} m2</p>
+            <p className="text-xl font-thin">{compare2.projectArenaM2} m²</p>
           </div>
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">택지 면적</p>
             <p className="text-xl font-thin">
-              {compare2.residentialLandAreaM2} m2
+              {compare2.residentialLandAreaM2} m²
             </p>
           </div>
         </div>
