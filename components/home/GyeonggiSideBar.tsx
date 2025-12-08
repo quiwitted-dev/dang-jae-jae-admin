@@ -1,68 +1,21 @@
 'use client';
 
-import { ArrowRight, Check, Pencil, X } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useState } from 'react';
-import { Input } from '../ui/input';
+import { ArrowRight } from 'lucide-react';
 import { GyeonggiSubmissionDetail } from '@/types/submission.type';
-import { postPrice } from '@/services/price.api';
 import BookmarkCompareGroup from './[id]/BookmarkCompareGroup';
+import PriceEditForm from './[id]/PriceEditForm';
 
 type GyeonggiSideBarProps = {
   publicData: GyeonggiSubmissionDetail;
 };
 
 const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
-  const [isEdit, setIsEdit] = useState(false);
-  const [maxPrice, setMaxPrice] = useState('');
-  const [minPrice, setMinPrice] = useState('');
-  const [minimumInitialInvestment, setMinimumInitialInvestment] = useState<
-    string | null
-  >(null);
-  const [premium, setPremium] = useState<string | null>(null);
-
   const projectArea = Number(publicData.projectAreaM2);
   const ownerCount = Number(publicData.ownerCount);
   const average_land_share =
     projectArea > 0 && ownerCount > 0
       ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
       : '-';
-
-  const handleEdit = () => {
-    setIsEdit(!isEdit);
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const referenceId = publicData.id;
-
-    const form = {
-      minPrice,
-      maxPrice,
-      minimumInitialInvestment,
-      premium,
-    };
-
-    try {
-      const data = await postPrice({
-        referenceId,
-        dataType: 'PUBLIC_DATA',
-        form,
-      });
-      if (data.success) {
-        alert('가격 입력이 확인되었습니다.');
-        setIsEdit(false);
-        setMaxPrice('');
-        setMinPrice('');
-        setMinimumInitialInvestment('');
-        setPremium('');
-      }
-    } catch (error) {
-      console.error(error);
-      const message = JSON.parse((error as Error).message).error;
-      alert(message);
-    }
-  };
 
   const dateFormatter = (date: string) => {
     if (!date) return '-';
@@ -115,133 +68,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
             </p>
           </div>
 
-          <form
-            id="price-form"
-            className="border-2 relative border-black rounded-4xl flex flex-row p-3 gap-8 mx-2 md:mx-0"
-            onSubmit={handleSave}
-          >
-            <div
-              className="absolute -top-5 left-5 w-7 h-7 bg-black rounded-full flex items-center justify-center cursor-pointer"
-              onClick={handleEdit}
-            >
-              {isEdit ? (
-                <X className="text-white" size={15} />
-              ) : (
-                <Pencil className="text-white" size={15} />
-              )}
-            </div>
-            <div className="text-[40px] font-normal text-center">
-              <div className="flex flex-row items-center">
-                {isEdit ? (
-                  <Input
-                    className="text-right"
-                    placeholder={publicData.renovationPrice?.minPrice ?? '0'}
-                    required
-                    onChange={(e) => {
-                      setMinPrice(e.target.value);
-                    }}
-                  />
-                ) : (
-                  <span className="font-playfair">
-                    {publicData.renovationPrice?.minPrice ?? '0'}
-                  </span>
-                )}
-                억
-              </div>
-              <p>~</p>
-              <div className="flex flex-row items-center">
-                {isEdit ? (
-                  <Input
-                    className="text-right"
-                    placeholder={publicData.renovationPrice?.maxPrice ?? '0'}
-                    required
-                    onChange={(e) => {
-                      setMaxPrice(e.target.value);
-                    }}
-                  />
-                ) : (
-                  <span className="font-playfair">
-                    {publicData.renovationPrice?.maxPrice ?? '0'}
-                  </span>
-                )}
-                억
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-around">
-              {isEdit ? (
-                <p className="text-xs font-medium text-gray-500 whitespace-normal break-keep">
-                  현재 구역의 전반적인 시세를 알려주세요~! 억 단위이며 천단위는
-                  반올림 해주세요. <br />
-                  <span className="text-red-600">빨간색은 필수</span>입니다.
-                </p>
-              ) : (
-                <p className="text-xs font-medium text-gray-500 whitespace-normal break-keep">
-                  사용자가 게시한 대략적인 <strong>시세정보</strong>이며 매물
-                  별로 크게 상이할 수 있고,{' '}
-                  <strong className="text-gray-700">
-                    참고 목적으로만 제공됩니다.
-                  </strong>{' '}
-                  당신의재재는 시세내용의 정확성을 보증하지 않습니다.
-                </p>
-              )}
-
-              <div className="flex flex-row text-[14px] font-semibold justify-between items-center border-b border-b-gray py-2">
-                <p>최소 초기 투자금</p>
-                <div className="flex flex-row items-end">
-                  {isEdit ? (
-                    <Input
-                      className="text-right"
-                      placeholder={
-                        publicData.renovationPrice?.minimumInitialInvestment ??
-                        '0'
-                      }
-                      // required
-                      onChange={(e) => {
-                        setMinimumInitialInvestment(e.target.value);
-                      }}
-                    />
-                  ) : (
-                    <span className="font-playfair">
-                      {publicData.renovationPrice?.minimumInitialInvestment ??
-                        '0'}
-                    </span>
-                  )}
-                  억
-                </div>
-              </div>
-              <div className="flex flex-row text-[14px] font-semibold justify-between items-center">
-                <p className="whitespace-nowrap">프리미엄(P)</p>
-                <div className="flex flex-row items-end">
-                  {isEdit ? (
-                    <Input
-                      className="text-right"
-                      placeholder={publicData.renovationPrice?.premium ?? '0'}
-                      // required
-                      onChange={(e) => {
-                        setPremium(e.target.value);
-                      }}
-                    />
-                  ) : (
-                    <span className="font-playfair">
-                      {publicData.renovationPrice?.premium ?? '0'}
-                    </span>
-                  )}
-                  억
-                </div>
-              </div>
-            </div>
-          </form>
-          {isEdit && (
-            <Button
-              className="rounded-4xl font-medium items-center flex flex-row cursor-pointer"
-              type="submit"
-              form="price-form"
-            >
-              <Check />
-              완료
-            </Button>
-          )}
+          <PriceEditForm data={publicData} type="PUBLIC_DATA" />
 
           <div className="mt-6 px-5 md:px-0">
             <div className="mb-4 text-sm font-bold text-[#49454F]">
