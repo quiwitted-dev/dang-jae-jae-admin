@@ -6,8 +6,8 @@ type PostPriceType = {
   form: {
     minPrice: string;
     maxPrice: string;
-    minimumInitialInvestment?: string;
-    premium?: string;
+    minimumInitialInvestment?: string | null;
+    premium?: string | null;
   };
 };
 
@@ -29,15 +29,6 @@ export const postPrice = async ({
       }),
     });
 
-    if (res.status === 401) {
-      throw new Error(`가격 입력 실패: 로그인이 필요합니다.`);
-    }
-
-    if (res.status === 429) {
-      throw new Error(
-        `가격 입력 실패: 동일 사업건에는 24시간 이후에 다시 가격을 등록할 수 있습니다`
-      );
-    }
     const data = await res.json();
 
     if (data.success === false) {
@@ -56,21 +47,11 @@ export const postPrice = async ({
       }),
     });
 
-    if (res.status === 401) {
-      throw new Error(`가격 입력 실패: 로그인이 필요합니다.`);
-    }
-
-    if (res.status === 429) {
-      throw new Error(
-        `가격 입력 실패: 동일 사업건에는 24시간 이후에 다시 가격을 등록할 수 있습니다`
-      );
-    }
-
-    if (!res.ok) {
-      throw new Error(`가격 입력 실패 ${res.status} ${res.statusText}`);
-    }
-
     const data = await res.json();
+
+    if (data.success === false) {
+      throw new Error(data.message || '가격 입력에 실패했습니다.');
+    }
     return data.data;
   }
 
