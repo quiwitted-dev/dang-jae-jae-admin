@@ -23,6 +23,7 @@ import {
 } from '@/services/bookmark.api';
 import useStore from '@/store/useStore';
 import { useQueryParams } from '@/lib/useQueryParams';
+import CompareButton from '../common/CompareButton';
 
 type SeoulSideBarProps = {
   publicData: SeoulSubmissionDetail;
@@ -200,15 +201,7 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
                 <BookmarkIcon size={16} />
               )}
             </Button>
-            <Button
-              className="rounded-full"
-              onClick={() => {
-                setCompare({ id, dataType: 'PUBLIC' });
-                alert('비교하기에 담았습니다');
-              }}
-            >
-              비교담기
-            </Button>
+            <CompareButton id={id} />
           </div>
 
           <div className="flex flex-row gap-4 px-5 md:px-0">
