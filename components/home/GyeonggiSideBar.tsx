@@ -1,29 +1,12 @@
 'use client';
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  BookmarkIcon,
-  Check,
-  Pencil,
-  X,
-} from 'lucide-react';
+import { ArrowRight, Check, Pencil, X } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Input } from '../ui/input';
 import { GyeonggiSubmissionDetail } from '@/types/submission.type';
-import useCompareStore from '@/store/useCompareStore';
 import { postPrice } from '@/services/price.api';
-import {
-  deleteBookmark,
-  getBookmark,
-  postBookmark,
-} from '@/services/bookmark.api';
-import useAuthStore from '@/store/useAuthStore';
-import useStore from '@/store/useStore';
-import { useQueryParams } from '@/lib/useQueryParams';
-import CompareButton from '../common/CompareButton';
+import BookmarkCompareGroup from './[id]/BookmarkCompareGroup';
 
 type GyeonggiSideBarProps = {
   publicData: GyeonggiSubmissionDetail;
@@ -33,20 +16,10 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
   const [isEdit, setIsEdit] = useState(false);
   const [maxPrice, setMaxPrice] = useState('');
   const [minPrice, setMinPrice] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [minimumInitialInvestment, setMinimumInitialInvestment] = useState('');
-  const [currentBookmarkId, setCurrentBookmarkId] = useState<
-    string | undefined
-  >(undefined);
-  const [premium, setPremium] = useState('');
-  const { setCompare } = useCompareStore();
-  const { isLogin } = useAuthStore();
-  const { toggleOpen, setAddress } = useStore();
-  const router = useRouter();
-  const { id } = publicData;
-  const query = useQueryParams();
-  const { type, ...restQuery } = query;
+  const [minimumInitialInvestment, setMinimumInitialInvestment] = useState<
+    string | null
+  >(null);
+  const [premium, setPremium] = useState<string | null>(null);
 
   const projectArea = Number(publicData.projectAreaM2);
   const ownerCount = Number(publicData.ownerCount);
@@ -55,35 +28,13 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
       ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
       : '-';
 
-  useEffect(() => {
-    (async () => {
-      const data = await getBookmark();
-      const favorite = data.favorites.find((item) => item.referenceId === id);
-      if (favorite) {
-        setIsFavorite(true);
-        setCurrentBookmarkId(favorite.id);
-      } else {
-        setIsFavorite(false);
-        setCurrentBookmarkId(undefined);
-      }
-    })();
-    setAddress(publicData.address);
-  }, []);
-
-  const handleGoHome = () => {
-    const qs = new URLSearchParams({
-      ...restQuery,
-    }).toString();
-    router.push(`/?${qs}`);
-  };
-
   const handleEdit = () => {
     setIsEdit(!isEdit);
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const referenceId = id;
+    const referenceId = publicData.id;
 
     const form = {
       minPrice,
@@ -113,47 +64,6 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
     }
   };
 
-  const handleToggleBookmark = async (id: string) => {
-    if (loading) return;
-    if (!isLogin) {
-      alert('로그인이 필요합니다.');
-      toggleOpen();
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      if (!isFavorite) {
-        const created = await postBookmark(publicData.id, 'PUBLIC_DATA');
-        // post 응답에 id가 없을 때를 대비해 리스트 재조회로 보정
-        let newId = created?.data?.id ?? created?.id;
-        if (!newId) {
-          const { favorites } = await getBookmark();
-          const found = favorites?.find(
-            (fav: any) =>
-              fav.referenceId === publicData.id || fav.id === publicData.id
-          );
-          newId = found?.id ?? publicData.id;
-        }
-        setCurrentBookmarkId(newId);
-        setIsFavorite(true);
-      } else {
-        const target = currentBookmarkId ?? publicData.id;
-        const data = await deleteBookmark(target);
-        if (!data) throw new Error('삭제 실패');
-        setIsFavorite(false);
-        setCurrentBookmarkId(undefined);
-      }
-    } catch (err) {
-      console.error(err);
-      const message = JSON.parse((err as Error).message).error;
-      alert(message); // 혹은 toast
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const dateFormatter = (date: string) => {
     if (!date) return '-';
     const translateDate = new Date(date.replace(' ', 'T'));
@@ -163,20 +73,13 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
 
   return (
     <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] text-black min-h-dvh whitespace-normal break-keep">
-      <div className="flex flex-row items-center justify-between px-4 py-5">
-        <div className="flex flex-row gap-4 text-[18px] font-bold">
-          <button onClick={handleGoHome} className="cursor-pointer">
-            <ArrowLeft />
-          </button>
-          {publicData.imprvZoneNm}
-        </div>
-        <button onClick={handleGoHome} className="cursor-pointer">
-          <X />
-        </button>
-      </div>
       <div className="flex max-w-[400px] mx-auto px-4">
         <div className="flex flex-col items-center justify-center gap-3">
-          <div className="text-3xl font-normal">
+          <div className="text-3xl font-normal w-full">
+            {/* <p className="text-lg font-semibold py-3">프로젝트 네임</p> */}
+            <p className="text-lg font-semibold py-3">
+              {publicData.imprvZoneNm}
+            </p>
             <h3>
               일반분양 세대수{' '}
               <span className="font-extrabold">
@@ -194,23 +97,13 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
             </h3>
           </div>
 
-          <div className="flex flex-row gap-3">
-            <Button
-              className="rounded-full"
-              onClick={(e) => {
-                handleToggleBookmark(publicData.id);
-              }}
-            >
-              {isFavorite ? (
-                <BookmarkIcon fill="white" size={16} />
-              ) : (
-                <BookmarkIcon size={16} />
-              )}
-            </Button>
-            <CompareButton id={id} />
-          </div>
+          <BookmarkCompareGroup
+            id={publicData.id}
+            type="PUBLIC_DATA"
+            address={publicData.address}
+          />
 
-          <div className="flex flex-row gap-4 px-5 md:px-0">
+          <div className="flex flex-row gap-4 md:px-0 pb-5">
             <h4 className="text-[20px] font-bold whitespace-nowrap">
               요즘시세
             </h4>
@@ -231,7 +124,11 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               className="absolute -top-5 left-5 w-7 h-7 bg-black rounded-full flex items-center justify-center cursor-pointer"
               onClick={handleEdit}
             >
-              <Pencil className="text-white" size={15} />
+              {isEdit ? (
+                <X className="text-white" size={15} />
+              ) : (
+                <Pencil className="text-white" size={15} />
+              )}
             </div>
             <div className="text-[40px] font-normal text-center">
               <div className="flex flex-row items-center">
@@ -299,7 +196,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                         publicData.renovationPrice?.minimumInitialInvestment ??
                         '0'
                       }
-                      required
+                      // required
                       onChange={(e) => {
                         setMinimumInitialInvestment(e.target.value);
                       }}
@@ -320,7 +217,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                     <Input
                       className="text-right"
                       placeholder={publicData.renovationPrice?.premium ?? '0'}
-                      required
+                      // required
                       onChange={(e) => {
                         setPremium(e.target.value);
                       }}

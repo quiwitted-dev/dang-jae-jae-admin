@@ -1,29 +1,12 @@
 'use client';
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  BookmarkIcon,
-  Check,
-  Pencil,
-  X,
-} from 'lucide-react';
+import { ArrowRight, Check, Pencil, X } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Input } from '../ui/input';
 import { SubmissionUserDetail } from '@/types/submission.type';
-import useCompareStore from '@/store/useCompareStore';
 import { postPrice } from '@/services/price.api';
-import useAuthStore from '@/store/useAuthStore';
-import {
-  deleteBookmark,
-  getBookmark,
-  postBookmark,
-} from '@/services/bookmark.api';
-import useStore from '@/store/useStore';
-import { useQueryParams } from '@/lib/useQueryParams';
-import CompareButton from '../common/CompareButton';
+import BookmarkCompareGroup from './[id]/BookmarkCompareGroup';
 
 const SubmissionUserSideBar = ({
   submissionData,
@@ -34,18 +17,6 @@ const SubmissionUserSideBar = ({
   const [popup, setPopup] = useState(false);
   const [maxPrice, setMaxPrice] = useState('');
   const [minPrice, setMinPrice] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [currentBookmarkId, setCurrentBookmarkId] = useState<
-    string | undefined
-  >(undefined);
-  const { setCompare } = useCompareStore();
-  const { isLogin } = useAuthStore();
-  const { toggleOpen, setAddress } = useStore();
-  const router = useRouter();
-  const { id } = submissionData;
-  const query = useQueryParams();
-  const { type, ...restQuery } = query;
 
   const projectArea = Number(submissionData.projectArea);
   const ownerCount = Number(submissionData.ownerCount);
@@ -53,30 +24,8 @@ const SubmissionUserSideBar = ({
     projectArea > 0 && ownerCount > 0
       ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
       : '-';
-  console.log(submissionData);
-  useEffect(() => {
-    (async () => {
-      const data = await getBookmark();
-      const favorite = data.favorites.find((item) => item.referenceId === id);
-      if (favorite) {
-        setIsFavorite(true);
-        setCurrentBookmarkId(favorite.id);
-      } else {
-        setIsFavorite(false);
-        setCurrentBookmarkId(undefined);
-      }
-    })();
-    setAddress(submissionData.location);
-  }, []);
 
   const [min, max] = submissionData.priceRange?.match(/\d+/g) ?? [];
-
-  const handleGoHome = () => {
-    const qs = new URLSearchParams({
-      ...restQuery,
-    }).toString();
-    router.push(`/?${qs}`);
-  };
 
   const handleEdit = () => {
     setIsEdit(!isEdit);
@@ -84,7 +33,7 @@ const SubmissionUserSideBar = ({
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const referenceId = id;
+    const referenceId = submissionData.id;
 
     const form = {
       minPrice,
@@ -110,62 +59,8 @@ const SubmissionUserSideBar = ({
     }
   };
 
-  const handleToggleBookmark = async (id: string) => {
-    if (loading) return;
-    if (!isLogin) {
-      alert('로그인이 필요합니다.');
-      toggleOpen();
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      if (!isFavorite) {
-        const created = await postBookmark(submissionData.id, 'SUBMISSION');
-
-        // post 응답에 id가 없을 때를 대비해 리스트 재조회로 보정
-        let newId = created?.data?.id ?? created?.id;
-        if (!newId) {
-          const { favorites } = await getBookmark();
-          const found = favorites?.find(
-            (fav: any) =>
-              fav.referenceId === submissionData.id ||
-              fav.id === submissionData.id
-          );
-          newId = found?.id ?? submissionData.id;
-        }
-        setCurrentBookmarkId(newId);
-        setIsFavorite(true);
-      } else {
-        const target = currentBookmarkId ?? submissionData.id;
-        const data = await deleteBookmark(target);
-        if (!data) throw new Error('삭제 실패');
-        setIsFavorite(false);
-        setCurrentBookmarkId(undefined);
-      }
-    } catch (err) {
-      console.error(err);
-      const message = JSON.parse((err as Error).message).error;
-      alert(message); // 혹은 toast
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="relative bg-linear-to-b from-[#A1ACEB] to-[#FFFEB1] text-black min-h-dvh whitespace-normal break-keep">
-      <div className="flex flex-row items-center justify-between px-4 py-5">
-        <div className="flex flex-row gap-4 text-[18px] font-bold">
-          <button onClick={handleGoHome} className="cursor-pointer">
-            <ArrowLeft />
-          </button>
-          {submissionData.tempName}
-        </div>
-        <button onClick={handleGoHome} className="cursor-pointer">
-          <X />
-        </button>
-      </div>
       <div className="flex max-w-[400px] mx-auto px-4">
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="text-3xl font-normal">
@@ -191,23 +86,13 @@ const SubmissionUserSideBar = ({
             </h3>
           </div>
 
-          <div className="flex flex-row gap-3">
-            <Button
-              className="rounded-full"
-              onClick={(e) => {
-                handleToggleBookmark(submissionData.id);
-              }}
-            >
-              {isFavorite ? (
-                <BookmarkIcon fill="white" size={16} />
-              ) : (
-                <BookmarkIcon size={16} />
-              )}
-            </Button>
-            <CompareButton id={id} />
-          </div>
+          <BookmarkCompareGroup
+            id={submissionData.id}
+            type="SUBMISSION"
+            address={submissionData.location}
+          />
 
-          <div className="flex flex-row gap-4 px-5 md:px-0">
+          <div className="flex flex-row gap-4 md:px-0 pb-5">
             <h4 className="text-[20px] font-bold whitespace-nowrap">
               요즘시세
             </h4>
@@ -229,7 +114,11 @@ const SubmissionUserSideBar = ({
               className="absolute -top-5 left-5 w-7 h-7 bg-black rounded-full flex items-center justify-center cursor-pointer"
               onClick={handleEdit}
             >
-              <Pencil className="text-white" size={15} />
+              {isEdit ? (
+                <X className="text-white" size={15} />
+              ) : (
+                <Pencil className="text-white" size={15} />
+              )}
             </div>
             <div className="text-[40px] font-normal text-center">
               <div className="flex flex-row items-center">
