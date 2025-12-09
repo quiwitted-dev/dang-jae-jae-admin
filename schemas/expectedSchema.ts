@@ -29,7 +29,7 @@ export const expectedSchema = z.object({
   consentRateStr: z.string(),
   notes: z.string(),
   submittedName: requiredString('이름을 입력해주세요'),
-  submittedPhoneNumber : requiredString('연락처를 입력해주세요'),
+  submittedPhoneNumber: requiredString('연락처를 입력해주세요'),
 });
 
 export type ExpectedFormInputs = z.infer<typeof expectedSchema>;

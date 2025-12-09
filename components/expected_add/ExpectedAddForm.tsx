@@ -83,9 +83,10 @@ const ExpectedAddForm = () => {
         router.push('/');
       }
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : '회원가입에 실패했습니다.';
-      setError('root', { type: 'serverSignupError', message });
+      console.error(error);
+      const message = JSON.parse((error as Error).message).error;
+      toast(message); // 혹은 toast
+      setError('root', { type: 'serverError', message });
     }
   };
 
