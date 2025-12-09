@@ -25,7 +25,7 @@ const SubmissionUserSideBar = ({
 
   return (
     <div className="relative bg-linear-to-b from-[#A1ACEB] to-[#FFFEB1] text-black min-h-dvh whitespace-normal break-keep">
-      <div className="flex max-w-[400px] mx-auto px-4">
+      <div className="flex max-w-[400px] mx-auto px-4 pt-4">
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="text-3xl font-normal">
             <p className="font-bold text-red-600 text-base">
