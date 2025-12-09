@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from 'react';
 import useAuthStore from '@/store/useAuthStore';
 import { logout } from '@/services/auth.api';
 import { useSearchParams } from 'next/navigation';
+import toast from 'react-hot-toast';
 type headerProps = {
   isLoggedIn: boolean;
 };
@@ -92,7 +93,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
     if (data.success === true) {
       setIsLogin(false);
       setAddress('');
-      alert('로그아웃 되었습니다.');
+      toast('로그아웃 되었습니다.');
       if (pathname.startsWith('/my')) {
         router.replace('/');
       }
@@ -116,9 +117,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
       performKeywordSearch();
     }
   };
-
-  // Todo : 비교보기 버튼 비교담기 상태에 따라 아이콘 표현 달리하기 (가능한가?)
-
+  const isDetail = /^\/[^/]+$/.test(pathname);
   return (
     <div
       className={`sticky top-0 z-50 bg-black ${
@@ -165,7 +164,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
             {isLogin ? <></> : <p>로그인</p>}
           </Button>
 
-          {isLogin && (
+          {pathname === '/my' && isLogin && (
             <Button
               className="hidden md:flex flex-row w-10 h-10 cursor-pointer"
               variant={'white'}
@@ -208,7 +207,9 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 className="absolute flex flex-row items-center justify-center gap-2 top-1/2 right-1 -translate-y-1/2 rounded-full px-2"
                 onClick={performKeywordSearch}
               >
-                검색
+                <p className="absolute top-1/2 -translate-y-1/2 -translate-x-7 pt-[2px]">
+                  검색
+                </p>
                 <Search className="h-4 w-4" />
               </Button>
             </div>
@@ -229,7 +230,8 @@ const Header = ({ isLoggedIn }: headerProps) => {
               <Link href={'/compare'}>
                 <Button
                   variant={'white'}
-                  className="flex items-center h-10 flex-row justify-center p-2 cursor-pointer"
+                  size={'none'}
+                  className="flex items-center h-10 flex-row justify-center p-2 cursor-pointer  leading-none"
                 >
                   {' '}
                   <Image
@@ -255,6 +257,15 @@ const Header = ({ isLoggedIn }: headerProps) => {
               />
             </div>
             <div className="relative flex flex-row items-center gap-1">
+              {isLogin && (
+                <Button
+                  className="w-10 h-10 cursor-pointer"
+                  variant={'white'}
+                  onClick={handleLogout}
+                >
+                  <LogOut fill="black" />
+                </Button>
+              )}
               <Link href={'/compare'}>
                 <Button
                   variant={'white'}
@@ -282,6 +293,42 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 onClick={() => handleLink('/')}
                 className="cursor-pointer"
               />
+            </div>
+            <div className="relative flex flex-row items-center gap-1">
+              <Button
+                className="flex flex-row w-10 h-10 cursor-pointer"
+                variant={'white'}
+                onClick={() => {
+                  isLogin ? handleLink('/my') : handleLoginToggle();
+                }}
+              >
+                {isLogin ? (
+                  <Bookmark fill="black" />
+                ) : (
+                  <UserRound fill="black" />
+                )}
+              </Button>
+              <Link href={'/compare'}>
+                <Button
+                  variant={'white'}
+                  className="border border-black rounded-full p-1 cursor-pointer"
+                >
+                  <Image
+                    src={'/black-compare.png'}
+                    alt="비교보기 아이콘"
+                    width={27}
+                    height={27}
+                  />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {isDetail && (
+          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-[#F8F4F1] text-black">
+            <div className="flex flex-row items-center justify-center gap-7">
+              <ChevronLeft onClick={handleBack} className="cursor-pointer" />
             </div>
             <div className="relative flex flex-row items-center gap-1">
               <Button
