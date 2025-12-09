@@ -22,9 +22,8 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
       <div className="flex max-w-[400px] mx-auto px-4">
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="text-3xl font-normal w-full">
-            <p className="text-lg font-semibold py-3">프로젝트 네임</p>
             <p className="text-lg font-semibold py-3">
-              {publicData.renovationZoneName}
+              {publicData.projectName}
             </p>
             <h3>
               일반분양 세대수{' '}
