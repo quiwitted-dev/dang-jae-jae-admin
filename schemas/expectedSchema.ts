@@ -8,7 +8,7 @@ const requiredString = (msg: string) =>
 export const expectedSchema = z.object({
   tempName: requiredString('가칭를 입력해주세요'),
   sido: requiredString('위치를 입력해주세요'),
-  gugun: requiredString('위치를 입력해주세요'),
+  gugun: z.string(),
   dong: requiredString('위치를 입력해주세요'),
   locationDetail: requiredString('위치를 입력해주세요'),
   consentContact: z.string(),
@@ -28,8 +28,8 @@ export const expectedSchema = z.object({
   businessType: requiredString('사업유형을 입력해주세요'),
   consentRateStr: z.string(),
   notes: z.string(),
-  name: requiredString('이름을 입력해주세요'),
-  phone: requiredString('연락처를 입력해주세요'),
+  submittedName: requiredString('이름을 입력해주세요'),
+  submittedPhoneNumber : requiredString('연락처를 입력해주세요'),
 });
 
 export type ExpectedFormInputs = z.infer<typeof expectedSchema>;
