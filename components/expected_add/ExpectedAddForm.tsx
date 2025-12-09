@@ -13,6 +13,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { getUser } from '@/services/user.api.client';
 import { User } from '@/types/user.type';
 import useAuthStore from '@/store/useAuthStore';
+import toast from 'react-hot-toast';
 
 const ExpectedAddForm = () => {
   const router = useRouter();
@@ -46,10 +47,10 @@ const ExpectedAddForm = () => {
       const res = await getUser();
       setUser(res);
       if (!res) {
-        alert('로그인이 필요한 서비스입니다.');
+        toast('로그인이 필요한 서비스입니다.');
         router.push('/');
       }
-      setValue('name', res.nickname);
+      setValue('submittedName', res.nickname);
     })();
   }, [isLogin, router, setValue]);
 
@@ -64,7 +65,7 @@ const ExpectedAddForm = () => {
 
   const handlePhoneChange = (
     event: ChangeEvent<HTMLInputElement>,
-    field: 'phone' | 'consentContact'
+    field: 'submittedPhoneNumber' | 'consentContact'
   ) => {
     const formatted = formatPhoneNumber(event.target.value);
     event.target.value = formatted;
@@ -73,12 +74,12 @@ const ExpectedAddForm = () => {
 
   const onSubmit = async (form: ExpectedFormInputs) => {
     if (!user) {
-      alert('로그인이 필요합니다.');
+      toast('로그인이 필요합니다.');
     }
     try {
       const data = await postSubmissionUser(form);
       if (data.success) {
-        alert('등록이 완료되었습니다.');
+        toast('등록이 완료되었습니다.');
         router.push('/');
       }
     } catch (error) {
@@ -444,27 +445,32 @@ const ExpectedAddForm = () => {
               작성자 성함*
             </h3>
             <Input
-              {...register('name')}
+              {...register('submittedName')}
               className="w-3/5 text-end text-base bg-white h-7"
               defaultValue={user?.nickname}
               placeholder={user?.nickname || '이름'}
             />
           </div>
-          {errors.name && <p className="text-red-600">{errors.name.message}</p>}
+          {errors.submittedName && (
+            <p className="text-red-600">{errors.submittedName.message}</p>
+          )}
           <div className="flex flex-row justify-between gap-5">
             <h3 className="md:text-[20px] text-base font-medium shrink-0">
               작성자 연락처*
             </h3>
             <Input
-              {...register('phone', {
-                onChange: (event) => handlePhoneChange(event, 'phone'),
+              {...register('submittedPhoneNumber', {
+                onChange: (event) =>
+                  handlePhoneChange(event, 'submittedPhoneNumber'),
               })}
               className="w-3/5 text-end text-base bg-white h-7"
               placeholder="전화번호"
             />
           </div>
-          {errors.phone && (
-            <p className="text-red-600">{errors.phone.message}</p>
+          {errors.submittedPhoneNumber && (
+            <p className="text-red-600">
+              {errors.submittedPhoneNumber.message}
+            </p>
           )}
 
           <div className="flex flex-col whitespace-normal break-keep text-[10px]">

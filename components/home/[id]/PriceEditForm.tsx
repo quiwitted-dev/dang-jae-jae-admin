@@ -10,6 +10,7 @@ import {
 } from '@/types/submission.type';
 import { Check, Pencil, X } from 'lucide-react';
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 type Props =
   | {
@@ -58,7 +59,7 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
         form,
       });
       if (data.success) {
-        alert('가격 입력이 확인되었습니다.');
+        toast('가격 입력이 확인되었습니다.');
         setIsEdit(false);
         setMaxPrice('');
         setMinPrice('');
@@ -69,7 +70,7 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
       console.error(error);
       const message = JSON.parse((error as Error).message).error;
 
-      alert(message);
+      toast(message);
     }
   };
 

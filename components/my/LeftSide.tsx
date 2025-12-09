@@ -16,6 +16,7 @@ import { logout } from '@/services/auth.api';
 import useAuthStore from '@/store/useAuthStore';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const LeftSide = ({ user }: { user: User }) => {
   const myPageTab = useStore((state) => state.myPageTab);
@@ -85,7 +86,7 @@ const LeftSide = ({ user }: { user: User }) => {
     if (data.success === true) {
       setIsLogin(false);
       setAddress('');
-      alert('로그아웃 되었습니다.');
+      toast('로그아웃 되었습니다.');
       if (pathname.startsWith('/my')) {
         router.replace('/');
       }
@@ -144,7 +145,7 @@ const LeftSide = ({ user }: { user: User }) => {
               </Button>
             </div>
             <p
-              className="text-sm font-normal text-[#F5B3CB]"
+              className="text-sm font-normal text-[#F5B3CB] w-fit"
               onClick={handleLogout}
             >
               로그아웃
@@ -156,13 +157,13 @@ const LeftSide = ({ user }: { user: User }) => {
           <div className="flex flex-col gap-3 mb-9">
             <p className="text-sm font-extralight text-[#F5B3CB]">고객센터</p>
             <h3
-              className={getTabClass('privacy')}
+              className={`${getTabClass('privacy')} w-fit`}
               onClick={() => handleTab('privacy')}
             >
               개인정보처리방침
             </h3>
             <h3
-              className={getTabClass('policies')}
+              className={`${getTabClass('policies')} w-fit`}
               onClick={() => handleTab('policies')}
             >
               약관 및 정책
@@ -209,11 +210,13 @@ const LeftSide = ({ user }: { user: User }) => {
 
           {isTermsModalOpen && (
             <div className="lg:hidden absolute inset-0">
-              <div className="relative">
-                <X
-                  className="absolute top-2 right-2 text-black"
-                  onClick={() => setIsTermsModalOpen(false)}
-                />
+              <div className="flex flex-col">
+                <div className="sticky top-0">
+                  <X
+                    className="absolute top-2 right-2 text-black"
+                    onClick={() => setIsTermsModalOpen(false)}
+                  />
+                </div>
                 <TermsModal />
               </div>
             </div>

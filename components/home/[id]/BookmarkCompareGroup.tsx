@@ -11,6 +11,7 @@ import useAuthStore from '@/store/useAuthStore';
 import useStore from '@/store/useStore';
 import { BookmarkIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 type Props = {
   id: string;
@@ -45,7 +46,7 @@ const BookmarkCompareGroup = ({ id, type, address }: Props) => {
   const handleToggleBookmark = async (id: string) => {
     if (loading) return;
     if (!isLogin) {
-      alert('로그인이 필요합니다.');
+      toast('로그인이 필요합니다.');
       toggleOpen();
       return;
     }
@@ -76,7 +77,7 @@ const BookmarkCompareGroup = ({ id, type, address }: Props) => {
     } catch (err) {
       console.error(err);
       const message = JSON.parse((err as Error).message).error;
-      alert(message); // 혹은 toast
+      toast(message); // 혹은 toast
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,9 @@
+'use client';
+
 import useCompareStore from '@/store/useCompareStore';
 import { Button } from '../ui/button';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 
 type Props = {
   id: string;
@@ -11,12 +14,12 @@ const CompareButton = ({ id, type }: Props) => {
   const { compare, setCompare } = useCompareStore();
   const hasId = compare.some((compareId) => compareId?.id === id);
 
-  const handleCompre = () => {
+  const handleCompare = () => {
     if (hasId) {
-      alert('비교하기에 이미 담았습니다.');
+      toast('비교하기에 이미 담았습니다.');
     } else {
       setCompare({ id, dataType: type });
-      alert('비교하기에 담았습니다.');
+      toast('비교하기에 담았습니다.');
     }
   };
 
@@ -25,7 +28,7 @@ const CompareButton = ({ id, type }: Props) => {
       className={`rounded-full cursor-pointer border ${
         hasId ? 'bg-transparent text-black border-black' : 'border-transparent'
       }`}
-      onClick={handleCompre}
+      onClick={handleCompare}
     >
       <Image
         src={hasId ? '/black-compare.png' : '/white-compare.png'}

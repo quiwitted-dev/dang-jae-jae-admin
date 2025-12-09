@@ -10,6 +10,7 @@ import useStore from '@/store/useStore';
 import { ApprovedSubmission } from '@/types/submission.type';
 import { BookmarkIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 type BookMarkProps = {
   item: ApprovedSubmission;
@@ -48,7 +49,7 @@ const Bookmark = ({
 
     if (loading) return;
     if (!isLogin) {
-      alert('로그인이 필요합니다.');
+      toast('로그인이 필요합니다.');
       toggleOpen();
       return;
     }
@@ -80,7 +81,7 @@ const Bookmark = ({
     } catch (err) {
       console.error(err);
       const message = JSON.parse((err as Error).message).error;
-      alert(message); // 혹은 toast
+      toast(message); // 혹은 toast
     } finally {
       setLoading(false);
     }
