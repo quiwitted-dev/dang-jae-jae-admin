@@ -45,10 +45,10 @@ const Login = () => {
         >
           <ChevronLeft onClick={handleModalToggle} />
           <div className="flex items-center gap-1">
-            <Button variant={'white'}>
+            {/* <Button variant={'white'}>
               <Bookmark fill="black" />
             </Button>
-            <Button variant={'white'}>비교보기</Button>
+            <Button variant={'white'}>비교보기</Button> */}
           </div>
         </div>
 

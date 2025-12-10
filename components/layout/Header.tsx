@@ -117,7 +117,10 @@ const Header = ({ isLoggedIn }: headerProps) => {
       performKeywordSearch();
     }
   };
-  const isDetail = /^\/[^/]+$/.test(pathname);
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const isDetail =
+    pathSegments.length === 1 &&
+    !['compare', 'my', 'expected_add', 'auth'].includes(pathSegments[0]);
   return (
     <div
       className={`sticky top-0 z-50 bg-black ${
