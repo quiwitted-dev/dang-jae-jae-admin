@@ -40,10 +40,10 @@ const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
       projectArenaM2: data.projectAreaM2 ?? '',
       residentialLandAreaM2: '0',
       price: '0',
-      averageLandScale: `${(
-        (+data.projectAreaM2 / +data.ownerCount) *
-        0.3025
-      ).toFixed(2)}`,
+      averageLandScale: `${getAverageLandSclae(
+        +data.projectAreaM2,
+        +data.ownerCount
+      )}`,
       ownerCount: `${data.ownerCount ?? ''}`,
       associationSaleUnits: '0',
       generalSaleUnits: `${data.generalSaleUnits ?? '0'}`,
@@ -62,10 +62,10 @@ const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
     projectArenaM2: data.projectAreaM2 ?? '0',
     residentialLandAreaM2: data.residentialLandAreaM2 ?? '0',
     price: '0',
-    averageLandScale: `${(
-      (+data.projectAreaM2 / +data.ownerCount) *
-      0.3025
-    ).toFixed(2)}`,
+    averageLandScale: `${getAverageLandSclae(
+      +data.projectAreaM2,
+      +data.ownerCount
+    )}`,
     ownerCount: `${data.ownerCount ?? '0'}`,
     associationSaleUnits: `${data.ownerCount ?? '0'}`,
     generalSaleUnits: `${+data.totalSaleUnits - +data.ownerCount}`,
@@ -84,10 +84,10 @@ const mapUserResultToCompare = (data: SubmissionUserDetail) => ({
   projectArenaM2: data.projectArea ?? '0',
   residentialLandAreaM2: '0',
   price: data.priceRange ?? '0',
-  averageLandScale: `${(
-    (+data.projectArea / +data.ownerCount) *
-    0.3025
-  ).toFixed(2)}`,
+  averageLandScale: `${getAverageLandSclae(
+    +data.projectArea,
+    +data.ownerCount
+  )}`,
   ownerCount: `${data.ownerCount ?? '0'}`,
   associationSaleUnits: '0',
   generalSaleUnits: '0',
@@ -98,6 +98,15 @@ const mapUserResultToCompare = (data: SubmissionUserDetail) => ({
   businessType: data.businessType ?? '-',
   businessOperator: data.businessEntity ?? '-',
 });
+
+export const getAverageLandSclae = (dividend: number, divisor: number) => {
+  if (dividend === 0 || divisor === 0) {
+    return 0;
+  }
+
+  const result = ((dividend / divisor) * 0.3025).toFixed(2);
+  return result;
+};
 
 const ComparePage = () => {
   const { compare, removeCompare } = useCompareStore();
@@ -151,12 +160,6 @@ const ComparePage = () => {
   const handleGoHome = () => {
     router.push('/');
   };
-  console.log(
-    +(+compare1.projectArenaM2 * 0.3025).toString().slice(0, 3) / 2 / 2
-  );
-  console.log(
-    +(+compare2.projectArenaM2 * 0.3025).toString().slice(0, 3) / 2 / 2
-  );
 
   const getPercentage = (dividend: number, divisor: number) => {
     if (dividend === 0 || divisor === 0) {
@@ -165,6 +168,8 @@ const ComparePage = () => {
     const result = Math.round((+dividend / +divisor) * 100);
     return result;
   };
+
+  console.log(compare1.averageLandScale);
 
   return (
     <div className="flex flex-row min-h-dvh relative">
