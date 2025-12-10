@@ -126,7 +126,7 @@ const ProjectCard = ({
 
   return (
     <Card
-      className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-390/230 min-w-[390px] max-w-[500px] mx-auto justify-between cursor-pointer"
+      className="relative flex flex-col overflow-hidden bg-transparent p-0 rounded-4xl aspect-390/230 md:min-w-[390px] w-[340px] mx-auto justify-between cursor-pointer"
       onClick={handleCardClick}
     >
       <div ref={mapRef} className="absolute inset-0 -z-10" />
@@ -135,7 +135,7 @@ const ProjectCard = ({
           {mapMaskMessage}
         </div>
       )}
-      <CardHeader className="relative flex flex-row p-0 justify-between pt-4 px-4">
+      <CardHeader className="relative flex flex-row p-0 justify-between pt-4 px-5">
         {item.dataType === 'PUBLIC_DATA' && (
           <>
             <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
@@ -143,7 +143,7 @@ const ProjectCard = ({
               <p className="text-xs font-semibold">
                 {gugun} {dong} {locationDetail}
               </p>
-              <h3 className="text-lg font-bold truncate w-40">
+              <h3 className="text-md font-bold truncate w-40">
                 {item.projectName}
               </h3>
             </div>
@@ -151,16 +151,16 @@ const ProjectCard = ({
         )}
 
         {item.currentStage ? (
-          <Badge className="text-xs font-bold bg-[#F4FF92] text-black h-fit">
+          <Badge className="text-xs font-bold bg-[#F4FF92] text-black  leading-relaxed">
             {item.currentStage}
           </Badge>
         ) : (
-          <Badge className="text-xs font-bold bg-[#000DFF] text-white h-fit absolute right-4">
+          <Badge className="text-xs font-bold bg-[#000DFF] text-white h-fit absolute right-4 leading-relaxed">
             예정지
           </Badge>
         )}
       </CardHeader>
-      <CardContent className="flex flex-row justify-between items-center px-4 flex-1">
+      <CardContent className="flex flex-row justify-between items-center px-5 flex-1">
         <div className="bg-black text-white flex flex-col text-center text-lg rounded-3xl py-2 px-1.5">
           <div className="flex flex-row items-center">
             <p className="font-playfair">
@@ -186,12 +186,12 @@ const ProjectCard = ({
         </div>
       </CardContent>
 
-      <CardFooter className="relative flex flex-row justify-between px-4 pb-4">
+      <CardFooter className="relative flex flex-row justify-between px-5 pb-4">
         <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
         {item.dataType === 'PUBLIC_DATA' ? (
           <>
             <div className="flex flex-col gap-1 font-bold">
-              <p className="text-lg">{item.totalSaleUnits || '-'} 신축세대</p>
+              <p className="text-md">{item.totalSaleUnits || '-'} 신축세대</p>
               <p className="text-xs">임대 {item.rentalUnits || '-'}</p>
             </div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">

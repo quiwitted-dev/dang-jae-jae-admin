@@ -126,6 +126,10 @@
     font-family: 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont,
       'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   }
+  html {
+    -webkit-text-size-adjust: none;
+    text-size-adjust: 100%;
+  }
 }
 
 /* 폰트 유틸리티 클래스 */
@@ -146,4 +150,62 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
+}
+/* Dropdown 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation-duration: 150ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+.fade-in-0 {
+  animation-name: fadeIn;
+}
+
+.zoom-in-95 {
+  animation-name: zoomIn;
+}
+
+.slide-in-from-top-2 {
+  animation-name: slideInFromTop;
+}
+
+/* 모바일에서 드롭다운 위치 자동 조정 */
+@media (max-width: 640px) {
+  .dropdown-mobile-adjust {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    max-width: calc(100vw - 2rem) !important;
+  }
 }

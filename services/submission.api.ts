@@ -115,13 +115,9 @@ export const postSubmissionUser = async (form: ExpectedFormInputs) => {
     method: 'POST',
     body: JSON.stringify({ form }),
   });
-
-  if (!res.ok) {
-    throw new Error(
-      `사업 예정지 유저 입력 실패 ${res.status} ${res.statusText}`
-    );
-  }
-  // todo : 사업 등록 성공하면 return 뭐 주고 아니면 뭐 주고
   const data = await res.json();
+  if (data.success === false) {
+    throw new Error(data.message || '사업장 등록에 실패하였습니다.');
+  }
   return data;
 };

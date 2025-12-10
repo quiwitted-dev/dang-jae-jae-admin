@@ -39,7 +39,7 @@ const SettingsNavigation = () => {
       <Button
         size={'none'}
         variant={'yellow'}
-        className={activeTab('settings')}
+        className={`flex flex-col bg-[#FAFFCE] border border-[#FAFFCE] text-black`}
         onClick={() => {
           setMyPageTab('settings');
           setSettingsTab('privacy');

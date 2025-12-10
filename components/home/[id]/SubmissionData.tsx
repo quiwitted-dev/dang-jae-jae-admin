@@ -12,7 +12,7 @@ const SubmissionData = ({
       <div className="order-2 md:order-1">
         <SubmissionUserSideBar submissionData={submissionData} />
       </div>
-      <div className="flex-1 md:min-h-dvh order-1 md:order-2">
+      <div className="flex-1 md:h-[calc(100vh)] rounded-xl md:sticky md:top-0 order-1 md:order-2">
         <DetailRightSide address={submissionData.location} />
       </div>
     </>

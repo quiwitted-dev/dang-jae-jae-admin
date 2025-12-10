@@ -143,29 +143,34 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
   };
 
   return (
-    <div className="flex flex-col max-w-[550px] w-full gap-4">
+    <div className="flex flex-col relative max-w-[550px] w-full">
       <div
-        ref={filterRef}
-        className="flex flex-row overflow-x-auto md:overflow-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none"
-        onMouseDown={handleMouseDown}
-        onMouseLeave={handleMouseLeave}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
+        className="sticky md:top-0 top-12 z-30 bg-black"
+        style={{ top: 'var(--header-offset, 0px)' }}
       >
-        <LocationFilter />
-        <BusinessTypeFilter />
-        <BusinessStageFilter />
-        <PriceFilter />
-        <OwnerCountFilter />
-        <NewUnitsFilter />
-        <div className="flex flex-row gap-1">
-          <Button
-            onClick={handleResetFilters}
-            className="bg-[#AAA4A9] text-black rounded-4xl"
-            variant={'ghost'}
-          >
-            리셋
-          </Button>
+        <div
+          ref={filterRef}
+          className="flex flex-row overflow-x-auto md:overflow-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none z-30 bg-black py-2 px-2"
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+        >
+          <LocationFilter />
+          <BusinessTypeFilter />
+          <BusinessStageFilter />
+          <PriceFilter />
+          <OwnerCountFilter />
+          <NewUnitsFilter />
+          <div className="flex flex-row gap-1">
+            <Button
+              onClick={handleResetFilters}
+              className="bg-[#AAA4A9] text-black rounded-4xl"
+              variant={'ghost'}
+            >
+              리셋
+            </Button>
+          </div>
         </div>
       </div>
       {/* 목록 */}

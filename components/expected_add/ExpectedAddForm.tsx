@@ -13,6 +13,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { getUser } from '@/services/user.api.client';
 import { User } from '@/types/user.type';
 import useAuthStore from '@/store/useAuthStore';
+import toast from 'react-hot-toast';
 
 const ExpectedAddForm = () => {
   const router = useRouter();
@@ -32,6 +33,8 @@ const ExpectedAddForm = () => {
     mode: 'onChange',
   });
 
+  const isSeoul = selectLocation === 'SEOUL';
+
   const numberInputClass =
     'text-end text-base [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none';
 
@@ -44,10 +47,10 @@ const ExpectedAddForm = () => {
       const res = await getUser();
       setUser(res);
       if (!res) {
-        alert('로그인이 필요한 서비스입니다.');
+        toast('로그인이 필요한 서비스입니다.');
         router.push('/');
       }
-      setValue('name', res.nickname);
+      setValue('submittedName', res.nickname);
     })();
   }, [isLogin, router, setValue]);
 
@@ -62,7 +65,7 @@ const ExpectedAddForm = () => {
 
   const handlePhoneChange = (
     event: ChangeEvent<HTMLInputElement>,
-    field: 'phone' | 'consentContact'
+    field: 'submittedPhoneNumber' | 'consentContact'
   ) => {
     const formatted = formatPhoneNumber(event.target.value);
     event.target.value = formatted;
@@ -71,21 +74,21 @@ const ExpectedAddForm = () => {
 
   const onSubmit = async (form: ExpectedFormInputs) => {
     if (!user) {
-      alert('로그인이 필요합니다.');
+      toast('로그인이 필요합니다.');
     }
     try {
       const data = await postSubmissionUser(form);
       if (data.success) {
-        alert('등록이 완료되었습니다.');
+        toast('등록이 완료되었습니다.');
         router.push('/');
       }
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : '회원가입에 실패했습니다.';
-      setError('root', { type: 'serverSignupError', message });
+      console.error(error);
+      const message = JSON.parse((error as Error).message).error;
+      toast(message); // 혹은 toast
+      setError('root', { type: 'serverError', message });
     }
   };
-  console.log(selectLocation);
 
   return (
     <div className="max-w-[700px] md:w-[700px] bg-[#A7B1E8] text-black min-h-dvh">
@@ -144,31 +147,25 @@ const ExpectedAddForm = () => {
                 <Input
                   {...register('sido')}
                   className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
-                  placeholder={`${
-                    selectLocation === 'SEOUL' ? '서울' : '경기'
-                  }`}
+                  placeholder={`${isSeoul ? '서울' : '경기'}`}
                 />
-                시
+                {isSeoul ? '시*' : '시/군*'}
               </div>
               <div className="flex flex-row items-center">
                 <Input
                   {...register('gugun')}
                   className="md:w-[50px] w-[70px] text-end text-base bg-white h-7"
-                  placeholder={`${
-                    selectLocation === 'SEOUL' ? '서울' : '경기'
-                  }`}
+                  placeholder={`${isSeoul ? '서울' : '경기'}`}
                 />
-                구
+                {isSeoul ? '구*' : '구'}
               </div>
               <div className="flex flex-row items-center">
                 <Input
                   {...register('dong')}
                   className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
-                  placeholder={`${
-                    selectLocation === 'SEOUL' ? '서울' : '경기'
-                  }`}
+                  placeholder={`${isSeoul ? '서울' : '경기'}`}
                 />
-                동
+                {isSeoul ? '동*' : '읍/면/동/리'}
               </div>
               <div className="flex flex-row items-center">
                 <Input
@@ -176,7 +173,7 @@ const ExpectedAddForm = () => {
                   className="w-[70px] text-end  text-base bg-white h-7"
                   placeholder="000-1"
                 />
-                일대
+                일대*
               </div>
             </div>
           </div>
@@ -222,8 +219,17 @@ const ExpectedAddForm = () => {
               <div className="flex flex-row items-center gap-3">
                 <Input
                   type="number"
-                  {...register('minPrice', { valueAsNumber: true })}
+                  {...register('minPrice', {
+                    valueAsNumber: true,
+                  })}
+                  onInput={(e) => {
+                    const trimmed = e.currentTarget.value
+                      .replace(/\D/g, '')
+                      .slice(0, 4);
+                    e.currentTarget.value = trimmed;
+                  }}
                   className={`w-14 ${numberInputClass} bg-white h-7`}
+                  inputMode="numeric"
                   placeholder="1"
                 />
                 <p>억</p>
@@ -233,7 +239,14 @@ const ExpectedAddForm = () => {
                 <Input
                   type="number"
                   {...register('maxPrice', { valueAsNumber: true })}
+                  onInput={(e) => {
+                    const trimmed = e.currentTarget.value
+                      .replace(/\D/g, '')
+                      .slice(0, 4);
+                    e.currentTarget.value = trimmed;
+                  }}
                   className={`w-14 ${numberInputClass} bg-white h-7 text-base`}
+                  inputMode="numeric"
                   placeholder="100"
                 />
                 <p>억</p>
@@ -249,6 +262,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('ownerCount', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="000000"
               />
               명
@@ -263,6 +277,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('expectedNewUnits', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="000000"
               />
               <p className="shrink-0">세대</p>
@@ -277,6 +292,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('projectArea', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="000000"
               />
               <p className="shrink-0">m2</p>
@@ -291,6 +307,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('currentVolumeRatio', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="200"
               />
               <p className="shrink-0">%</p>
@@ -305,6 +322,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('expectedVolumeRatio', { valueAsNumber: true })}
                 className={`w-4/5 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="200"
               />
               <p className="shrink-0">%</p>
@@ -319,6 +337,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('constructionYearStart', { valueAsNumber: true })}
                 className={`w-20 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="1980"
               />
               ~
@@ -326,6 +345,7 @@ const ExpectedAddForm = () => {
                 type="number"
                 {...register('constructionYearEnd', { valueAsNumber: true })}
                 className={`w-20 ${numberInputClass} bg-white h-7`}
+                inputMode="numeric"
                 placeholder="1988"
               />
             </div>
@@ -380,11 +400,17 @@ const ExpectedAddForm = () => {
             <h3 className="md:text-[20px] text-base font-medium shrink-0">
               사업성격*
             </h3>
-            <Input
+            <select
               {...register('businessType')}
-              className="w-3/5 text-end text-base bg-white h-7"
-              placeholder="재개발"
-            />
+              className="w-3/5 text-end text-sm bg-white h-7 rounded-md"
+            >
+              <option value="재건축">재건축</option>
+              <option value="재개발">재개발</option>
+              <option value="리모델링">리모델링</option>
+              <option value="재정비촉진구역">재정비촉진구역</option>
+              <option value="지역주택">지역주택</option>
+              <option value="가로주택정비">가로주택정비</option>
+            </select>
           </div>
           {errors.businessType && (
             <p className="text-red-600">{errors.businessType.message}</p>
@@ -397,7 +423,9 @@ const ExpectedAddForm = () => {
               대략 ~
               <Input
                 {...register('consentRateStr')}
-                className="w-1/5 text-end text-base bg-white h-7"
+                className={`w-1/5 text-end text-base bg-white h-7 ${numberInputClass}`}
+                type="number"
+                inputMode="numeric"
                 placeholder="40"
               />
               %
@@ -418,27 +446,32 @@ const ExpectedAddForm = () => {
               작성자 성함*
             </h3>
             <Input
-              {...register('name')}
+              {...register('submittedName')}
               className="w-3/5 text-end text-base bg-white h-7"
               defaultValue={user?.nickname}
               placeholder={user?.nickname || '이름'}
             />
           </div>
-          {errors.name && <p className="text-red-600">{errors.name.message}</p>}
+          {errors.submittedName && (
+            <p className="text-red-600">{errors.submittedName.message}</p>
+          )}
           <div className="flex flex-row justify-between gap-5">
             <h3 className="md:text-[20px] text-base font-medium shrink-0">
               작성자 연락처*
             </h3>
             <Input
-              {...register('phone', {
-                onChange: (event) => handlePhoneChange(event, 'phone'),
+              {...register('submittedPhoneNumber', {
+                onChange: (event) =>
+                  handlePhoneChange(event, 'submittedPhoneNumber'),
               })}
               className="w-3/5 text-end text-base bg-white h-7"
               placeholder="전화번호"
             />
           </div>
-          {errors.phone && (
-            <p className="text-red-600">{errors.phone.message}</p>
+          {errors.submittedPhoneNumber && (
+            <p className="text-red-600">
+              {errors.submittedPhoneNumber.message}
+            </p>
           )}
 
           <div className="flex flex-col whitespace-normal break-keep text-[10px]">

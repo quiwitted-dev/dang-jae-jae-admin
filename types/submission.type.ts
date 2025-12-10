@@ -54,6 +54,7 @@ export type SeoulSubmissionDetail = {
   renovationZoneName: string; // 정비구역명칭
   usageZone: string; // 용도지역
   mainUsage: string; // 주용도
+  projectName: string;
 
   ownerCount: number; // 토지 등 소유자 수
 

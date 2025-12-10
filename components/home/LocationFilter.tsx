@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronDown } from 'lucide-react';
+import { Dropdown, useDropdown } from '@/components/ui/dropdown';
 import useFilterStore from '@/store/useFilterStore';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const LOCATION_DATA = {
@@ -82,72 +82,9 @@ export default function LocationFilter() {
     region: '',
     district: '',
   });
-  const [isOpen, setIsOpen] = useState(false);
+  const dropdown = useDropdown();
   const [showDistricts, setShowDistricts] = useState<string>('');
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  const [isPositioned, setIsPositioned] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const handleFilter = useHandleFilter();
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-        setShowDistricts('');
-      }
-    };
-
-    const updateDropdownPosition = () => {
-      if (buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        const dropdownWidth = 256; // w-64 = 16rem = 256px
-        const viewportWidth = window.innerWidth;
-        const padding = 16; // 여백
-
-        let left = rect.left + window.scrollX;
-
-        // 드롭다운이 화면 우측을 벗어나는 경우 위치 조정
-        if (left + dropdownWidth > viewportWidth - padding) {
-          left = viewportWidth - dropdownWidth - padding;
-        }
-
-        // 드롭다운이 화면 좌측을 벗어나는 경우 위치 조정
-        if (left < padding) {
-          left = padding;
-        }
-
-        setDropdownPosition({
-          top: rect.bottom + window.scrollY + 4,
-          left: left,
-        });
-        setIsPositioned(true);
-      }
-    };
-
-    if (isOpen) {
-      setIsPositioned(false);
-      updateDropdownPosition();
-      window.addEventListener('scroll', updateDropdownPosition);
-      window.addEventListener('resize', updateDropdownPosition);
-    } else {
-      setIsPositioned(false);
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('scroll', updateDropdownPosition);
-      window.removeEventListener('resize', updateDropdownPosition);
-    };
-  }, [isOpen]);
 
   const handleRegionSelect = (region: string) => {
     if (selectRegion.region === region) {
@@ -165,20 +102,21 @@ export default function LocationFilter() {
   const handleDistrictSelect = (district: string) => {
     if (selectRegion.region === '서울시') {
       setLocations([`${district}구`]);
+      handleFilter({ data: `${district}구`, filter: 'locations' });
     } else {
       setLocations([`${district}시`]);
+      handleFilter({ data: `${district}시`, filter: 'locations' });
     }
     setSelectRegion((prev) => ({ ...prev, district }));
-    setIsOpen(false);
+    dropdown.close();
     setShowDistricts('');
-    handleFilter({ data: `${district}구`, filter: 'locations' });
   };
 
   const handleReset = () => {
     setLocations([]);
     setSelectRegion({ region: '', district: '' });
     handleFilter({ data: [], filter: 'locations' });
-    setIsOpen(false);
+    dropdown.close();
     setShowDistricts('');
   };
 
@@ -215,107 +153,101 @@ export default function LocationFilter() {
   };
 
   return (
-    <>
-      <Button
-        ref={buttonRef}
-        variant="ghost"
-        className={`flex items-center gap-2 rounded-full ${
-          isOpen && 'bg-gray-100 text-black'
-        }`}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <p className="text-2xl font-bold">{getDisplayText()}</p>
-        <svg
-          className={`h-4 w-4 transition-transform ${
-            isOpen ? 'rotate-180' : ''
+    <Dropdown
+      isOpen={dropdown.isOpen}
+      onClose={() => {
+        dropdown.close();
+        setShowDistricts('');
+      }}
+      className="w-64 sm:w-56"
+      trigger={
+        <Button
+          variant="ghost"
+          className={`flex items-center gap-2 rounded-full ${
+            dropdown.isOpen && 'bg-gray-100 text-black'
           }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+          onClick={dropdown.toggle}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </Button>
+          <p className="text-xl font-bold">{getDisplayText()}</p>
+          <svg
+            className={`h-4 w-4 transition-transform ${
+              dropdown.isOpen ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </Button>
+      }
+    >
+      <div className="py-1">
+        {Object.entries(LOCATION_DATA).map(([region, districts]) => (
+          <div key={region}>
+            <button
+              className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center text-black justify-between ${
+                selectRegion.region === region ? 'bg-blue-50 text-blue-600' : ''
+              }`}
+              onClick={() => handleRegionSelect(region)}
+            >
+              <span className="font-medium">{region}</span>
+              <svg
+                className={`h-4 w-4 transition-transform ${
+                  showDistricts === region ? 'rotate-180' : ''
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
 
-      {isOpen && isPositioned && (
-        <div
-          ref={dropdownRef}
-          className="fixed w-64 bg-white border border-gray-200 rounded-md shadow-lg z-9999"
-          style={{
-            top: `${dropdownPosition.top}px`,
-            left: `${dropdownPosition.left}px`,
-          }}
-        >
-          <div className="py-1">
-            {Object.entries(LOCATION_DATA).map(([region, districts]) => (
-              <div key={region}>
-                <button
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center text-black justify-between ${
-                    selectRegion.region === region
-                      ? 'bg-blue-50 text-blue-600'
-                      : ''
-                  }`}
-                  onClick={() => handleRegionSelect(region)}
-                >
-                  <span className="font-medium">{region}</span>
-                  <svg
-                    className={`h-4 w-4 transition-transform ${
-                      showDistricts === region ? 'rotate-180' : ''
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {showDistricts === region && (
-                  <div className="bg-gray-50 border-t border-gray-100">
-                    <div className="grid grid-cols-3 gap-1 p-2">
-                      {districts.map((district) => (
-                        <button
-                          key={district}
-                          className={`px-2 py-1 text-sm rounded text-black hover:bg-gray-200 ${
-                            selectRegion.district === district
-                              ? 'bg-blue-100 text-blue-600'
-                              : ''
-                          }`}
-                          onClick={() => handleDistrictSelect(district)}
-                        >
-                          {district}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            {showDistricts === region && (
+              <div className="bg-gray-50 border-t border-gray-100">
+                <div className="grid grid-cols-3 gap-1 p-2">
+                  {districts.map((district) => (
+                    <button
+                      key={district}
+                      className={`px-2 py-1 text-sm rounded text-black hover:bg-gray-200 ${
+                        selectRegion.district === district
+                          ? 'bg-blue-100 text-blue-600'
+                          : ''
+                      }`}
+                      onClick={() => handleDistrictSelect(district)}
+                    >
+                      {district}
+                    </button>
+                  ))}
+                </div>
               </div>
-            ))}
-
-            {(selectRegion.region || selectRegion.district) && (
-              <>
-                <div className="border-t border-gray-100 my-1"></div>
-                <button
-                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
-                  onClick={handleReset}
-                >
-                  선택 초기화
-                </button>
-              </>
             )}
           </div>
-        </div>
-      )}
-    </>
+        ))}
+
+        {(selectRegion.region || selectRegion.district) && (
+          <>
+            <div className="border-t border-gray-100 my-1"></div>
+            <button
+              className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+              onClick={handleReset}
+            >
+              선택 초기화
+            </button>
+          </>
+        )}
+      </div>
+    </Dropdown>
   );
 }

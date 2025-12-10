@@ -29,7 +29,7 @@ const Login = () => {
         <X className="size-8" />
       </Button>
       <div
-        className="md:w-[390px] md:h-[615px] flex flex-col w-full h-dvh relative bg-black rounded-4xl"
+        className="md:w-[390px] md:h-[615px] flex flex-col w-full h-dvh relative bg-[#212138] rounded-4xl"
         onClick={(e) => e.stopPropagation()}
       >
         <Image
