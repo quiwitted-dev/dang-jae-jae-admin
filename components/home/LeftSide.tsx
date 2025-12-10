@@ -165,7 +165,7 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
           <div className="flex flex-row gap-1">
             <Button
               onClick={handleResetFilters}
-              className="bg-[#532f4d] text-black rounded-4xl"
+              className="bg-[#AAA4A9] text-black rounded-4xl"
               variant={'ghost'}
             >
               리셋
