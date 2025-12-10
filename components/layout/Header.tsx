@@ -299,7 +299,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
             </div>
             <div className="relative flex flex-row items-center gap-1">
               <Button
-                className="flex flex-row w-10 h-10 cursor-pointer"
+                className="flex flex-row w-10 h-10 cursor-pointer border border-black"
                 variant={'white'}
                 onClick={() => {
                   isLogin ? handleLink('/my') : handleLoginToggle();
@@ -314,7 +314,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
               <Link href={'/compare'}>
                 <Button
                   variant={'white'}
-                  className="border border-black rounded-full p-1 cursor-pointer"
+                  className="border border-black w-10 h-10 rounded-full p-1 cursor-pointer"
                 >
                   <Image
                     src={'/black-compare.png'}
@@ -335,7 +335,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
             </div>
             <div className="relative flex flex-row items-center gap-1">
               <Button
-                className="flex flex-row w-10 h-10 cursor-pointer"
+                className="flex flex-row w-10 h-10 cursor-pointer border border-black"
                 variant={'white'}
                 onClick={() => {
                   isLogin ? handleLink('/my') : handleLoginToggle();
@@ -350,7 +350,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
               <Link href={'/compare'}>
                 <Button
                   variant={'white'}
-                  className="border border-black rounded-full p-1 cursor-pointer"
+                  className="border border-black w-10 h-10 rounded-full p-1 cursor-pointer"
                 >
                   <Image
                     src={'/black-compare.png'}
