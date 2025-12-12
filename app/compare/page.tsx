@@ -168,8 +168,7 @@ const ComparePage = () => {
     const result = Math.round((+dividend / +divisor) * 100);
     return result;
   };
-
-  console.log(compare1.averageLandScale);
+  console.log(compare1.newConstructionUnits === '0');
 
   return (
     <div className="flex flex-row min-h-dvh relative">
@@ -492,7 +491,7 @@ const ComparePage = () => {
 
               <div className="flex items-center gap-2 flex-1 pl-4">
                 <span className="text-base font-thin text-white">
-                  {compare1.ownerCount}명
+                  {compare2.ownerCount}명
                 </span>
               </div>
               <span>
@@ -721,7 +720,13 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
                   style={{
-                    width: `${compare1.newConstructionUnits ? 100 : 0}%`,
+                    width: `${
+                      compare1.newConstructionUnits === '0'
+                        ? 0
+                        : compare1.newConstructionUnits
+                        ? 100
+                        : 0
+                    }%`,
                   }} // 왼쪽 비율
                 />
               </div>
@@ -731,13 +736,26 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 left-0 bg-[#61616C] transition-all duration-500 rounded-r-4xl"
                   style={{
-                    width: `${compare2.newConstructionUnits ? 100 : 0}%`,
+                    width: `${
+                      compare2.newConstructionUnits === '0'
+                        ? 0
+                        : compare2.newConstructionUnits
+                        ? 1000
+                        : 0
+                    }%`,
                   }} // 오른쪽 비율
                 />
               </div>
 
               {/* 위에 올리는 실제 콘텐츠 */}
-              <span>{compare1.newConstructionUnits ? 100 : 0}%</span>
+              <span>
+                {compare1.newConstructionUnits === '0'
+                  ? 0
+                  : compare1.newConstructionUnits
+                  ? 100
+                  : 0}
+                %
+              </span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-20">
                 <span className="text-base font-thin text-white">
                   {compare1.newConstructionUnits}세대
@@ -759,7 +777,14 @@ const ComparePage = () => {
                   {compare2.newConstructionUnits}세대
                 </span>
               </div>
-              <span>{compare2.newConstructionUnits ? 100 : 0}%</span>
+              <span>
+                {compare2.newConstructionUnits === '0'
+                  ? 0
+                  : compare2.newConstructionUnits
+                  ? 1000
+                  : 0}
+                %
+              </span>
             </div>
           </div>
 
