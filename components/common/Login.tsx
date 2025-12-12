@@ -33,7 +33,7 @@ const Login = () => {
         onClick={(e) => e.stopPropagation()}
       >
         <Image
-          src={'/login_background.png'}
+          src={'/login_background_img.png'}
           fill
           alt="로그인 페이지 배경"
           className="absolute inset-0 object-cover"
@@ -43,7 +43,7 @@ const Login = () => {
           className="md:hidden relative flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1"
           // onClick={(e) => e.stopPropagation()}
         >
-          <ChevronLeft onClick={handleModalToggle} />
+          <X onClick={handleModalToggle} />
           <div className="flex items-center gap-1">
             {/* <Button variant={'white'}>
               <Bookmark fill="black" />
