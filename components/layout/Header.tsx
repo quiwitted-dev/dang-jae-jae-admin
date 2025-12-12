@@ -186,7 +186,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
       <div className="md:hidden">
         {pathname === "/" && (
           <div className="relative flex flex-row px-2 justify-between items-center py-1 gap-1">
-            <div className="relative text-black md:max-w-[400px] max-w-[180px] w-full ">
+            <div className="relative text-black md:max-w-[400px] w-full">
               <Input
                 className="bg-white rounded-4xl w-full pr-14 text-base"
                 value={keyword}
@@ -201,7 +201,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <div className="relative flex flex-row items-center gap-1 md:gap-2">
+            <div className="relative flex flex-row items-center min-w-[150px] gap-1 md:gap-2">
               <Button
                 className="flex flex-row w-10 h-10 cursor-pointer"
                 variant={"white"}
