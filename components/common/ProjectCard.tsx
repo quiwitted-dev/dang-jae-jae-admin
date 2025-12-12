@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { ApprovedSubmission } from '@/types/submission.type';
-import Bookmark from './Bookmark';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { useQueryParams } from '@/lib/useQueryParams';
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { ApprovedSubmission } from "@/types/submission.type";
+import Bookmark from "./Bookmark";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useQueryParams } from "@/lib/useQueryParams";
 
 type ProjectCardProps = {
   item: ApprovedSubmission;
@@ -15,12 +15,7 @@ type ProjectCardProps = {
   handleFavoriteChange?: (bookmarkId: string) => void;
 };
 
-const ProjectCard = ({
-  item,
-  isFavorite,
-  favoriteId,
-  handleFavoriteChange,
-}: ProjectCardProps) => {
+const ProjectCard = ({ item, isFavorite, favoriteId, handleFavoriteChange }: ProjectCardProps) => {
   const router = useRouter();
   const mapRef = useRef<HTMLDivElement>(null);
   const query = useQueryParams();
@@ -30,7 +25,7 @@ const ProjectCard = ({
 
   const averageLandSharePyeong = () => {
     if (+item.projectAreaM2 === 0 || +item.ownerCount === 0) {
-      return '-';
+      return "-";
     }
     return ((+item.projectAreaM2 / +item.ownerCount) * 0.3025).toFixed(2);
   };
@@ -43,7 +38,7 @@ const ProjectCard = ({
     router.push(`/${item.id}?${qs}`);
   };
 
-  const str = item.address.split(' ');
+  const str = item.address.split(" ");
   const sido = str[0];
   const gugun = str[1];
   const dong = str[2];
@@ -53,9 +48,9 @@ const ProjectCard = ({
     if (!mapRef.current) return;
 
     if (!hasAddress) {
-      mapRef.current.innerHTML = '';
+      mapRef.current.innerHTML = "";
       setIsMapVisible(false);
-      setMapMaskMessage('주소 정보 없음');
+      setMapMaskMessage("주소 정보 없음");
       return;
     }
 
@@ -69,7 +64,7 @@ const ProjectCard = ({
       kakao.maps.load(() => {
         if (!mounted || !mapRef.current) return;
 
-        mapRef.current.innerHTML = '';
+        mapRef.current.innerHTML = "";
 
         const defaultCenter = new kakao.maps.LatLng(37.5665, 126.978);
         const map = new kakao.maps.Map(mapRef.current, {
@@ -81,30 +76,21 @@ const ProjectCard = ({
         map.setZoomable(false);
 
         const geocoder = new kakao.maps.services.Geocoder();
-        geocoder.addressSearch(
-          item.address,
-          (result: any[], status: string) => {
-            if (
-              !mounted ||
-              status !== kakao.maps.services.Status.OK ||
-              !result?.length
-            ) {
-              setIsMapVisible(false);
-              setMapMaskMessage(
-                `${item.address} 는 카카오맵에 존재하지 않는 주소입니다`
-              );
-              return;
-            }
-
-            const { x, y } = result[0];
-            const coords = new kakao.maps.LatLng(y, x);
-
-            map.setCenter(coords);
-            new kakao.maps.Marker({ map, position: coords });
-            setIsMapVisible(true);
-            setMapMaskMessage(null);
+        geocoder.addressSearch(item.address, (result: any[], status: string) => {
+          if (!mounted || status !== kakao.maps.services.Status.OK || !result?.length) {
+            setIsMapVisible(false);
+            setMapMaskMessage(`${item.address} 는 카카오맵에 존재하지 않는 주소입니다`);
+            return;
           }
-        );
+
+          const { x, y } = result[0];
+          const coords = new kakao.maps.LatLng(y, x);
+
+          map.setCenter(coords);
+          new kakao.maps.Marker({ map, position: coords });
+          setIsMapVisible(true);
+          setMapMaskMessage(null);
+        });
       });
 
       return true;
@@ -130,22 +116,16 @@ const ProjectCard = ({
       onClick={handleCardClick}
     >
       <div ref={mapRef} className="absolute inset-0 -z-10" />
-      {!isMapVisible && mapMaskMessage && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/50 text-white text-sm font-bold z-10">
-          {mapMaskMessage}
-        </div>
-      )}
-      <CardHeader className="relative flex flex-row p-0 justify-between pt-4 px-5">
-        {item.dataType === 'PUBLIC_DATA' && (
+
+      <CardHeader className="relative flex flex-row p-0 justify-between pt-2 px-5 pb-1 items-center h-[52px]">
+        {item.dataType === "PUBLIC_DATA" && (
           <>
             <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col">
               <p className="text-xs font-semibold">
                 {gugun} {dong} {locationDetail}
               </p>
-              <h3 className="text-md font-bold truncate w-40">
-                {item.projectName}
-              </h3>
+              <h3 className="text-md font-bold truncate w-40">{item.projectName}</h3>
             </div>
           </>
         )}
@@ -160,39 +140,46 @@ const ProjectCard = ({
           </Badge>
         )}
       </CardHeader>
-      <CardContent className="flex flex-row justify-between items-center px-5 flex-1">
+      <CardContent className="flex flex-row relative justify-between items-center px-5 flex-1">
         <div className="bg-black text-white flex flex-col text-center text-lg rounded-3xl py-2 px-1.5">
           <div className="flex flex-row items-center">
             <p className="font-playfair">
-              {item.renovationPrice?.minPrice ?? item.minPrice ?? '0'}
+              {item.renovationPrice?.minPrice ?? item.minPrice ?? "0"}
             </p>
             <span className="text-sm">억</span>
           </div>
           <p className="p-0 m-0 font-playfair leading-none text-sm">~</p>
           <div className="flex flex-row items-center">
             <p className="font-playfair">
-              {item.renovationPrice?.maxPrice ?? item.maxPrice ?? '0'}
+              {item.renovationPrice?.maxPrice ?? item.maxPrice ?? "0"}
             </p>
             <span className="text-sm">억</span>
           </div>
         </div>
+        <div>
+          {!isMapVisible && mapMaskMessage && (
+            <div className="max-w-[180px] rounded-lg pointer-events-none flex items-center justify-center bg-white/50 text-black text-sm font-bold whitespace-normal break-keep z-10">
+              {mapMaskMessage}
+            </div>
+          )}
+        </div>
         <div className="relative flex flex-col border-2 border-black rounded-2xl p-1.5 text-right gap-1 overflow-hidden h-fit">
           <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
-          <p className="text-sm font-bold">{item.projectType || '-'}</p>
+          <p className="text-sm font-bold">{item.projectType || "-"}</p>
           <div className="font-bold">
             <p className="text-xs">평균대지지분</p>
-            <p className="text-sm">{averageLandSharePyeong() || '-'} 평</p>
+            <p className="text-sm">{averageLandSharePyeong() || "-"} 평</p>
           </div>
         </div>
       </CardContent>
 
-      <CardFooter className="relative flex flex-row justify-between px-5 pb-4">
+      <CardFooter className="relative flex flex-row justify-between items-center px-5 pb-2 pt-1">
         <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
-        {item.dataType === 'PUBLIC_DATA' ? (
+        {item.dataType === "PUBLIC_DATA" ? (
           <>
             <div className="flex flex-col gap-1 font-bold">
-              <p className="text-md">{item.totalSaleUnits || '-'} 신축세대</p>
-              <p className="text-xs">임대 {item.rentalUnits || '-'}</p>
+              <p className="text-md">{item.totalSaleUnits || "-"} 신축세대</p>
+              <p className="text-xs">임대 {item.rentalUnits || "-"}</p>
             </div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
               <Bookmark
@@ -204,16 +191,15 @@ const ProjectCard = ({
             </div>
             <div className="flex flex-col text-xs text-gray-700 text-right">
               <p>
-                소유자 수{' '}
-                <span className="font-bold">{item.ownerCount || '-'}명</span>
+                소유자 수 <span className="font-bold">{item.ownerCount || "-"}명</span>
               </p>
-              <p className="font-bold">{item.projectAreaM2 || '-'}m2</p>
+              <p className="font-bold">{item.projectAreaM2 || "-"}m2</p>
             </div>
           </>
         ) : (
           <>
-            <div className="flex flex-col gap-1 font-bold">
-              <p className="text-sm">{gugun}</p>
+            <div className="flex flex-col font-bold">
+              <p className="text-sm font-normal">{gugun}</p>
               <p className="text-xs">{item.projectName}</p>
               <p className="text-xs">{`${dong} ${locationDetail}`}</p>
             </div>
