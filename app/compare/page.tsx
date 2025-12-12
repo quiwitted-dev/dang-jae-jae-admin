@@ -137,7 +137,6 @@ const ComparePage = () => {
           : getSubmissionUserDetail(item.id)
       );
       const results = await Promise.all(tasks);
-      console.log(results);
 
       results.forEach((result, idx) => {
         const { item, index } = nonNullItems[idx];
@@ -168,7 +167,6 @@ const ComparePage = () => {
     const result = Math.round((+dividend / +divisor) * 100);
     return result;
   };
-  console.log(compare1.newConstructionUnits === '0');
 
   return (
     <div className="flex flex-row min-h-dvh relative">
