@@ -121,6 +121,9 @@ const Header = ({ isLoggedIn }: headerProps) => {
   const isDetail =
     pathSegments.length === 1 &&
     !['compare', 'my', 'expected_add', 'auth'].includes(pathSegments[0]);
+
+  const isSubmission = searchParams.get('type') === 'SUBMISSION';
+
   return (
     <div
       className={`sticky top-0 z-50 bg-black ${
@@ -200,7 +203,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
           <div className="relative flex flex-row px-2 justify-between items-center py-1 gap-1">
             <div className="relative text-black md:max-w-[400px] max-w-[180px] w-full ">
               <Input
-                className="bg-white rounded-4xl w-full pr-14 md:text-base text-sm"
+                className="bg-white rounded-4xl w-full pr-14 text-base"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={handleKeywordKeyDown}
@@ -210,9 +213,6 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 className="absolute flex flex-row items-center justify-center gap-2 top-1/2 right-1 -translate-y-1/2 rounded-full px-2"
                 onClick={performKeywordSearch}
               >
-                <p className="absolute top-1/2 -translate-y-1/2 -translate-x-7 pt-[2px]">
-                  검색
-                </p>
                 <Search className="h-4 w-4" />
               </Button>
             </div>
@@ -329,7 +329,11 @@ const Header = ({ isLoggedIn }: headerProps) => {
         )}
 
         {isDetail && (
-          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-[#F8F4F1] text-black">
+          <div
+            className={`relative flex flex-row px-2 justify-between items-center py-3 gap-1 ${
+              isSubmission ? 'bg-[#A1ACEB]' : 'bg-[#F8F4F1]'
+            }  text-black`}
+          >
             <div className="flex flex-row items-center justify-center gap-7">
               <ChevronLeft onClick={handleBack} className="cursor-pointer" />
             </div>

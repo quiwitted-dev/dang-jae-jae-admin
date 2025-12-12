@@ -13,7 +13,6 @@ const SubmissionUserSideBar = ({
   submissionData: SubmissionUserDetail;
 }) => {
   const [popup, setPopup] = useState(false);
-  console.log(submissionData);
   const projectArea = Number(submissionData.projectArea);
   const ownerCount = Number(submissionData.ownerCount);
   const average_land_share =

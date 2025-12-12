@@ -8,7 +8,7 @@ const MyPage = async () => {
 
   if (!user) return redirect('/');
   return (
-    <div className="flex lg:flex-row flex-col bg-[#212138] min-h-dvh lg:px-0 px-2">
+    <div className="flex lg:flex-row flex-col bg-black min-h-dvh lg:px-0 px-2">
       <div className="lg:max-w-[600px] lg:md:w-[600px]">
         <LeftSide user={user} />
       </div>
