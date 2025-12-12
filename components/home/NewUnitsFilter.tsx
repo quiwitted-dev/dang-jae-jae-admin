@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Dropdown, useDropdown } from '@/components/ui/dropdown';
-import useFilterStore from '@/store/useFilterStore';
-import { useSearchParams } from 'next/navigation';
-import { useHandleFilter } from '@/lib/useHandleFilter';
+import { useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Dropdown, useDropdown } from "@/components/ui/dropdown";
+import useFilterStore from "@/store/useFilterStore";
+import { useSearchParams } from "next/navigation";
+import { useHandleFilter } from "@/lib/useHandleFilter";
 
 const NEW_UNITS_OPTIONS = [
-  { value: 100, label: '100세대' },
-  { value: 300, label: '300세대' },
-  { value: 500, label: '500세대' },
-  { value: 1000, label: '1000세대' },
-  { value: 3000, label: '3000세대' },
-  { value: 5000, label: '5000세대' },
+  { value: 100, label: "~100세대" },
+  { value: 300, label: "300세대" },
+  { value: 500, label: "500세대" },
+  { value: 1000, label: "1000세대" },
+  { value: 3000, label: "3000세대" },
+  { value: 5000, label: "5000세대~" },
 ];
 
 export default function NewUnitsFilter() {
@@ -26,83 +26,73 @@ export default function NewUnitsFilter() {
     if (!searchParams) return;
     const params = new URLSearchParams(searchParams.toString());
     const toNumberOrNull = (value: string | null) => {
-      if (value === null || value === '') return null;
+      if (value === null || value === "") return null;
       const num = Number(value);
       return Number.isFinite(num) ? num : null;
     };
     setNewUnits({
-      newConstructionUnitsMin: toNumberOrNull(
-        params.get('newConstructionUnitsMin')
-      ),
-      newConstructionUnitsMax: toNumberOrNull(
-        params.get('newConstructionUnitsMax')
-      ),
+      newConstructionUnitsMin: toNumberOrNull(params.get("newConstructionUnitsMin")),
+      newConstructionUnitsMax: toNumberOrNull(params.get("newConstructionUnitsMax")),
     });
   }, [searchParams, setNewUnits]);
 
   const handleUnitsClick = useCallback(
     (units: number) => {
       setNewUnits((prevRange) => {
-        const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } =
-          prevRange;
+        const { newConstructionUnitsMin, newConstructionUnitsMax } = prevRange;
 
-        if (!min && !max) {
-          handleFilter({
-            filter: 'newConstructionUnits',
-            data: {
-              newConstructionUnitsMin: units,
-              newConstructionUnitsMax: null,
-            },
-          });
-          return {
-            newConstructionUnitsMin: units,
-            newConstructionUnitsMax: null,
-          };
-        } else if (min && !max) {
-          if (units >= min) {
-            dropdown.close();
-            handleFilter({
-              filter: 'newConstructionUnits',
-              data: {
-                newConstructionUnitsMin: min,
-                newConstructionUnitsMax: units,
-              },
-            });
-            return {
-              newConstructionUnitsMin: min,
-              newConstructionUnitsMax: units,
-            };
+        if (newConstructionUnitsMin && !newConstructionUnitsMax) {
+          if (units > newConstructionUnitsMin) {
+            return { newConstructionUnitsMin, newConstructionUnitsMax: units };
+          } else if (units === newConstructionUnitsMin) {
+            return { newConstructionUnitsMin, newConstructionUnitsMax: null };
           } else {
-            dropdown.close();
-            handleFilter({
-              filter: 'newConstructionUnits',
-              data: {
-                newConstructionUnitsMin: units,
-                newConstructionUnitsMax: min,
-              },
-            });
             return {
               newConstructionUnitsMin: units,
-              newConstructionUnitsMax: min,
+              newConstructionUnitsMax: newConstructionUnitsMin,
+            };
+          }
+        } else if (newConstructionUnitsMin && newConstructionUnitsMax) {
+          if (units > newConstructionUnitsMax) {
+            return { newConstructionUnitsMin, newConstructionUnitsMax: units };
+          } else if (units < newConstructionUnitsMax && units > newConstructionUnitsMin) {
+            return { newConstructionUnitsMin, newConstructionUnitsMax: units };
+          } else if (units === newConstructionUnitsMin || units === newConstructionUnitsMax) {
+            return { newConstructionUnitsMin: units, newConstructionUnitsMax: null };
+          } else {
+            return {
+              newConstructionUnitsMin: units,
+              newConstructionUnitsMax: newConstructionUnitsMin,
             };
           }
         } else {
-          handleFilter({
-            filter: 'newConstructionUnits',
-            data: {
-              newConstructionUnitsMin: units,
-              newConstructionUnitsMax: null,
-            },
-          });
-          return {
-            newConstructionUnitsMin: units,
-            newConstructionUnitsMax: null,
-          };
+          return { newConstructionUnitsMin: units, newConstructionUnitsMax: null };
         }
       });
     },
     [setNewUnits]
   );
+
+  const handleSubmit = () => {
+    if (!selectedRange.newConstructionUnitsMax) {
+      handleFilter({
+        filter: "newConstructionUnits",
+        data: {
+          newConstructionUnitsMin: 0,
+          newConstructionUnitsMax: selectedRange.newConstructionUnitsMin,
+        },
+      });
+    } else {
+      handleFilter({
+        data: {
+          newConstructionUnitsMin: selectedRange.newConstructionUnitsMin,
+          newConstructionUnitsMax: selectedRange.newConstructionUnitsMax,
+        },
+        filter: "newConstructionUnits",
+      });
+    }
+    dropdown.close();
+  };
 
   const handleReset = () => {
     setNewUnits({
@@ -110,7 +100,7 @@ export default function NewUnitsFilter() {
       newConstructionUnitsMax: null,
     });
     handleFilter({
-      filter: 'newConstructionUnits',
+      filter: "newConstructionUnits",
       data: {
         newConstructionUnitsMin: null,
         newConstructionUnitsMax: null,
@@ -121,26 +111,24 @@ export default function NewUnitsFilter() {
 
   const getDisplayText = () => {
     const { newConstructionUnitsMin, newConstructionUnitsMax } = selectedRange;
-    if (!newConstructionUnitsMin && !newConstructionUnitsMax)
-      return '신축세대수';
-    if (newConstructionUnitsMin && newConstructionUnitsMax)
-      return `${newConstructionUnitsMin}세대~${newConstructionUnitsMax}세대`;
-    if (newConstructionUnitsMin)
-      return `${newConstructionUnitsMin}세대 선택중...`;
-    return '신축세대수';
+    if (!newConstructionUnitsMin && newConstructionUnitsMax) {
+      return `${newConstructionUnitsMax}세대 이하`;
+    }
+    if (newConstructionUnitsMin && newConstructionUnitsMax) {
+      return `${newConstructionUnitsMin}세대 ~ ${newConstructionUnitsMax}세대`;
+    }
+    return "신축세대수";
   };
 
   const isInRange = (units: number) => {
-    const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } =
-      selectedRange;
+    const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } = selectedRange;
     if (!min) return false;
     if (!max) return units === min;
     return units >= min && units <= max;
   };
 
   const isRangeEndpoint = (units: number) => {
-    const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } =
-      selectedRange;
+    const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } = selectedRange;
     return units === min || units === max;
   };
 
@@ -153,39 +141,23 @@ export default function NewUnitsFilter() {
         <Button
           variant="ghost"
           className={`flex items-center gap-2 rounded-full ${
-            dropdown.isOpen && 'bg-gray-100 text-black'
+            dropdown.isOpen && "bg-gray-100 text-black"
           }`}
           onClick={dropdown.toggle}
         >
           <p className="text-xl font-bold">{getDisplayText()}</p>
           <svg
-            className={`h-4 w-4 transition-transform ${
-              dropdown.isOpen ? 'rotate-180' : ''
-            }`}
+            className={`h-4 w-4 transition-transform ${dropdown.isOpen ? "rotate-180" : ""}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </Button>
       }
     >
       <div className="p-4">
-        <div className="mb-3">
-          <p className="text-sm text-gray-600 text-center">
-            {selectedRange.newConstructionUnitsMin &&
-            !selectedRange.newConstructionUnitsMax
-              ? '끝점을 선택하세요'
-              : '시작점을 클릭하고 끝점을 선택하세요'}
-          </p>
-        </div>
-
         {/* 세로 슬라이더 형태 */}
         <div className="flex flex-col space-y-1">
           {NEW_UNITS_OPTIONS.map((option) => (
@@ -193,10 +165,10 @@ export default function NewUnitsFilter() {
               key={option.value}
               className={`px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isRangeEndpoint(option.value)
-                  ? 'bg-green-600 text-white border-2 border-green-600'
+                  ? "bg-green-600 text-white border-2 border-green-600"
                   : isInRange(option.value)
-                  ? 'bg-green-100 text-green-700 border-2 border-green-200'
-                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-transparent'
+                  ? "bg-green-100 text-green-700 border-2 border-green-200"
+                  : "bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-transparent"
               }`}
               onClick={() => handleUnitsClick(option.value)}
             >
@@ -205,18 +177,20 @@ export default function NewUnitsFilter() {
           ))}
         </div>
 
-        {(selectedRange.newConstructionUnitsMin ||
-          selectedRange.newConstructionUnitsMax) && (
-          <>
-            <div className="border-t border-gray-100 my-3"></div>
-            <button
-              className="w-full text-left px-2 py-2 text-red-600 hover:bg-red-50 rounded"
-              onClick={handleReset}
-            >
-              선택 초기화
-            </button>
-          </>
-        )}
+        <div className="border-t flex flex-row border-gray-100 my-3">
+          <button
+            className="w-1/2 text-center px-2 py-2 text-red-600 hover:bg-red-50 rounded cursor-pointer"
+            onClick={handleReset}
+          >
+            선택 초기화
+          </button>
+          <button
+            className="w-1/2 text-center px-2 py-2 text-blue-600 hover:bg-red-50 rounded cursor-pointer"
+            onClick={handleSubmit}
+          >
+            적용
+          </button>
+        </div>
       </div>
     </Dropdown>
   );

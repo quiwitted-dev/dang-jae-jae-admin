@@ -107,7 +107,6 @@ export default function PriceFilter() {
 
   const getDisplayText = () => {
     const { minPrice, maxPrice } = selectedRange;
-    console.log(selectedRange);
     if (!minPrice && maxPrice) {
       return `${maxPrice}억 이하`;
     }
@@ -115,13 +114,6 @@ export default function PriceFilter() {
       return `${minPrice}억 ~ ${maxPrice}억`;
     }
     return "시세";
-    // const toEok = (won: number | null) => (won ? Math.round(won) : null);
-    // const minEok = toEok(min);
-    // const maxEok = toEok(max);
-    // if (!minEok && !maxEok) return "시세";
-    // if (minEok && maxEok) return `${minEok}억~${maxEok}억`;
-    // if (minEok) return `${minEok}억 선택중...`;
-    // return "시세";
   };
 
   const isInRange = (price: number) => {
