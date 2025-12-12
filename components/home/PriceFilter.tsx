@@ -1,44 +1,43 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Dropdown, useDropdown } from '@/components/ui/dropdown';
-import useFilterStore from '@/store/useFilterStore';
-import { useSearchParams } from 'next/navigation';
-import { useHandleFilter } from '@/lib/useHandleFilter';
+import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Dropdown, useDropdown } from "@/components/ui/dropdown";
+import useFilterStore from "@/store/useFilterStore";
+import { useSearchParams } from "next/navigation";
+import { useHandleFilter } from "@/lib/useHandleFilter";
 
 const PRICE_OPTIONS = [
-  { value: 1, label: '1억' },
-  { value: 5, label: '5억' },
-  { value: 10, label: '10억' },
-  { value: 15, label: '15억' },
-  { value: 20, label: '20억' },
-  { value: 25, label: '25억' },
-  { value: 30, label: '30억' },
-  { value: 35, label: '35억' },
-  { value: 40, label: '40억' },
-  { value: 50, label: '50억' },
-  { value: 60, label: '60억' },
+  { value: 1, label: "~1억" },
+  { value: 5, label: "5억" },
+  { value: 10, label: "10억" },
+  { value: 15, label: "15억" },
+  { value: 20, label: "20억" },
+  { value: 25, label: "25억" },
+  { value: 30, label: "30억" },
+  { value: 35, label: "35억" },
+  { value: 40, label: "40억" },
+  { value: 50, label: "50억" },
+  { value: 60, label: "60억~" },
 ];
 
 export default function PriceFilter() {
   const { price: selectedRange, setPrice } = useFilterStore();
   const searchParams = useSearchParams();
   const dropdown = useDropdown();
-  const [range, setRagnge] = useState<'less' | 'more'>('less');
   const handleFilter = useHandleFilter();
 
   useEffect(() => {
     if (!searchParams) return;
     const params = new URLSearchParams(searchParams.toString());
     const toNumberOrNull = (value: string | null) => {
-      if (value === null || value === '') return null;
+      if (value === null || value === "") return null;
       const num = Number(value);
       return Number.isFinite(num) ? num : null;
     };
     setPrice({
-      minPrice: toNumberOrNull(params.get('minPrice')),
-      maxPrice: toNumberOrNull(params.get('maxPrice')),
+      minPrice: toNumberOrNull(params.get("minPrice")),
+      maxPrice: toNumberOrNull(params.get("maxPrice")),
     });
   }, [searchParams, setPrice]);
 
@@ -75,21 +74,13 @@ export default function PriceFilter() {
   );
 
   const handleSubmit = () => {
-    if (!selectedRange.maxPrice && range === 'less') {
+    if (!selectedRange.maxPrice) {
       handleFilter({
         data: {
           minPrice: 0,
           maxPrice: selectedRange.minPrice,
         },
-        filter: 'price',
-      });
-    } else if (!selectedRange.maxPrice && range === 'more') {
-      handleFilter({
-        data: {
-          minPrice: selectedRange.minPrice,
-          maxPrice: 60,
-        },
-        filter: 'price',
+        filter: "price",
       });
     } else {
       handleFilter({
@@ -97,7 +88,7 @@ export default function PriceFilter() {
           minPrice: selectedRange.minPrice,
           maxPrice: selectedRange.maxPrice,
         },
-        filter: 'price',
+        filter: "price",
       });
     }
     dropdown.close();
@@ -110,19 +101,27 @@ export default function PriceFilter() {
         minPrice: null,
         maxPrice: null,
       },
-      filter: 'price',
+      filter: "price",
     });
   };
 
   const getDisplayText = () => {
-    const { minPrice: min, maxPrice: max } = selectedRange;
-    const toEok = (won: number | null) => (won ? Math.round(won) : null);
-    const minEok = toEok(min);
-    const maxEok = toEok(max);
-    if (!minEok && !maxEok) return '시세';
-    if (minEok && maxEok) return `${minEok}억~${maxEok}억`;
-    if (minEok) return `${minEok}억 선택중...`;
-    return '시세';
+    const { minPrice, maxPrice } = selectedRange;
+    console.log(selectedRange);
+    if (!minPrice && maxPrice) {
+      return `${maxPrice}억 이하`;
+    }
+    if (minPrice && maxPrice) {
+      return `${minPrice}억 ~ ${maxPrice}억`;
+    }
+    return "시세";
+    // const toEok = (won: number | null) => (won ? Math.round(won) : null);
+    // const minEok = toEok(min);
+    // const maxEok = toEok(max);
+    // if (!minEok && !maxEok) return "시세";
+    // if (minEok && maxEok) return `${minEok}억~${maxEok}억`;
+    // if (minEok) return `${minEok}억 선택중...`;
+    // return "시세";
   };
 
   const isInRange = (price: number) => {
@@ -148,36 +147,25 @@ export default function PriceFilter() {
         <Button
           variant="ghost"
           className={`flex items-center gap-2 rounded-full ${
-            dropdown.isOpen && 'bg-gray-100 text-black'
+            dropdown.isOpen && "bg-gray-100 text-black"
           }`}
           onClick={dropdown.toggle}
         >
           <p className="text-xl font-bold">{getDisplayText()}</p>
           <svg
-            className={`h-4 w-4 transition-transform ${
-              dropdown.isOpen ? 'rotate-180' : ''
-            }`}
+            className={`h-4 w-4 transition-transform ${dropdown.isOpen ? "rotate-180" : ""}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </Button>
       }
     >
       <div className="p-4">
         <div className="mb-3">
-          <p className="text-sm text-gray-600 text-center">
-            {selectedRange.minPrice && !selectedRange.maxPrice
-              ? '끝점을 선택하세요'
-              : '시작점을 클릭하고 끝점을 선택하세요'}
-          </p>
+          <p className="text-sm text-gray-600 text-center"></p>
         </div>
 
         {/* 세로 슬라이더 형태 */}
@@ -187,10 +175,10 @@ export default function PriceFilter() {
               key={option.value}
               className={`px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isRangeEndpoint(option.value)
-                  ? 'bg-blue-600 text-white border-2 border-blue-600'
+                  ? "bg-blue-600 text-white border-2 border-blue-600"
                   : isInRange(option.value)
-                  ? 'bg-blue-100 text-blue-700 border-2 border-blue-200'
-                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-transparent'
+                  ? "bg-blue-100 text-blue-700 border-2 border-blue-200"
+                  : "bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-transparent"
               }`}
               onClick={() => handlePriceClick(option.value)}
             >
@@ -198,45 +186,6 @@ export default function PriceFilter() {
             </button>
           ))}
         </div>
-
-        {/* Todo : 하나만 선택했을 때 이상 이하 나오게 하기 */}
-        {selectedRange.maxPrice === null && selectedRange.minPrice !== null && (
-          <div className="border-t flex flex-row justify-around items-center border-gray-100 pt-3">
-            <div>
-              <input
-                type="radio"
-                name="priceRange"
-                id="less"
-                checked={range === 'less'}
-                onChange={() => setRagnge('less')}
-              />
-              <label
-                htmlFor="less"
-                className="text-black"
-                onChange={() => setRagnge('less')}
-              >
-                이하
-              </label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                name="priceRange"
-                id="more"
-                className=""
-                checked={range === 'more'}
-                onChange={() => setRagnge('more')}
-              />
-              <label
-                htmlFor="more"
-                className="text-black"
-                onChange={() => setRagnge('more')}
-              >
-                이상
-              </label>
-            </div>
-          </div>
-        )}
 
         <div className="border-t flex flex-row border-gray-100 my-3">
           <button
