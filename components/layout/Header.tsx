@@ -227,7 +227,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
         )}
 
         {pathname === "/my" && (
-          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-[#212138]">
+          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-black">
             <div className="flex flex-row items-center justify-center gap-7">
               <ChevronLeft onClick={handleBack} className="cursor-pointer" />
               <Home onClick={() => handleLink("/")} className="cursor-pointer" />
