@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Dropdown, useDropdown } from "@/components/ui/dropdown";
-import useFilterStore from "@/store/useFilterStore";
-import { useSearchParams } from "next/navigation";
-import { useHandleFilter } from "@/lib/useHandleFilter";
+import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Dropdown, useDropdown } from '@/components/ui/dropdown';
+import useFilterStore from '@/store/useFilterStore';
+import { useSearchParams } from 'next/navigation';
+import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const PRICE_OPTIONS = [
-  { value: 1, label: "~1억" },
-  { value: 5, label: "5억" },
-  { value: 10, label: "10억" },
-  { value: 15, label: "15억" },
-  { value: 20, label: "20억" },
-  { value: 25, label: "25억" },
-  { value: 30, label: "30억" },
-  { value: 35, label: "35억" },
-  { value: 40, label: "40억" },
-  { value: 50, label: "50억" },
-  { value: 60, label: "60억~" },
+  { value: 1, label: '~1억' },
+  { value: 5, label: '5억' },
+  { value: 10, label: '10억' },
+  { value: 15, label: '15억' },
+  { value: 20, label: '20억' },
+  { value: 25, label: '25억' },
+  { value: 30, label: '30억' },
+  { value: 35, label: '35억' },
+  { value: 40, label: '40억' },
+  { value: 50, label: '50억' },
+  { value: 60, label: '60억~' },
 ];
 
 export default function PriceFilter() {
@@ -31,13 +31,13 @@ export default function PriceFilter() {
     if (!searchParams) return;
     const params = new URLSearchParams(searchParams.toString());
     const toNumberOrNull = (value: string | null) => {
-      if (value === null || value === "") return null;
+      if (value === null || value === '') return null;
       const num = Number(value);
       return Number.isFinite(num) ? num : null;
     };
     setPrice({
-      minPrice: toNumberOrNull(params.get("minPrice")),
-      maxPrice: toNumberOrNull(params.get("maxPrice")),
+      minPrice: toNumberOrNull(params.get('minPrice')),
+      maxPrice: toNumberOrNull(params.get('maxPrice')),
     });
   }, [searchParams, setPrice]);
 
@@ -80,7 +80,7 @@ export default function PriceFilter() {
           minPrice: 0,
           maxPrice: selectedRange.minPrice,
         },
-        filter: "price",
+        filter: 'price',
       });
     } else {
       handleFilter({
@@ -88,7 +88,7 @@ export default function PriceFilter() {
           minPrice: selectedRange.minPrice,
           maxPrice: selectedRange.maxPrice,
         },
-        filter: "price",
+        filter: 'price',
       });
     }
     dropdown.close();
@@ -101,7 +101,7 @@ export default function PriceFilter() {
         minPrice: null,
         maxPrice: null,
       },
-      filter: "price",
+      filter: 'price',
     });
   };
 
@@ -113,7 +113,7 @@ export default function PriceFilter() {
     if (minPrice && maxPrice) {
       return `${minPrice}억 ~ ${maxPrice}억`;
     }
-    return "시세";
+    return '시세';
   };
 
   const isInRange = (price: number) => {
@@ -139,18 +139,25 @@ export default function PriceFilter() {
         <Button
           variant="ghost"
           className={`flex items-center gap-2 rounded-full ${
-            dropdown.isOpen && "bg-gray-100 text-black"
+            dropdown.isOpen && 'bg-gray-100 text-black'
           }`}
           onClick={dropdown.toggle}
         >
           <p className="text-xl font-bold">{getDisplayText()}</p>
           <svg
-            className={`h-4 w-4 transition-transform ${dropdown.isOpen ? "rotate-180" : ""}`}
+            className={`h-4 w-4 transition-transform ${
+              dropdown.isOpen ? 'rotate-180' : ''
+            }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </Button>
       }
@@ -167,10 +174,10 @@ export default function PriceFilter() {
               key={option.value}
               className={`px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isRangeEndpoint(option.value)
-                  ? "bg-blue-600 text-white border-2 border-blue-600"
+                  ? 'bg-blue-600 text-white border-2 border-blue-600'
                   : isInRange(option.value)
-                  ? "bg-blue-100 text-blue-700 border-2 border-blue-200"
-                  : "bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-transparent"
+                  ? 'bg-blue-100 text-blue-700 border-2 border-blue-200'
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-transparent'
               }`}
               onClick={() => handlePriceClick(option.value)}
             >
@@ -184,7 +191,7 @@ export default function PriceFilter() {
             className="w-1/2 text-center px-2 py-2 text-red-600 hover:bg-red-50 rounded cursor-pointer"
             onClick={handleReset}
           >
-            선택 초기화
+            선택해제
           </button>
           <button
             className="w-1/2 text-center px-2 py-2 text-blue-600 hover:bg-red-50 rounded cursor-pointer"
