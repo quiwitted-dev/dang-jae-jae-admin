@@ -32,7 +32,9 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
             <h3>
               일반분양 세대수{' '}
               <span className="font-extrabold">
-                {publicData.totalSaleUnits - publicData.ownerCount}
+                {publicData.totalSaleUnits - publicData.ownerCount < 0
+                  ? '-'
+                  : publicData.totalSaleUnits - publicData.ownerCount}
               </span>{' '}
               세대
             </h3>
