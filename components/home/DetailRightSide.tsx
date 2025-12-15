@@ -1,12 +1,38 @@
 'use client';
 
+import {
+  SubmissionPublicDetail,
+  SubmissionUserDetail,
+} from '@/types/submission.type';
 import { useEffect, useRef } from 'react';
+import { Badge } from '../ui/badge';
 
-type DetailRightSideProps = {
-  address?: string;
-};
+type DetailRightSideProps =
+  | {
+      type: 'PUBLIC_DATA';
+      publicData: SubmissionPublicDetail;
+    }
+  | { type: 'SUBMISSION'; publicData: SubmissionUserDetail };
 
-const DetailRightSide = ({ address }: DetailRightSideProps) => {
+const DetailRightSide = ({ type, publicData }: DetailRightSideProps) => {
+  const address = () => {
+    if (type === 'PUBLIC_DATA') {
+      return publicData.dataSource === 'SEOUL'
+        ? publicData.representativeLotNumber
+        : publicData.address;
+    }
+    return publicData.location;
+  };
+
+  const businessType = () => {
+    if (type === 'PUBLIC_DATA') {
+      return publicData.dataSource === 'SEOUL'
+        ? publicData.businessType
+        : publicData.projectType;
+    }
+    return '예정지';
+  };
+
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,6 +91,31 @@ const DetailRightSide = ({ address }: DetailRightSideProps) => {
 
   if (!address) return null;
 
-  return <div ref={mapRef} className="w-full h-full min-h-80" />;
+  return (
+    <div className="relative w-full h-full">
+      {/* map */}
+      <div ref={mapRef} className="w-full h-full min-h-80" />
+
+      {/* 하단 정보 */}
+      <div className="md:hidden absolute flex flex-col bottom-0 left-0 w-full py-3 px-6 bg-transparent z-20 backdrop-blur-xs">
+        <div className="flex flex-row justify-between items-center text-[14px]">
+          <p className="text-black">
+            <span>{address().split(' ')[1]}</span>{' '}
+            <span className="font-medium">
+              {address().split(' ').slice(2).join(' ')}
+            </span>
+          </p>
+          {type === 'PUBLIC_DATA' && (
+            <p className="text-black font-semibold">{businessType()}</p>
+          )}
+          {type === 'SUBMISSION' && (
+            <Badge className="text-xs font-bold bg-[#000DFF] text-white h-fit absolute right-4 leading-relaxed">
+              {businessType()}
+            </Badge>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 export default DetailRightSide;
