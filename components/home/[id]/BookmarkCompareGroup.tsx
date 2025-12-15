@@ -86,7 +86,7 @@ const BookmarkCompareGroup = ({ id, type, address }: Props) => {
   return (
     <div className="flex flex-row gap-3 items-center">
       <Button
-        className={`rounded-full h-10 border cursor-pointer ${
+        className={`rounded-full w-10 h-10 border cursor-pointer ${
           isFavorite ? 'border-black bg-transparent' : 'border-transparent '
         }`}
         onClick={(e) => {
