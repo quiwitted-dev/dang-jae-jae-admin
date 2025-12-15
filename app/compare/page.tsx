@@ -246,13 +246,13 @@ const ComparePage = () => {
             />
           )}
         </div>
-        <div className="flex flex-col gap-2 text-center pt-4 w-full h-20">
-          <h3 className="text-[18px] font-bold truncate ">
-            {compare1.zoneName}
-          </h3>
-          {/* <p className="text-xl font-thin">{compare1.address}</p> */}
+        <div className="flex flex-col gap-2 text-center pt-4 w-full h-32">
+          <h3 className="text-base font-bold truncate ">{compare1.zoneName}</h3>
+          <p className="text-base font-thin whitespace-normal break-keep px-5">
+            {compare1.address}
+          </p>
         </div>
-        <div className="flex flex-col gap-3 pt-[60px]">
+        <div className="flex flex-col gap-3 pt-[30px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
             <p className="text-xl font-thin">{compare1.projectArenaM2} m²</p>
@@ -287,13 +287,13 @@ const ComparePage = () => {
             />
           )}
         </div>
-        <div className="flex flex-col gap-2 text-center pt-4 w-full h-20">
-          <h3 className="text-[18px] font-bold truncate ">
-            {compare2.zoneName}
-          </h3>
-          <p className="text-xl font-thin">{compare2.address}</p>
+        <div className="flex flex-col gap-2 text-center pt-4 w-full h-32">
+          <h3 className="text-base font-bold truncate ">{compare2.zoneName}</h3>
+          <p className="text-base font-thin whitespace-normal break-keep px-5">
+            {compare2.address}
+          </p>
         </div>
-        <div className="flex flex-col gap-3 pt-[60px]">
+        <div className="flex flex-col gap-3 pt-[30px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
             <p className="text-xl font-thin">{compare2.projectArenaM2} m²</p>
