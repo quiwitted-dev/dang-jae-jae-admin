@@ -12,6 +12,7 @@ import useAuthStore from "@/store/useAuthStore";
 import { logout } from "@/services/auth.api";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import HeaderCompareButton from "../common/HeaderCompareButton";
 type headerProps = {
   isLoggedIn: boolean;
 };
@@ -155,9 +156,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
               isLogin ? handleLink("/my") : handleLoginToggle();
             }}
           >
-            {isLogin ? <Bookmark fill="black" /> : <UserRound fill="black" />}
-
-            {isLogin ? <></> : <p>로그인</p>}
+            <Bookmark fill="black" />
           </Button>
 
           {pathname === "/my" && isLogin && (
@@ -171,13 +170,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
           )}
 
           <Link href={"/compare"}>
-            <Button
-              variant={"white"}
-              className="flex items-center h-10 flex-row justify-center cursor-pointer"
-            >
-              <Image src={"/black-compare.png"} alt="비교보기 아이콘" width={27} height={27} />
-              <p>비교보기</p>
-            </Button>
+            <HeaderCompareButton hasTitle={true} />
           </Link>
         </div>
       </div>
@@ -209,18 +202,10 @@ const Header = ({ isLoggedIn }: headerProps) => {
                   isLogin ? handleLink("/my") : handleLoginToggle();
                 }}
               >
-                {isLogin ? <Bookmark fill="black" /> : <UserRound fill="black" />}
+                <Bookmark fill="black" />
               </Button>
               <Link href={"/compare"}>
-                <Button
-                  variant={"white"}
-                  size={"none"}
-                  className="flex items-center h-10 flex-row justify-center p-2 cursor-pointer  leading-none"
-                >
-                  {" "}
-                  <Image src={"/black-compare.png"} alt="비교보기 아이콘" width={27} height={27} />
-                  <p>비교보기</p>
-                </Button>
+                <HeaderCompareButton hasTitle={true} />
               </Link>
             </div>
           </div>
@@ -243,14 +228,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 </Button>
               )}
               <Link href={"/compare"}>
-                <Button
-                  variant={"white"}
-                  className="flex items-center h-10 flex-row justify-center p-2 cursor-pointer"
-                >
-                  {" "}
-                  <Image src={"/black-compare.png"} alt="비교보기 아이콘" width={27} height={27} />
-                  <p>비교보기</p>
-                </Button>
+                <HeaderCompareButton hasTitle={true} />
               </Link>
             </div>
           </div>
@@ -270,15 +248,10 @@ const Header = ({ isLoggedIn }: headerProps) => {
                   isLogin ? handleLink("/my") : handleLoginToggle();
                 }}
               >
-                {isLogin ? <Bookmark fill="black" /> : <UserRound fill="black" />}
+                <Bookmark fill="black" />
               </Button>
               <Link href={"/compare"}>
-                <Button
-                  variant={"white"}
-                  className="border border-black w-10 h-10 rounded-full p-1 cursor-pointer"
-                >
-                  <Image src={"/black-compare.png"} alt="비교보기 아이콘" width={27} height={27} />
-                </Button>
+                <HeaderCompareButton hasTitle={false} />
               </Link>
             </div>
           </div>
@@ -301,15 +274,10 @@ const Header = ({ isLoggedIn }: headerProps) => {
                   isLogin ? handleLink("/my") : handleLoginToggle();
                 }}
               >
-                {isLogin ? <Bookmark fill="black" /> : <UserRound fill="black" />}
+                <Bookmark fill="black" />
               </Button>
               <Link href={"/compare"}>
-                <Button
-                  variant={"white"}
-                  className="border border-black w-10 h-10 rounded-full p-1 cursor-pointer"
-                >
-                  <Image src={"/black-compare.png"} alt="비교보기 아이콘" width={27} height={27} />
-                </Button>
+                <HeaderCompareButton hasTitle={false} />
               </Link>
             </div>
           </div>
