@@ -22,13 +22,17 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
       <div className="flex max-w-[400px] mx-auto px-4">
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="text-3xl font-normal w-full">
-            <p className="text-lg font-semibold py-3">
-              {publicData.projectName}
-            </p>
+            <div className="md:hidden flex flex-row py-4">
+              <p className="text-[11px] font-[#49454F]">**</p>
+              <p className="text-[11px] font-[#49454F]">
+                정비구역의 대표위치만 지도상에 표시됩니다.
+                <br /> 상세한 구역면적은 [토지이음]에서 확인하실 수 있습니다.
+              </p>
+            </div>
             <h3>
               일반분양 세대수{' '}
               <span className="font-extrabold">
-                {publicData.totalSaleUnits}
+                {publicData.totalSaleUnits - publicData.ownerCount}
               </span>{' '}
               세대
             </h3>
