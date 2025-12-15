@@ -3,7 +3,14 @@
 import Image from 'next/image';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { Bookmark, ChevronLeft, Home, LogOut, Search, UserRound } from 'lucide-react';
+import {
+  Bookmark,
+  ChevronLeft,
+  Home,
+  LogOut,
+  Search,
+  UserRound,
+} from 'lucide-react';
 import useStore from '@/store/useStore';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -114,7 +121,9 @@ const Header = ({ isLoggedIn }: headerProps) => {
 
   return (
     <div
-      className={`sticky top-0 z-50 bg-black ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}
+      className={`sticky top-0 z-50 bg-black ${
+        showHeader ? 'translate-y-0' : '-translate-y-full'
+      }`}
     >
       {/* 데스크탑 */}
       <div className="hidden md:relative md:flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1 ">
@@ -209,7 +218,10 @@ const Header = ({ isLoggedIn }: headerProps) => {
           <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-black">
             <div className="flex flex-row items-center justify-center gap-7">
               <ChevronLeft onClick={handleBack} className="cursor-pointer" />
-              <Home onClick={() => handleLink('/')} className="cursor-pointer" />
+              <Home
+                onClick={() => handleLink('/')}
+                className="cursor-pointer"
+              />
             </div>
             <div className="relative flex flex-row items-center gap-1">
               {isLogin && (
@@ -232,7 +244,10 @@ const Header = ({ isLoggedIn }: headerProps) => {
           <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-[#F8F4F1] text-black">
             <div className="flex flex-row items-center justify-center gap-7">
               <ChevronLeft onClick={handleBack} className="cursor-pointer" />
-              <Home onClick={() => handleLink('/')} className="cursor-pointer" />
+              <Home
+                onClick={() => handleLink('/')}
+                className="cursor-pointer"
+              />
             </div>
             <div className="relative flex flex-row items-center gap-1">
               <Button
@@ -245,7 +260,17 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 <Bookmark fill="black" />
               </Button>
               <Link href={'/compare'}>
-                <HeaderCompareButton hasTitle={false} />
+                <Button
+                  variant={'white'}
+                  className="flex items-center w-10 h-10 flex-row justify-center cursor-pointer gap-0 p-0 border border-black"
+                >
+                  <Image
+                    src={'/black-compare.png'}
+                    alt="비교보기 아이콘"
+                    width={27}
+                    height={27}
+                  />
+                </Button>
               </Link>
             </div>
           </div>
