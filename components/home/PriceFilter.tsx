@@ -74,7 +74,19 @@ export default function PriceFilter() {
   );
 
   const handleSubmit = () => {
+    if (selectedRange.minPrice === null && selectedRange.maxPrice === null) {
+      return handleReset();
+    }
     if (!selectedRange.maxPrice) {
+      if (selectedRange.minPrice === 60) {
+        return handleFilter({
+          data: {
+            minPrice: selectedRange.minPrice,
+            maxPrice: null,
+          },
+          filter: 'price',
+        });
+      }
       handleFilter({
         data: {
           minPrice: 0,
@@ -109,6 +121,9 @@ export default function PriceFilter() {
     const { minPrice, maxPrice } = selectedRange;
     if (!minPrice && maxPrice) {
       return `${maxPrice}억 이하`;
+    }
+    if (minPrice === 60) {
+      return `${minPrice}억 이상`;
     }
     if (minPrice && maxPrice) {
       return `${minPrice}억 ~ ${maxPrice}억`;

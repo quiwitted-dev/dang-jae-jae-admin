@@ -68,7 +68,22 @@ export default function OwnerCountFilter() {
   );
 
   const handleSubmit = () => {
+    if (
+      selectedRange.ownerCountMin === null &&
+      selectedRange.ownerCountMax === null
+    ) {
+      return handleReset();
+    }
     if (!selectedRange.ownerCountMax) {
+      if (selectedRange.ownerCountMin === 5000) {
+        return handleFilter({
+          data: {
+            ownerCountMin: selectedRange.ownerCountMin,
+            ownerCountMax: null,
+          },
+          filter: 'ownerCount',
+        });
+      }
       handleFilter({
         filter: 'ownerCount',
         data: { ownerCountMin: 0, ownerCountMax: selectedRange.ownerCountMin },
@@ -98,6 +113,9 @@ export default function OwnerCountFilter() {
     const { ownerCountMin, ownerCountMax } = selectedRange;
     if (!ownerCountMin && ownerCountMax) {
       return `${ownerCountMax}명 이하`;
+    }
+    if (ownerCountMin === 5000) {
+      return `${ownerCountMin}명 이상`;
     }
     if (ownerCountMin && ownerCountMax) {
       return `${ownerCountMin}명 ~ ${ownerCountMax}명`;

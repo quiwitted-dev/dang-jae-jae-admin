@@ -90,7 +90,22 @@ export default function NewUnitsFilter() {
   );
 
   const handleSubmit = () => {
+    if (
+      selectedRange.newConstructionUnitsMin === null &&
+      selectedRange.newConstructionUnitsMax === null
+    ) {
+      return handleReset();
+    }
     if (!selectedRange.newConstructionUnitsMax) {
+      if (selectedRange.newConstructionUnitsMin === 5000) {
+        return handleFilter({
+          data: {
+            newConstructionUnitsMin: selectedRange.newConstructionUnitsMin,
+            newConstructionUnitsMax: null,
+          },
+          filter: 'newConstructionUnits',
+        });
+      }
       handleFilter({
         filter: 'newConstructionUnits',
         data: {
@@ -129,6 +144,9 @@ export default function NewUnitsFilter() {
     const { newConstructionUnitsMin, newConstructionUnitsMax } = selectedRange;
     if (!newConstructionUnitsMin && newConstructionUnitsMax) {
       return `${newConstructionUnitsMax}세대 이하`;
+    }
+    if (newConstructionUnitsMin === 5000) {
+      return `${newConstructionUnitsMin}세대 이상`;
     }
     if (newConstructionUnitsMin && newConstructionUnitsMax) {
       return `${newConstructionUnitsMin}세대 ~ ${newConstructionUnitsMax}세대`;
