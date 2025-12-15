@@ -14,7 +14,7 @@ const HomeRightSide = () => {
           <MapView address={address} />
         </div>
       )}
-      {!address && <RightSide />}
+      <div className="relative">{!address && <RightSide />}</div>
     </>
   );
 };

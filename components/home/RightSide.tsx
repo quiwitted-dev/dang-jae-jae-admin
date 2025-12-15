@@ -34,9 +34,9 @@ const RightSide = () => {
   }
 
   return (
-    <div className="hidden md:block pt-20">
+    <div className="hidden md:block sticky top-16 pt-20">
       <div
-        className="text-[43px] md:max-w-[980px] font-extralight whitespace-normal break-keep"
+        className="text-4xl md:max-w-[980px] font-extralight whitespace-normal break-keep"
         dangerouslySetInnerHTML={{ __html: data.mainTitle.title }}
       />
       <div className="w-16 border-b-2 mt-8 mb-28" />
@@ -57,7 +57,7 @@ const RightSide = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-1 md:pb-[140px]">
+      <div className="hidden lg:grid grid-cols-2 gap-1 md:pb-[140px]">
         {DANGJAEJAE_INFO.map((item) => (
           <InfoCard info={item} key={item.title} />
         ))}
