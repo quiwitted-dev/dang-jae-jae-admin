@@ -36,7 +36,7 @@ const DetailRightSide = ({ type, publicData }: DetailRightSideProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!address || !mapRef.current) return;
+    if (!address() || !mapRef.current) return;
     let mounted = true;
     let pollId: NodeJS.Timeout | null = null;
 
@@ -59,7 +59,7 @@ const DetailRightSide = ({ type, publicData }: DetailRightSideProps) => {
         map.setZoomable(false);
 
         const geocoder = new kakao.maps.services.Geocoder();
-        geocoder.addressSearch(address, (result: any[], status: string) => {
+        geocoder.addressSearch(address(), (result: any[], status: string) => {
           if (status !== kakao.maps.services.Status.OK || !result?.length) {
             return;
           }
@@ -87,9 +87,9 @@ const DetailRightSide = ({ type, publicData }: DetailRightSideProps) => {
       mounted = false;
       if (pollId) clearInterval(pollId);
     };
-  }, [address]);
+  }, [address()]);
 
-  if (!address) return null;
+  if (!address()) return null;
 
   return (
     <div className="relative w-full h-full">
