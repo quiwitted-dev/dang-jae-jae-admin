@@ -29,7 +29,7 @@ const CompareButton = ({ id, type }: Props) => {
 
   return (
     <Button
-      className={`rounded-full cursor-pointer border ${
+      className={`rounded-full h-10 cursor-pointer border ${
         hasId ? 'bg-transparent text-black border-black' : 'border-transparent'
       }`}
       onClick={handleCompare}
