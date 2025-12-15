@@ -409,7 +409,7 @@ const ComparePage = () => {
           {/* 평균 대지지분 */}
           <div className="flex items-center w-full gap-16">
             <div className="flex-1 text-right pr-4 h-[60px]">
-              <span className="text-4xl font-bold">
+              <span className="text-4xl font-bold whitespace-nowrap">
                 {compare1.averageLandScale === 'Infinity'
                   ? '0'
                   : compare1.averageLandScale}
@@ -426,7 +426,7 @@ const ComparePage = () => {
               대지지분
             </div>
             <div className="flex-1 text-left pl-4  h-[60px]">
-              <span className="text-4xl font-bold">
+              <span className="text-4xl font-bold whitespace-nowrap">
                 {compare2.averageLandScale === 'Infinity'
                   ? '0'
                   : compare2.averageLandScale}
@@ -738,7 +738,7 @@ const ComparePage = () => {
                       compare2.newConstructionUnits === '0'
                         ? 0
                         : compare2.newConstructionUnits
-                        ? 1000
+                        ? 100
                         : 0
                     }%`,
                   }} // 오른쪽 비율
