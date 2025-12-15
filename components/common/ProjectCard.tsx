@@ -74,7 +74,7 @@ const ProjectCard = ({
         const defaultCenter = new kakao.maps.LatLng(37.5665, 126.978);
         const map = new kakao.maps.Map(mapRef.current, {
           center: defaultCenter,
-          level: 6,
+          level: 7,
         });
 
         map.setDraggable(false);
@@ -135,28 +135,26 @@ const ProjectCard = ({
         {item.dataType === 'PUBLIC_DATA' && (
           <>
             <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
-            <div className="flex flex-col">
+            <div className="flex min-w-0 flex-1 flex-col">
               <p className="text-xs font-semibold">
                 {gugun} {dong} {locationDetail}
               </p>
-              <h3 className="text-md font-bold truncate w-40">
-                {item.projectName}
-              </h3>
+              <h3 className="text-md font-bold truncate">{item.projectName}</h3>
             </div>
           </>
         )}
 
         {item.currentStage ? (
-          <Badge className="text-xs font-bold bg-[#F4FF92] text-black  leading-relaxed">
+          <Badge className="shrink-0 text-xs font-bold bg-[#F4FF92] text-black  leading-relaxed">
             {item.currentStage}
           </Badge>
         ) : (
-          <Badge className="text-xs font-bold bg-[#000DFF] text-white h-fit absolute right-4 leading-relaxed">
+          <Badge className="shrink-0 text-xs font-bold bg-[#000DFF] text-white h-fit absolute right-4 leading-relaxed">
             예정지
           </Badge>
         )}
       </CardHeader>
-      <CardContent className="flex flex-row relative justify-between items-center px-5 flex-1">
+      <CardContent className="flex flex-row relative justify-between items-center px-5 flex-1 py-1">
         <div className="bg-black text-white flex flex-col text-center text-lg rounded-3xl py-2 px-1.5">
           <div className="flex flex-row items-center">
             <p className="font-playfair">
@@ -193,7 +191,7 @@ const ProjectCard = ({
         <div className="pointer-events-none absolute inset-0 backdrop-blur-xs -z-10" />
         {item.dataType === 'PUBLIC_DATA' ? (
           <>
-            <div className="flex flex-col gap-1 font-bold">
+            <div className="flex flex-col font-bold">
               <p className="text-md">{item.totalSaleUnits || '-'} 신축세대</p>
               <p className="text-xs">임대 {item.rentalUnits || '-'}</p>
             </div>
