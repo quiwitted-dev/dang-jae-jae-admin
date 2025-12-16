@@ -14,7 +14,7 @@ const BUSINESS_STAGES = [
   '조합설립',
   '사업시행인가',
   '관리처분인가',
-  '철거 / 착공',
+  '철거 / 착공 이후',
 ];
 
 export default function BusinessStageFilter() {
@@ -26,12 +26,16 @@ export default function BusinessStageFilter() {
   useEffect(() => {
     if (!searchParams) return;
     const params = new URLSearchParams(searchParams.toString());
-    setCurrentStage(params.get('currentStage') ?? '');
+    let stage = params.get('currentStage');
+    stage === '철거 / 착공' ? (stage = '철거 / 착공 이후') : stage;
+    setCurrentStage(stage ?? '');
   }, [searchParams, setCurrentStage]);
 
   const handleStageSelect = (stage: string) => {
-    handleFilter({ data: stage, filter: 'currentStage' });
     setCurrentStage(stage);
+
+    const filter = stage === '철거 / 착공 이후' ? '철거 / 착공' : stage;
+    handleFilter({ data: filter, filter: 'currentStage' });
     dropdown.close();
   };
 
