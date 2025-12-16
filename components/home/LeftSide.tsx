@@ -150,7 +150,7 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
       >
         <div
           ref={filterRef}
-          className="flex flex-row overflow-x-auto md:overflow-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none z-30 bg-black py-2 px-2"
+          className="flex flex-row overflow-x-auto md:overflow-visible scrollbar-hide cursor-grab active:cursor-grabbing select-none z-30 bg-black py-2 px-2"
           onMouseDown={handleMouseDown}
           onMouseLeave={handleMouseLeave}
           onMouseUp={handleMouseUp}
