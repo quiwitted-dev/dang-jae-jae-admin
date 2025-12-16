@@ -781,7 +781,7 @@ const ComparePage = () => {
                 {compare2.newConstructionUnits === '0'
                   ? 0
                   : compare2.newConstructionUnits
-                  ? 1000
+                  ? 100
                   : 0}
                 %
               </span>
