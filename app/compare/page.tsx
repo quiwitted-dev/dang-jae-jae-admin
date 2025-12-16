@@ -442,12 +442,10 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
                   style={{
-                    width: `${
-                      getPercentage(
-                        +compare1.ownerCount,
-                        +compare1.newConstructionUnits
-                      ) + 7
-                    }%`,
+                    width: `${getPercentage(
+                      +compare1.ownerCount,
+                      +compare1.newConstructionUnits
+                    )}%`,
                   }} // 왼쪽 비율
                 />
               </div>
@@ -457,12 +455,10 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 left-0 bg-[#61616C] transition-all duration-500 rounded-r-4xl"
                   style={{
-                    width: `${
-                      getPercentage(
-                        +compare2.ownerCount,
-                        +compare2.newConstructionUnits
-                      ) + 7
-                    }%`,
+                    width: `${getPercentage(
+                      +compare2.ownerCount,
+                      +compare2.newConstructionUnits
+                    )}%`,
                   }} // 오른쪽 비율
                 />
               </div>
@@ -513,12 +509,10 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
                   style={{
-                    width: `${
-                      getPercentage(
-                        +compare1.associationSaleUnits,
-                        +compare1.newConstructionUnits
-                      ) + 7
-                    }%`,
+                    width: `${getPercentage(
+                      +compare1.associationSaleUnits,
+                      +compare1.newConstructionUnits
+                    )}%`,
                   }} // 왼쪽 비율
                 />
               </div>
@@ -528,12 +522,10 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 left-0 bg-[#61616C] transition-all duration-500 rounded-r-4xl"
                   style={{
-                    width: `${
-                      getPercentage(
-                        +compare2.associationSaleUnits,
-                        +compare2.newConstructionUnits
-                      ) + 7
-                    }%`,
+                    width: `${getPercentage(
+                      +compare2.associationSaleUnits,
+                      +compare2.newConstructionUnits
+                    )}%`,
                   }} // 오른쪽 비율
                 />
               </div>
