@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   getSubmissionPublicDetail,
@@ -112,7 +112,23 @@ const ComparePage = () => {
   const { compare, removeCompare } = useCompareStore();
   const [compare1, setCompare1] = useState(defaultValue);
   const [compare2, setCompare2] = useState(defaultValue);
+  const [widthOffset, setWidthOffset] = useState(5);
   const router = useRouter();
+
+  useEffect(() => {
+    const computeOffset = (width: number) => {
+      if (width < 555) return 12;
+      if (width < 768) return 7;
+      if (width < 1150) return 15;
+      if (width < 1500) return 12;
+      return 7;
+    };
+
+    const handleResize = () => setWidthOffset(computeOffset(window.innerWidth));
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchCompareData = async () => {
@@ -168,10 +184,26 @@ const ComparePage = () => {
     return result;
   };
 
-  console.log(compare1.zoneName);
+  const getAdjustedPercentage = (dividend: number, divisor: number) => {
+    const base = getPercentage(dividend, divisor);
+    return base + widthOffset;
+  };
+
+  const getArea = (area: number) => {
+    const converted = +area * 0.3025;
+
+    if (!converted) return 0;
+    if (converted < 100) {
+      return Math.floor(converted) / 2;
+    }
+    return Math.floor(converted / 100) / 2;
+  };
 
   return (
-    <div className="flex flex-row min-h-dvh relative">
+    <div
+      className="flex flex-row min-h-dvh relative pb-20
+    "
+    >
       {/* 왼쪽 50% - 그라데이션 */}
       <div className="absolute left-0 top-0 w-1/2 h-full bg-linear-to-b from-[#F2EEEB] via-[#CFCCFF] to-[#D1DFD3]"></div>
 
@@ -179,7 +211,7 @@ const ComparePage = () => {
       <div className="absolute right-0 top-0 w-1/2 h-full bg-linear-to-b from-[#F2EEEB] via-[#EECFD3] to-[#E7DDE3]"></div>
 
       {/* 좌측 md이상 */}
-      <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
+      <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4 z-20">
         {compare[0] ? (
           <X
             width={34}
@@ -320,38 +352,20 @@ const ComparePage = () => {
         </div>
 
         {/* 면적 Bubble */}
-        {/* Todo : 면적도 계산할 수 있으면 계산 (가능할 듯?) */}
         <div className="relative flex w-full h-[250px]">
           <div className="absolute inset-y-0 left-0 w-1/2 -z-10 ">
             <div
               className="absolute top-1/2 right-0 -translate-y-1/2 bg-radial-[at_75%_50%] from-[##D5B3CB00] to-[#98b6af] transition-all duration-500 rounded-l-full"
               style={{
-                width: `${
-                  +(+compare1.projectArenaM2 * 0.3025).toString().slice(0, 3) /
-                  2 /
-                  2
-                }px`,
-                height: `${
-                  +(+compare1.projectArenaM2 * 0.3025).toString().slice(0, 3) /
-                  2
-                }px`,
+                width: `${getArea(+compare1.projectArenaM2) / 2}px`,
+                height: `${getArea(+compare1.projectArenaM2)}px`,
               }} // 왼쪽 비율
             />
             <div
               className="absolute top-1/2 right-0 -translate-y-1/2 bg-radial-[at_75%_50%] from-[#f3eae9] to-[#c4a9dc] transition-all duration-500 rounded-l-full"
               style={{
-                width: `${
-                  +(+compare1.residentialLandAreaM2 * 0.3025)
-                    .toString()
-                    .slice(0, 3) /
-                  2 /
-                  2
-                }px`,
-                height: `${
-                  +(+compare1.residentialLandAreaM2 * 0.3025)
-                    .toString()
-                    .slice(0, 3) / 2
-                }px`,
+                width: `${getArea(+compare1.residentialLandAreaM2) / 2}px`,
+                height: `${getArea(+compare1.residentialLandAreaM2)}px`,
               }} // 왼쪽 비율
             />
           </div>
@@ -359,32 +373,15 @@ const ComparePage = () => {
             <div
               className="absolute top-1/2 left-0 -translate-y-1/2 bg-radial-[at_25%_50%] from-[#D5B3CB00] to-[#98b6af]  transition-all duration-500 rounded-r-full"
               style={{
-                width: `${
-                  +(+compare2.projectArenaM2 * 0.3025).toString().slice(0, 3) /
-                  2 /
-                  2
-                }px`,
-                height: `${
-                  +(+compare2.projectArenaM2 * 0.3025).toString().slice(0, 3) /
-                  2
-                }px`,
+                width: `${getArea(+compare2.projectArenaM2) / 2}px`,
+                height: `${getArea(+compare2.projectArenaM2)}px`,
               }} // 오른쪽 비율
             />
             <div
               className="absolute top-1/2 left-0 -translate-y-1/2 bg-radial-[at_25%_50%] from-[#f3eae9] to-[#c4a9dc]  transition-all duration-500 rounded-r-full"
               style={{
-                width: `${
-                  +(+compare2.residentialLandAreaM2 * 0.3025)
-                    .toString()
-                    .slice(0, 3) /
-                  2 /
-                  2
-                }px`,
-                height: `${
-                  +(+compare2.residentialLandAreaM2 * 0.3025)
-                    .toString()
-                    .slice(0, 3) / 2
-                }px`,
+                width: `${getArea(+compare2.residentialLandAreaM2) / 2}px`,
+                height: `${getArea(+compare2.residentialLandAreaM2)}px`,
               }} // 오른쪽 비율
             />
           </div>
@@ -445,10 +442,12 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
                   style={{
-                    width: `${getPercentage(
-                      +compare1.ownerCount,
-                      +compare1.newConstructionUnits
-                    )}%`,
+                    width: `${
+                      getPercentage(
+                        +compare1.ownerCount,
+                        +compare1.newConstructionUnits
+                      ) + 7
+                    }%`,
                   }} // 왼쪽 비율
                 />
               </div>
@@ -458,10 +457,12 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 left-0 bg-[#61616C] transition-all duration-500 rounded-r-4xl"
                   style={{
-                    width: `${getPercentage(
-                      +compare2.ownerCount,
-                      +compare2.newConstructionUnits
-                    )}%`,
+                    width: `${
+                      getPercentage(
+                        +compare2.ownerCount,
+                        +compare2.newConstructionUnits
+                      ) + 7
+                    }%`,
                   }} // 오른쪽 비율
                 />
               </div>
@@ -512,10 +513,12 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
                   style={{
-                    width: `${getPercentage(
-                      +compare1.associationSaleUnits,
-                      +compare1.newConstructionUnits
-                    )}%`,
+                    width: `${
+                      getPercentage(
+                        +compare1.associationSaleUnits,
+                        +compare1.newConstructionUnits
+                      ) + 7
+                    }%`,
                   }} // 왼쪽 비율
                 />
               </div>
@@ -525,10 +528,12 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 left-0 bg-[#61616C] transition-all duration-500 rounded-r-4xl"
                   style={{
-                    width: `${getPercentage(
-                      +compare2.associationSaleUnits,
-                      +compare2.newConstructionUnits
-                    )}%`,
+                    width: `${
+                      getPercentage(
+                        +compare2.associationSaleUnits,
+                        +compare2.newConstructionUnits
+                      ) + 7
+                    }%`,
                   }} // 오른쪽 비율
                 />
               </div>
@@ -581,7 +586,7 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 right-0 bg-[#F4FF92] transition-all duration-500 rounded-l-4xl"
                   style={{
-                    width: `${getPercentage(
+                    width: `${getAdjustedPercentage(
                       +compare1.generalSaleUnits,
                       +compare1.newConstructionUnits
                     )}%`,
@@ -594,7 +599,7 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 left-0 bg-[#F4FF92] transition-all duration-500 rounded-r-4xl"
                   style={{
-                    width: `${getPercentage(
+                    width: `${getAdjustedPercentage(
                       +compare2.generalSaleUnits,
                       +compare2.newConstructionUnits
                     )}%`,
@@ -650,7 +655,7 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 right-0 bg-[#FF0000] transition-all duration-500 rounded-l-4xl"
                   style={{
-                    width: `${getPercentage(
+                    width: `${getAdjustedPercentage(
                       +compare1.rentalUnits,
                       +compare1.newConstructionUnits
                     )}%`,
@@ -663,7 +668,7 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 left-0 bg-[#FF0000] transition-all duration-500 rounded-r-4xl"
                   style={{
-                    width: `${getPercentage(
+                    width: `${getAdjustedPercentage(
                       +compare2.rentalUnits,
                       +compare2.newConstructionUnits
                     )}%`,
@@ -861,7 +866,7 @@ const ComparePage = () => {
       </section>
 
       {/* 우측 md이상 */}
-      <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4">
+      <section className="hidden md:flex flex-1 flex-col relative text-black items-center pt-4 z-20">
         {compare[1] ? (
           <X
             width={34}
