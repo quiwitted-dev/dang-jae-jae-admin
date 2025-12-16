@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Dropdown, useDropdown } from "@/components/ui/dropdown";
-import useFilterStore from "@/store/useFilterStore";
-import { useSearchParams } from "next/navigation";
-import { useHandleFilter } from "@/lib/useHandleFilter";
+import { useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Dropdown, useDropdown } from '@/components/ui/dropdown';
+import useFilterStore from '@/store/useFilterStore';
+import { useSearchParams } from 'next/navigation';
+import { useHandleFilter } from '@/lib/useHandleFilter';
 
 const OWNER_COUNT_OPTIONS = [
-  { value: 100, label: "~100명" },
-  { value: 300, label: "300명" },
-  { value: 500, label: "500명" },
-  { value: 1000, label: "1000명" },
-  { value: 3000, label: "3000명" },
-  { value: 5000, label: "5000명~" },
+  { value: 100, label: '~100명' },
+  { value: 300, label: '300명' },
+  { value: 500, label: '500명' },
+  { value: 1000, label: '1000명' },
+  { value: 3000, label: '3000명' },
+  { value: 5000, label: '5000명~' },
 ];
 
 export default function OwnerCountFilter() {
@@ -26,13 +26,13 @@ export default function OwnerCountFilter() {
     if (!searchParams) return;
     const params = new URLSearchParams(searchParams.toString());
     const toNumberOrNull = (value: string | null) => {
-      if (value === null || value === "") return null;
+      if (value === null || value === '') return null;
       const num = Number(value);
       return Number.isFinite(num) ? num : null;
     };
     setOwnerCount({
-      ownerCountMin: toNumberOrNull(params.get("ownerCountMin")),
-      ownerCountMax: toNumberOrNull(params.get("ownerCountMax")),
+      ownerCountMin: toNumberOrNull(params.get('ownerCountMin')),
+      ownerCountMax: toNumberOrNull(params.get('ownerCountMax')),
     });
   }, [searchParams, setOwnerCount]);
 
@@ -68,9 +68,24 @@ export default function OwnerCountFilter() {
   );
 
   const handleSubmit = () => {
+    if (
+      selectedRange.ownerCountMin === null &&
+      selectedRange.ownerCountMax === null
+    ) {
+      return handleReset();
+    }
     if (!selectedRange.ownerCountMax) {
+      if (selectedRange.ownerCountMin === 5000) {
+        return handleFilter({
+          data: {
+            ownerCountMin: selectedRange.ownerCountMin,
+            ownerCountMax: null,
+          },
+          filter: 'ownerCount',
+        });
+      }
       handleFilter({
-        filter: "ownerCount",
+        filter: 'ownerCount',
         data: { ownerCountMin: 0, ownerCountMax: selectedRange.ownerCountMin },
       });
     } else {
@@ -79,7 +94,7 @@ export default function OwnerCountFilter() {
           ownerCountMin: selectedRange.ownerCountMin,
           ownerCountMax: selectedRange.ownerCountMax,
         },
-        filter: "ownerCount",
+        filter: 'ownerCount',
       });
     }
     dropdown.close();
@@ -88,7 +103,7 @@ export default function OwnerCountFilter() {
   const handleReset = () => {
     setOwnerCount({ ownerCountMin: null, ownerCountMax: null });
     handleFilter({
-      filter: "ownerCount",
+      filter: 'ownerCount',
       data: { ownerCountMin: null, ownerCountMax: null },
     });
     dropdown.close();
@@ -99,10 +114,13 @@ export default function OwnerCountFilter() {
     if (!ownerCountMin && ownerCountMax) {
       return `${ownerCountMax}명 이하`;
     }
+    if (ownerCountMin === 5000) {
+      return `${ownerCountMin}명 이상`;
+    }
     if (ownerCountMin && ownerCountMax) {
       return `${ownerCountMin}명 ~ ${ownerCountMax}명`;
     }
-    return "권리자수";
+    return '권리자수';
   };
 
   const isInRange = (count: number) => {
@@ -126,18 +144,25 @@ export default function OwnerCountFilter() {
         <Button
           variant="ghost"
           className={`flex items-center gap-2 rounded-full ${
-            dropdown.isOpen && "bg-gray-100 text-black"
+            dropdown.isOpen && 'bg-gray-100 text-black'
           }`}
           onClick={dropdown.toggle}
         >
           <p className="text-xl font-bold">{getDisplayText()}</p>
           <svg
-            className={`h-4 w-4 transition-transform ${dropdown.isOpen ? "rotate-180" : ""}`}
+            className={`h-4 w-4 transition-transform ${
+              dropdown.isOpen ? 'rotate-180' : ''
+            }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </Button>
       }
@@ -150,10 +175,10 @@ export default function OwnerCountFilter() {
               key={option.value}
               className={`px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isRangeEndpoint(option.value)
-                  ? "bg-purple-600 text-white border-2 border-purple-600"
+                  ? 'bg-purple-600 text-white border-2 border-purple-600'
                   : isInRange(option.value)
-                  ? "bg-purple-100 text-purple-700 border-2 border-purple-200"
-                  : "bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-transparent"
+                  ? 'bg-purple-100 text-purple-700 border-2 border-purple-200'
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-transparent'
               }`}
               onClick={() => handleCountClick(option.value)}
             >
@@ -167,7 +192,7 @@ export default function OwnerCountFilter() {
             className="w-1/2 text-center px-2 py-2 text-red-600 hover:bg-red-50 rounded cursor-pointer"
             onClick={handleReset}
           >
-            선택 초기화
+            선택해제
           </button>
           <button
             className="w-1/2 text-center px-2 py-2 text-blue-600 hover:bg-red-50 rounded cursor-pointer"

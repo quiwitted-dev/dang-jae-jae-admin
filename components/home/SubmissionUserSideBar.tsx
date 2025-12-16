@@ -95,8 +95,10 @@ const SubmissionUserSideBar = ({
                 <p className="font-bold">
                   현재 용적률{' '}
                   <span className="text-black font-extrabold">
-                    {Number(submissionData.currentVolumeRatio).toFixed(2) ??
-                      '-'}{' '}
+                    {submissionData.currentVolumeRatio
+                      ? Number(submissionData.currentVolumeRatio).toFixed(2) ??
+                        '-'
+                      : '-'}{' '}
                     %
                   </span>
                 </p>
@@ -108,7 +110,7 @@ const SubmissionUserSideBar = ({
                 <p>
                   미래용적률{' '}
                   <span className="text-black font-bold">
-                    {submissionData.expectedVolumeRatio}
+                    {submissionData.expectedVolumeRatio ?? '-'}
                   </span>{' '}
                   %
                 </p>
@@ -125,7 +127,7 @@ const SubmissionUserSideBar = ({
                 <p>
                   신축세대수 :{' '}
                   <span className="text-black font-extrabold">
-                    {submissionData.expectedNewUnits}
+                    {submissionData.expectedNewUnits ?? '-'}
                   </span>{' '}
                   세대
                 </p>
@@ -143,7 +145,7 @@ const SubmissionUserSideBar = ({
                 <p>
                   노후도 :{' '}
                   <span className="text-black font-extrabold">
-                    {submissionData.constructionYear}년도 건축물
+                    {submissionData.constructionYear ?? '-'}년도 건축물
                   </span>{' '}
                 </p>
               </div>
@@ -151,7 +153,7 @@ const SubmissionUserSideBar = ({
                 <p>
                   사업주체 :{' '}
                   <span className="text-black font-extrabold">
-                    {submissionData.businessEntity}
+                    {submissionData.businessEntity ?? '-'}
                   </span>{' '}
                 </p>
               </div>
@@ -159,7 +161,7 @@ const SubmissionUserSideBar = ({
                 <p>
                   사업성격 :{' '}
                   <span className="text-black font-extrabold">
-                    {submissionData.businessType}
+                    {submissionData.businessType ?? '-'}
                   </span>{' '}
                 </p>
               </div>

@@ -6,6 +6,7 @@ import ModalProvider from "@/components/providers/ModalProviders";
 import { cookies } from "next/headers";
 import { getUser } from "@/services/user.api.server";
 import { ToastProvider } from "@/components/providers/ToastProvider";
+import Footer from "@/components/layout/Footer";
 
 // Playfair Display Google 폰트 설정
 const playfairDisplay = Playfair_Display({
@@ -38,14 +39,7 @@ export default async function RootLayout({
           type="text/javascript"
           src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0dacc0c4e114487ed38c366e80cd1d4b&autoload=false&libraries=services"
         ></script>
-        <footer className="text-center my-2 font-[#F4F4F4] text-sm">
-          당신의재재
-          <br />
-          사업자등록번호 | 475-46-01292 대표 | 이필순
-          <br />
-          주소 | 경기도 용인시 수지구 용구대로2790번길 7, 3층 302호 <br />
-          연락처 | jajattok@gmail.com
-        </footer>
+        <Footer />
       </body>
     </html>
   );

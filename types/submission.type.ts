@@ -95,6 +95,7 @@ export type GyeonggiSubmissionDetail = {
   totalSaleUnits: number; // 사업시행세대수총계
   generalSaleUnits: number; // 일반분양세대수
   rentalUnits: number; // 임대세대수
+  memberSaleUnits: number; // 조합원 분양수
   newVolumeRatio: string; // 용적률(%)
 
   ownerCount: number; // 토지등소유자수

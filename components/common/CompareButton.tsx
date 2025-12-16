@@ -11,12 +11,16 @@ type Props = {
 };
 
 const CompareButton = ({ id, type }: Props) => {
-  const { compare, setCompare } = useCompareStore();
+  const { compare, setCompare, removeCompare } = useCompareStore();
   const hasId = compare.some((compareId) => compareId?.id === id);
+  const index = compare.findIndex((data) => data?.id === id);
 
   const handleCompare = () => {
     if (hasId) {
-      toast('비교하기에 이미 담았습니다.');
+      if (index === 0 || index === 1) {
+        removeCompare(index);
+        toast('비교하기에 제외되었습니다.');
+      }
     } else {
       setCompare({ id, dataType: type });
       toast('비교하기에 담았습니다.');
@@ -25,7 +29,7 @@ const CompareButton = ({ id, type }: Props) => {
 
   return (
     <Button
-      className={`rounded-full cursor-pointer border ${
+      className={`rounded-full h-10 cursor-pointer border ${
         hasId ? 'bg-transparent text-black border-black' : 'border-transparent'
       }`}
       onClick={handleCompare}

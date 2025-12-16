@@ -10,11 +10,11 @@ const HomeRightSide = () => {
   return (
     <>
       {address && (
-        <div className="md:flex-1 pr-4 hidden md:block">
+        <div className="md:flex-1 mt-[52px] pr-4 hidden md:block">
           <MapView address={address} />
         </div>
       )}
-      {!address && <RightSide />}
+      <div className="relative">{!address && <RightSide />}</div>
     </>
   );
 };

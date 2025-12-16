@@ -11,11 +11,11 @@ const InfoCard = ({ info }: { info: InfoCardProps }) => {
   return (
     <div key={info.title} className="flex flex-row">
       <div className="relative p-0 min-w-[94px]">
-        <Image src={info.img} alt={info.title} fill className='object-cover' />
+        <Image src={info.img} alt={info.title} fill className="object-cover" />
       </div>
       <div className="py-10 px-7 flex flex-col gap-4 bg-white/4">
         <h3 className={`${info.color} text-base`}>{info.title}</h3>
-        <p className="text-white">{info.desc}</p>
+        <p className="text-white whitespace-normal break-keep">{info.desc}</p>
       </div>
     </div>
   );

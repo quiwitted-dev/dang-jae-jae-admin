@@ -45,7 +45,7 @@ const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
         +data.ownerCount
       )}`,
       ownerCount: `${data.ownerCount ?? ''}`,
-      associationSaleUnits: '0',
+      associationSaleUnits: `${data.memberSaleUnits ?? 0}`,
       generalSaleUnits: `${data.generalSaleUnits ?? '0'}`,
       rentalUnits: `${data.rentalUnits ?? '0'}`,
       newConstructionUnits: `${+data.totalSaleUnits + +data.rentalUnits}`,
@@ -71,7 +71,7 @@ const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
     generalSaleUnits: `${+data.totalSaleUnits - +data.ownerCount}`,
     rentalUnits: `${data.rentalUnits}`,
     newConstructionUnits: `${+data.rentalUnits + +data.totalSaleUnits}`,
-    newVolumeRatio: data.volumeRatio ?? '0',
+    newVolumeRatio: data.buildingCoverageRatio ?? '0',
     currentStage: data.currentStage ?? '',
     businessType: data.businessType ?? '',
     businessOperator: '-',
@@ -168,6 +168,8 @@ const ComparePage = () => {
     return result;
   };
 
+  console.log(compare1.zoneName);
+
   return (
     <div className="flex flex-row min-h-dvh relative">
       {/* 왼쪽 50% - 그라데이션 */}
@@ -244,13 +246,13 @@ const ComparePage = () => {
             />
           )}
         </div>
-        <div className="flex flex-col gap-2 text-center pt-4 w-full h-20">
-          <h3 className="text-[18px] font-bold truncate ">
-            {compare1.zoneName}
-          </h3>
-          <p className="text-xl font-thin">{compare1.address}</p>
+        <div className="flex flex-col gap-2 text-center pt-4 w-full h-32">
+          <h3 className="text-base font-bold truncate ">{compare1.zoneName}</h3>
+          <p className="text-base font-thin whitespace-normal break-keep px-5">
+            {compare1.address}
+          </p>
         </div>
-        <div className="flex flex-col gap-3 pt-[60px]">
+        <div className="flex flex-col gap-3 pt-[30px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
             <p className="text-xl font-thin">{compare1.projectArenaM2} m²</p>
@@ -285,13 +287,13 @@ const ComparePage = () => {
             />
           )}
         </div>
-        <div className="flex flex-col gap-2 text-center pt-4 w-full h-20">
-          <h3 className="text-[18px] font-bold truncate ">
-            {compare2.zoneName}
-          </h3>
-          <p className="text-xl font-thin">{compare2.address}</p>
+        <div className="flex flex-col gap-2 text-center pt-4 w-full h-32">
+          <h3 className="text-base font-bold truncate ">{compare2.zoneName}</h3>
+          <p className="text-base font-thin whitespace-normal break-keep px-5">
+            {compare2.address}
+          </p>
         </div>
-        <div className="flex flex-col gap-3 pt-[60px]">
+        <div className="flex flex-col gap-3 pt-[30px]">
           <div className="flex flex-col text-center">
             <p className="text-sm font-extrabold">정비구역 면적</p>
             <p className="text-xl font-thin">{compare2.projectArenaM2} m²</p>
@@ -306,7 +308,7 @@ const ComparePage = () => {
       </div>
 
       {/* 메인 비교 */}
-      <section className="flex-1 flex flex-col items-center justify-center relative z-10 text-black md:px-0 px-4">
+      <section className="flex-1 flex flex-col items-center justify-center relative z-10 text-black md:px-0 px-4 pb-20 md:pb-0">
         {/* Top Line with 위치 */}
         <div className="md:mt-20 mt-28 w-full flex items-center justify-center">
           <div className="w-full relative">
@@ -409,7 +411,7 @@ const ComparePage = () => {
           {/* 평균 대지지분 */}
           <div className="flex items-center w-full gap-16">
             <div className="flex-1 text-right pr-4 h-[60px]">
-              <span className="text-4xl font-bold">
+              <span className="text-4xl font-bold whitespace-nowrap">
                 {compare1.averageLandScale === 'Infinity'
                   ? '0'
                   : compare1.averageLandScale}
@@ -426,7 +428,7 @@ const ComparePage = () => {
               대지지분
             </div>
             <div className="flex-1 text-left pl-4  h-[60px]">
-              <span className="text-4xl font-bold">
+              <span className="text-4xl font-bold whitespace-nowrap">
                 {compare2.averageLandScale === 'Infinity'
                   ? '0'
                   : compare2.averageLandScale}
@@ -678,7 +680,7 @@ const ComparePage = () => {
                 %
               </span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-20">
-                <span className="text-base font-thin text-white">
+                <span className="text-base font-thin text-black">
                   {compare1.rentalUnits}세대
                 </span>
               </div>
@@ -695,7 +697,7 @@ const ComparePage = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-1 pl-4">
-                <span className="text-base font-thin text-white">
+                <span className="text-base font-thin text-black">
                   {compare2.rentalUnits}세대
                 </span>
               </div>
@@ -738,7 +740,7 @@ const ComparePage = () => {
                       compare2.newConstructionUnits === '0'
                         ? 0
                         : compare2.newConstructionUnits
-                        ? 1000
+                        ? 100
                         : 0
                     }%`,
                   }} // 오른쪽 비율
@@ -779,7 +781,7 @@ const ComparePage = () => {
                 {compare2.newConstructionUnits === '0'
                   ? 0
                   : compare2.newConstructionUnits
-                  ? 1000
+                  ? 100
                   : 0}
                 %
               </span>
