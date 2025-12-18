@@ -79,6 +79,7 @@ export default function PriceFilter() {
     }
     if (!selectedRange.maxPrice) {
       if (selectedRange.minPrice === 60) {
+        dropdown.close();
         return handleFilter({
           data: {
             minPrice: selectedRange.minPrice,
@@ -89,7 +90,7 @@ export default function PriceFilter() {
       }
       handleFilter({
         data: {
-          minPrice: 0,
+          minPrice: null,
           maxPrice: selectedRange.minPrice,
         },
         filter: 'price',

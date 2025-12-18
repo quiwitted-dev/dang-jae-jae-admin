@@ -76,6 +76,7 @@ export default function OwnerCountFilter() {
     }
     if (!selectedRange.ownerCountMax) {
       if (selectedRange.ownerCountMin === 5000) {
+        dropdown.close();
         return handleFilter({
           data: {
             ownerCountMin: selectedRange.ownerCountMin,

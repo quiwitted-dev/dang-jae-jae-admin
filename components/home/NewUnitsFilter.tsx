@@ -98,6 +98,7 @@ export default function NewUnitsFilter() {
     }
     if (!selectedRange.newConstructionUnitsMax) {
       if (selectedRange.newConstructionUnitsMin === 5000) {
+        dropdown.close();
         return handleFilter({
           data: {
             newConstructionUnitsMin: selectedRange.newConstructionUnitsMin,
