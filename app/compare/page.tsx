@@ -181,6 +181,9 @@ const ComparePage = () => {
       return 0;
     }
     const result = Math.round((+dividend / +divisor) * 100);
+    if (result > 100) {
+      return 100;
+    }
     return result;
   };
 
@@ -709,11 +712,62 @@ const ComparePage = () => {
           </div>
 
           {/* 신축 총 세대수 */}
-          {/* Todo : 신축 총 세대수 계산 해야함. */}
           <div className="relative w-full">
             <div className="relative z-10 flex items-center w-full h-[60px]">
-              {/* 퍼센트 배경 — 왼쪽 절반 */}
+              {/* 임대 세대수 퍼센트 배경 — 왼쪽 절반 */}
               <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-10">
+                <div
+                  className="absolute inset-y-0 right-0 bg-[#FF0000] transition-all duration-500 rounded-l-4xl"
+                  style={{
+                    width: `${getAdjustedPercentage(
+                      +compare1.rentalUnits,
+                      +compare1.newConstructionUnits
+                    )}%`,
+                  }} // 왼쪽 비율
+                />
+              </div>
+
+              {/* 임대 세대수 퍼센트 배경 — 오른쪽 절반 */}
+              <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden -z-10">
+                <div
+                  className="absolute inset-y-0 left-0 bg-[#FF0000] transition-all duration-500 rounded-r-4xl"
+                  style={{
+                    width: `${getAdjustedPercentage(
+                      +compare2.rentalUnits,
+                      +compare2.newConstructionUnits
+                    )}%`,
+                  }} // 오른쪽 비율
+                />
+              </div>
+
+              {/* 일반 분양수 퍼센트 배경 — 오른쪽 절반 */}
+              <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-20">
+                <div
+                  className="absolute inset-y-0 right-0 bg-[#F4FF92] transition-all duration-500 rounded-l-4xl"
+                  style={{
+                    width: `${getAdjustedPercentage(
+                      +compare1.generalSaleUnits,
+                      +compare1.newConstructionUnits
+                    )}%`,
+                  }} // 왼쪽 비율
+                />
+              </div>
+
+              {/* 일반 분양수 퍼센트 배경 — 오른쪽 절반 */}
+              <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden -z-20">
+                <div
+                  className="absolute inset-y-0 left-0 bg-[#F4FF92] transition-all duration-500 rounded-r-4xl"
+                  style={{
+                    width: `${getAdjustedPercentage(
+                      +compare2.generalSaleUnits,
+                      +compare2.newConstructionUnits
+                    )}%`,
+                  }} // 오른쪽 비율
+                />
+              </div>
+
+              {/* 신축 총 세대수 퍼센트 배경 — 왼쪽 절반 */}
+              <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden -z-30">
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
                   style={{
@@ -728,8 +782,8 @@ const ComparePage = () => {
                 />
               </div>
 
-              {/* 퍼센트 배경 — 오른쪽 절반 */}
-              <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden -z-10">
+              {/* 신축 총 세대수 퍼센트 배경 — 오른쪽 절반 */}
+              <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden -z-30">
                 <div
                   className="absolute inset-y-0 left-0 bg-[#61616C] transition-all duration-500 rounded-r-4xl"
                   style={{
@@ -754,7 +808,7 @@ const ComparePage = () => {
                 %
               </span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-20">
-                <span className="text-base font-thin text-white">
+                <span className="text-base font-thin text-black">
                   {compare1.newConstructionUnits}세대
                 </span>
               </div>
@@ -770,7 +824,7 @@ const ComparePage = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-1 pl-4">
-                <span className="text-base font-thin text-white">
+                <span className="text-base font-thin text-black">
                   {compare2.newConstructionUnits}세대
                 </span>
               </div>
