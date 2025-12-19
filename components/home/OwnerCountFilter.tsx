@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dropdown, useDropdown } from '@/components/ui/dropdown';
 import useFilterStore from '@/store/useFilterStore';
@@ -18,6 +18,10 @@ const OWNER_COUNT_OPTIONS = [
 
 export default function OwnerCountFilter() {
   const { ownerCount: selectedRange, setOwnerCount } = useFilterStore();
+  const [displayCount, setDisplayCount] = useState<{
+    ownerCountMin: number | null;
+    ownerCountMax: number | null;
+  }>({ ownerCountMin: null, ownerCountMax: null });
   const searchParams = useSearchParams();
   const dropdown = useDropdown();
   const handleFilter = useHandleFilter();
@@ -34,6 +38,10 @@ export default function OwnerCountFilter() {
       ownerCountMin: toNumberOrNull(params.get('ownerCountMin')),
       ownerCountMax: toNumberOrNull(params.get('ownerCountMax')),
     });
+    setDisplayCount({
+      ownerCountMin: toNumberOrNull(params.get('ownerCountMin')),
+      ownerCountMax: toNumberOrNull(params.get('ownerCountMax')),
+    });
   }, [searchParams, setOwnerCount]);
 
   const handleCountClick = useCallback(
@@ -43,23 +51,38 @@ export default function OwnerCountFilter() {
 
         if (ownerCountMin && !ownerCountMax) {
           if (count > ownerCountMin) {
+            setDisplayCount({ ownerCountMin, ownerCountMax: count });
             return { ownerCountMin, ownerCountMax: count };
           } else if (count === ownerCountMin) {
+            setDisplayCount({ ownerCountMin, ownerCountMax: null });
             return { ownerCountMin, ownerCountMax: null };
           } else {
+            setDisplayCount({
+              ownerCountMin: count,
+              ownerCountMax: ownerCountMin,
+            });
             return { ownerCountMin: count, ownerCountMax: ownerCountMin };
           }
+          // 설정된 값에서 추가로 누를 때
         } else if (ownerCountMin && ownerCountMax) {
           if (count > ownerCountMax) {
+            setDisplayCount({ ownerCountMin, ownerCountMax: count });
             return { ownerCountMin, ownerCountMax: count };
           } else if (count < ownerCountMax && count > ownerCountMin) {
+            setDisplayCount({ ownerCountMin, ownerCountMax: count });
             return { ownerCountMin, ownerCountMax: count };
           } else if (count === ownerCountMin || count === ownerCountMax) {
+            setDisplayCount({ ownerCountMin: count, ownerCountMax: null });
             return { ownerCountMin: count, ownerCountMax: null };
           } else {
+            setDisplayCount({
+              ownerCountMin: count,
+              ownerCountMax: ownerCountMin,
+            });
             return { ownerCountMin: count, ownerCountMax: ownerCountMin };
           }
         } else {
+          setDisplayCount({ ownerCountMin: count, ownerCountMax: null });
           return { ownerCountMin: count, ownerCountMax: null };
         }
       });
@@ -76,6 +99,7 @@ export default function OwnerCountFilter() {
     }
     if (!selectedRange.ownerCountMax) {
       if (selectedRange.ownerCountMin === 5000) {
+        dropdown.close();
         return handleFilter({
           data: {
             ownerCountMin: selectedRange.ownerCountMin,
@@ -87,6 +111,14 @@ export default function OwnerCountFilter() {
       handleFilter({
         filter: 'ownerCount',
         data: { ownerCountMin: 0, ownerCountMax: selectedRange.ownerCountMin },
+      });
+    } else if (selectedRange.ownerCountMax === 5000) {
+      handleFilter({
+        data: {
+          ownerCountMin: selectedRange.ownerCountMin,
+          ownerCountMax: null,
+        },
+        filter: 'ownerCount',
       });
     } else {
       handleFilter({
@@ -102,6 +134,7 @@ export default function OwnerCountFilter() {
 
   const handleReset = () => {
     setOwnerCount({ ownerCountMin: null, ownerCountMax: null });
+    setDisplayCount({ ownerCountMin: null, ownerCountMax: null });
     handleFilter({
       filter: 'ownerCount',
       data: { ownerCountMin: null, ownerCountMax: null },
@@ -110,28 +143,41 @@ export default function OwnerCountFilter() {
   };
 
   const getDisplayText = () => {
-    const { ownerCountMin, ownerCountMax } = selectedRange;
+    const { ownerCountMin, ownerCountMax } = displayCount;
+
+    if (dropdown.isOpen) {
+      if (ownerCountMin && !ownerCountMax) {
+        if (ownerCountMin === 5000) {
+          return `${ownerCountMin}명 이상`;
+        }
+        return `${ownerCountMin}명 이하`;
+      }
+    } else {
+      if (ownerCountMin && !ownerCountMax) {
+        return `${ownerCountMin}명 이상`;
+      }
+    }
     if (!ownerCountMin && ownerCountMax) {
       return `${ownerCountMax}명 이하`;
     }
-    if (ownerCountMin === 5000) {
-      return `${ownerCountMin}명 이상`;
-    }
     if (ownerCountMin && ownerCountMax) {
+      if (ownerCountMax === 5000) {
+        return `${ownerCountMin}명 이상`;
+      }
       return `${ownerCountMin}명 ~ ${ownerCountMax}명`;
     }
     return '권리자수';
   };
 
   const isInRange = (count: number) => {
-    const { ownerCountMin: min, ownerCountMax: max } = selectedRange;
+    const { ownerCountMin: min, ownerCountMax: max } = displayCount;
     if (!min) return false;
     if (!max) return count === min;
     return count >= min && count <= max;
   };
 
   const isRangeEndpoint = (count: number) => {
-    const { ownerCountMin: min, ownerCountMax: max } = selectedRange;
+    const { ownerCountMin: min, ownerCountMax: max } = displayCount;
     return count === min || count === max;
   };
 

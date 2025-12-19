@@ -162,7 +162,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
             <Bookmark fill="black" />
           </Button>
 
-          {pathname === '/my' && isLogin && (
+          {/* {pathname === '/my' && isLogin && (
             <Button
               className="hidden md:flex flex-row w-10 h-10 cursor-pointer"
               variant={'white'}
@@ -170,7 +170,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
             >
               <LogOut fill="black" />
             </Button>
-          )}
+          )} */}
 
           <Link href={'/compare'}>
             <HeaderCompareButton hasTitle={true} />
@@ -215,7 +215,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
         )}
 
         {pathname === '/my' && (
-          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-black">
+          <div className="relative flex flex-row px-2 justify-between items-center py-1 gap-1 bg-black">
             <div className="flex flex-row items-center justify-center gap-7">
               <ChevronLeft onClick={handleBack} className="cursor-pointer" />
               <Home
@@ -226,11 +226,11 @@ const Header = ({ isLoggedIn }: headerProps) => {
             <div className="relative flex flex-row items-center gap-1">
               {isLogin && (
                 <Button
-                  className="w-10 h-10 cursor-pointer"
+                  className="w-10 h-10 cursor-pointer bg-transparent border"
                   variant={'white'}
-                  onClick={handleLogout}
+                  // onClick={handleBack}
                 >
-                  <LogOut fill="black" />
+                  <Bookmark fill="white" className="text-white" />
                 </Button>
               )}
               <Link href={'/compare'}>
@@ -241,7 +241,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
         )}
 
         {pathname === '/compare' && (
-          <div className="relative flex flex-row px-2 justify-between items-center py-3 gap-1 bg-[#F8F4F1] text-black">
+          <div className="relative flex flex-row px-2 justify-between items-center py-1 gap-1 bg-[#F8F4F1] text-black">
             <div className="flex flex-row items-center justify-center gap-7">
               <ChevronLeft onClick={handleBack} className="cursor-pointer" />
               <Home
@@ -251,7 +251,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
             </div>
             <div className="relative flex flex-row items-center gap-1">
               <Button
-                className="flex flex-row w-10 h-10 cursor-pointer border border-black"
+                className="flex flex-row w-10 h-10 cursor-pointer border border-black bg-transparent"
                 variant={'white'}
                 onClick={() => {
                   isLogin ? handleLink('/my') : handleLoginToggle();
@@ -262,7 +262,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
               <Link href={'/compare'}>
                 <Button
                   variant={'white'}
-                  className="flex items-center w-10 h-10 flex-row justify-center cursor-pointer gap-0 p-0 border border-black"
+                  className="flex items-center w-10 h-10 flex-row justify-center cursor-pointer gap-0 p-0 border border-black bg-transparent"
                 >
                   <Image
                     src={'/black-compare.png'}

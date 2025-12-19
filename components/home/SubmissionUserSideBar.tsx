@@ -23,7 +23,7 @@ const SubmissionUserSideBar = ({
   const [min, max] = submissionData.priceRange?.match(/\d+/g) ?? [];
 
   return (
-    <div className="relative bg-linear-to-b from-[#A1ACEB] to-[#FFFEB1] text-black min-h-dvh whitespace-normal break-keep">
+    <div className="relative bg-linear-to-b from-[#A1ACEB] to-[#FFFEB1] text-black min-h-dvh whitespace-normal break-keep pb-10">
       <div className="flex max-w-[400px] mx-auto px-4 pt-4">
         <div className="flex flex-col items-center justify-center gap-3">
           <div className="text-3xl font-normal">
@@ -185,14 +185,13 @@ const SubmissionUserSideBar = ({
               </Button>
             </div>
             {/* todo : 전문가 분석 레포트 */}
-            <div></div>
+            {/* <div></div> */}
 
             {/* footer */}
-            <div className="flex flex-col text-[10px] text-gray-500 gap-5 my-16">
+            {/* <div className="flex flex-col text-[10px] text-gray-500 gap-5 my-16">
               <strong>당신의재건축재개발</strong>
               <div>
                 <div className="flex flex-row gap-2">
-                  {/* todo : 링크 달기 */}
                   <p>개인정보 처리방침</p>|<p>약관 및 정책</p>
                 </div>
                 <div className="flex flex-row gap-2">
@@ -201,7 +200,7 @@ const SubmissionUserSideBar = ({
                 </div>
               </div>
               <p>© 2025 당신의재재 All Rights Reserved.</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -219,7 +218,7 @@ const SubmissionUserSideBar = ({
 };
 
 export default SubmissionUserSideBar;
-// todo  : 동의서 팝업 만들어야 함.
+
 export const ApprovePopup = ({ phoneNumber }: { phoneNumber: string }) => {
   return (
     <div className="flex flex-col bg-white rounded-3xl text-black max-w-[390px] p-6">

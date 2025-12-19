@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 
 type PriceRange = {
-  minPrice: number | null; // 원 단위
-  maxPrice: number | null; // 원 단위
+  minPrice: number | null; 
+  maxPrice: number | null; 
 };
 
 type OwnerRange = {
