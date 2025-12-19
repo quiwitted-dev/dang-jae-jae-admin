@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dropdown, useDropdown } from '@/components/ui/dropdown';
 import useFilterStore from '@/store/useFilterStore';
@@ -18,6 +18,10 @@ const NEW_UNITS_OPTIONS = [
 
 export default function NewUnitsFilter() {
   const { newUnits: selectedRange, setNewUnits } = useFilterStore();
+  const [displayUnits, setDisplayUnits] = useState<{
+    newConstructionUnitsMin: number | null;
+    newConstructionUnitsMax: number | null;
+  }>({ newConstructionUnitsMin: null, newConstructionUnitsMax: null });
   const searchParams = useSearchParams();
   const dropdown = useDropdown();
   const handleFilter = useHandleFilter();
@@ -38,6 +42,14 @@ export default function NewUnitsFilter() {
         params.get('newConstructionUnitsMax')
       ),
     });
+    setDisplayUnits({
+      newConstructionUnitsMin: toNumberOrNull(
+        params.get('newConstructionUnitsMin')
+      ),
+      newConstructionUnitsMax: toNumberOrNull(
+        params.get('newConstructionUnitsMax')
+      ),
+    });
   }, [searchParams, setNewUnits]);
 
   const handleUnitsClick = useCallback(
@@ -47,10 +59,22 @@ export default function NewUnitsFilter() {
 
         if (newConstructionUnitsMin && !newConstructionUnitsMax) {
           if (units > newConstructionUnitsMin) {
+            setDisplayUnits({
+              newConstructionUnitsMin,
+              newConstructionUnitsMax: units,
+            });
             return { newConstructionUnitsMin, newConstructionUnitsMax: units };
           } else if (units === newConstructionUnitsMin) {
+            setDisplayUnits({
+              newConstructionUnitsMin,
+              newConstructionUnitsMax: null,
+            });
             return { newConstructionUnitsMin, newConstructionUnitsMax: null };
           } else {
+            setDisplayUnits({
+              newConstructionUnitsMin: units,
+              newConstructionUnitsMax: newConstructionUnitsMin,
+            });
             return {
               newConstructionUnitsMin: units,
               newConstructionUnitsMax: newConstructionUnitsMin,
@@ -58,27 +82,47 @@ export default function NewUnitsFilter() {
           }
         } else if (newConstructionUnitsMin && newConstructionUnitsMax) {
           if (units > newConstructionUnitsMax) {
+            setDisplayUnits({
+              newConstructionUnitsMin,
+              newConstructionUnitsMax: units,
+            });
             return { newConstructionUnitsMin, newConstructionUnitsMax: units };
           } else if (
             units < newConstructionUnitsMax &&
             units > newConstructionUnitsMin
           ) {
+            setDisplayUnits({
+              newConstructionUnitsMin,
+              newConstructionUnitsMax: units,
+            });
             return { newConstructionUnitsMin, newConstructionUnitsMax: units };
           } else if (
             units === newConstructionUnitsMin ||
             units === newConstructionUnitsMax
           ) {
+            setDisplayUnits({
+              newConstructionUnitsMin: units,
+              newConstructionUnitsMax: null,
+            });
             return {
               newConstructionUnitsMin: units,
               newConstructionUnitsMax: null,
             };
           } else {
+            setDisplayUnits({
+              newConstructionUnitsMin: units,
+              newConstructionUnitsMax: newConstructionUnitsMin,
+            });
             return {
               newConstructionUnitsMin: units,
               newConstructionUnitsMax: newConstructionUnitsMin,
             };
           }
         } else {
+          setDisplayUnits({
+            newConstructionUnitsMin: units,
+            newConstructionUnitsMax: null,
+          });
           return {
             newConstructionUnitsMin: units,
             newConstructionUnitsMax: null,
@@ -114,6 +158,14 @@ export default function NewUnitsFilter() {
           newConstructionUnitsMax: selectedRange.newConstructionUnitsMin,
         },
       });
+    } else if (selectedRange.newConstructionUnitsMax === 5000) {
+      handleFilter({
+        data: {
+          newConstructionUnitsMin: selectedRange.newConstructionUnitsMin,
+          newConstructionUnitsMax: null,
+        },
+        filter: 'newConstructionUnits',
+      });
     } else {
       handleFilter({
         data: {
@@ -131,6 +183,10 @@ export default function NewUnitsFilter() {
       newConstructionUnitsMin: null,
       newConstructionUnitsMax: null,
     });
+    setDisplayUnits({
+      newConstructionUnitsMin: null,
+      newConstructionUnitsMax: null,
+    });
     handleFilter({
       filter: 'newConstructionUnits',
       data: {
@@ -142,14 +198,24 @@ export default function NewUnitsFilter() {
   };
 
   const getDisplayText = () => {
-    const { newConstructionUnitsMin, newConstructionUnitsMax } = selectedRange;
+    const { newConstructionUnitsMin, newConstructionUnitsMax } = displayUnits;
+
+    if (dropdown.isOpen) {
+      if (newConstructionUnitsMin && !newConstructionUnitsMax) {
+        return `${newConstructionUnitsMin}세대 이하`;
+      }
+    } else {
+      if (newConstructionUnitsMin && !newConstructionUnitsMax) {
+        return `${newConstructionUnitsMin}세대 이상`;
+      }
+    }
     if (!newConstructionUnitsMin && newConstructionUnitsMax) {
       return `${newConstructionUnitsMax}세대 이하`;
     }
-    if (newConstructionUnitsMin === 5000) {
-      return `${newConstructionUnitsMin}세대 이상`;
-    }
     if (newConstructionUnitsMin && newConstructionUnitsMax) {
+      if (newConstructionUnitsMax === 5000) {
+        return `${newConstructionUnitsMin}세대 이상`;
+      }
       return `${newConstructionUnitsMin}세대 ~ ${newConstructionUnitsMax}세대`;
     }
     return '신축세대수';
@@ -157,7 +223,7 @@ export default function NewUnitsFilter() {
 
   const isInRange = (units: number) => {
     const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } =
-      selectedRange;
+      displayUnits;
     if (!min) return false;
     if (!max) return units === min;
     return units >= min && units <= max;
@@ -165,7 +231,7 @@ export default function NewUnitsFilter() {
 
   const isRangeEndpoint = (units: number) => {
     const { newConstructionUnitsMin: min, newConstructionUnitsMax: max } =
-      selectedRange;
+      displayUnits;
     return units === min || units === max;
   };
 

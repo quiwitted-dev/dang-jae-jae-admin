@@ -23,6 +23,10 @@ const PRICE_OPTIONS = [
 
 export default function PriceFilter() {
   const { price: selectedRange, setPrice } = useFilterStore();
+  const [displayPrice, setDisplayPrice] = useState<{
+    minPrice: number | null;
+    maxPrice: number | null;
+  }>({ minPrice: null, maxPrice: null });
   const searchParams = useSearchParams();
   const dropdown = useDropdown();
   const handleFilter = useHandleFilter();
@@ -39,34 +43,46 @@ export default function PriceFilter() {
       minPrice: toNumberOrNull(params.get('minPrice')),
       maxPrice: toNumberOrNull(params.get('maxPrice')),
     });
+    setDisplayPrice({
+      minPrice: toNumberOrNull(params.get('minPrice')),
+      maxPrice: toNumberOrNull(params.get('maxPrice')),
+    });
   }, [searchParams, setPrice]);
 
   const handlePriceClick = useCallback(
     (price: number) => {
-      const priceWon = price; // 억 단위를 원으로 변환
       setPrice((prevRange) => {
         const { minPrice, maxPrice } = prevRange;
 
         if (minPrice && !maxPrice) {
-          if (priceWon > minPrice) {
-            return { minPrice, maxPrice: priceWon };
-          } else if (priceWon === minPrice) {
+          if (price > minPrice) {
+            setDisplayPrice({ minPrice, maxPrice: price });
+            return { minPrice, maxPrice: price };
+          } else if (price === minPrice) {
+            setDisplayPrice({ minPrice, maxPrice: null });
             return { minPrice, maxPrice: null };
           } else {
-            return { minPrice: priceWon, maxPrice: minPrice };
+            setDisplayPrice({ minPrice: price, maxPrice: minPrice });
+            return { minPrice: price, maxPrice: minPrice };
           }
+          // 설정된 값에서 추가로 누를 때
         } else if (minPrice && maxPrice) {
-          if (priceWon > maxPrice) {
-            return { minPrice, maxPrice: priceWon };
-          } else if (priceWon < maxPrice && priceWon > minPrice) {
-            return { minPrice, maxPrice: priceWon };
-          } else if (priceWon === minPrice || priceWon === maxPrice) {
-            return { minPrice: priceWon, maxPrice: null };
+          if (price > maxPrice) {
+            setDisplayPrice({ minPrice, maxPrice: price });
+            return { minPrice, maxPrice: price };
+          } else if (minPrice < price && price < maxPrice) {
+            setDisplayPrice({ minPrice, maxPrice: price });
+            return { minPrice, maxPrice: price };
+          } else if (minPrice === price || price === maxPrice) {
+            setDisplayPrice({ minPrice: price, maxPrice: null });
+            return { minPrice: price, maxPrice: null };
           } else {
-            return { minPrice: priceWon, maxPrice: minPrice };
+            setDisplayPrice({ minPrice: price, maxPrice: minPrice });
+            return { minPrice: price, maxPrice: minPrice };
           }
         } else {
-          return { minPrice: priceWon, maxPrice: null };
+          setDisplayPrice({ minPrice: price, maxPrice: null });
+          return { minPrice: price, maxPrice: null };
         }
       });
     },
@@ -95,6 +111,14 @@ export default function PriceFilter() {
         },
         filter: 'price',
       });
+    } else if (selectedRange.maxPrice === 60) {
+      handleFilter({
+        data: {
+          minPrice: selectedRange.minPrice,
+          maxPrice: null,
+        },
+        filter: 'price',
+      });
     } else {
       handleFilter({
         data: {
@@ -109,6 +133,7 @@ export default function PriceFilter() {
 
   const handleReset = () => {
     setPrice({ minPrice: null, maxPrice: null });
+    setDisplayPrice({ minPrice: null, maxPrice: null });
     handleFilter({
       data: {
         minPrice: null,
@@ -116,24 +141,35 @@ export default function PriceFilter() {
       },
       filter: 'price',
     });
+    dropdown.close();
   };
 
   const getDisplayText = () => {
-    const { minPrice, maxPrice } = selectedRange;
+    const { minPrice, maxPrice } = displayPrice;
+
+    if (dropdown.isOpen) {
+      if (minPrice && !maxPrice) {
+        return `${minPrice}억 이하`;
+      }
+    } else {
+      if (minPrice && !maxPrice) {
+        return `${minPrice}억 이상`;
+      }
+    }
     if (!minPrice && maxPrice) {
       return `${maxPrice}억 이하`;
     }
-    if (minPrice === 60) {
-      return `${minPrice}억 이상`;
-    }
     if (minPrice && maxPrice) {
+      if (maxPrice === 60) {
+        return `${minPrice}억 이상`;
+      }
       return `${minPrice}억 ~ ${maxPrice}억`;
     }
     return '시세';
   };
 
   const isInRange = (price: number) => {
-    const { minPrice: min, maxPrice: max } = selectedRange;
+    const { minPrice: min, maxPrice: max } = displayPrice;
     const priceWon = price;
     if (!min) return false;
     if (!max) return priceWon === min;
@@ -141,7 +177,7 @@ export default function PriceFilter() {
   };
 
   const isRangeEndpoint = (price: number) => {
-    const { minPrice: min, maxPrice: max } = selectedRange;
+    const { minPrice: min, maxPrice: max } = displayPrice;
     const priceWon = price;
     return priceWon === min || priceWon === max;
   };
