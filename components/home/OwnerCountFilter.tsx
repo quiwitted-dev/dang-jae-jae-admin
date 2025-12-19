@@ -147,6 +147,9 @@ export default function OwnerCountFilter() {
 
     if (dropdown.isOpen) {
       if (ownerCountMin && !ownerCountMax) {
+        if (ownerCountMin === 5000) {
+          return `${ownerCountMin}명 이상`;
+        }
         return `${ownerCountMin}명 이하`;
       }
     } else {

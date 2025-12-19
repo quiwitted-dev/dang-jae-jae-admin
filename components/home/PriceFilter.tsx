@@ -149,6 +149,9 @@ export default function PriceFilter() {
 
     if (dropdown.isOpen) {
       if (minPrice && !maxPrice) {
+        if (minPrice === 60) {
+          return `${minPrice}억 이상`;
+        }
         return `${minPrice}억 이하`;
       }
     } else {
