@@ -5,16 +5,31 @@ import { Bookmark, ChevronLeft, icons, MoveRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '../ui/button';
 import { permissionKakao } from '@/services/auth.api';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const Login = () => {
   const { toggleOpen } = useStore();
+  const [isAgreed, setIsAgreed] = useState(false);
+
+  useEffect(() => {
+    const agreed = localStorage.getItem('dangJaeJae_terms_agreed') === 'true';
+    setIsAgreed(agreed);
+  }, []);
 
   const handleModalToggle = () => {
     toggleOpen();
   };
 
   const handleKakaoLogin = () => {
+    if (!isAgreed) return;
     permissionKakao();
+  };
+
+  const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setIsAgreed(checked);
+    localStorage.setItem('dangJaeJae_terms_agreed', String(checked));
   };
 
   return (
@@ -29,7 +44,7 @@ const Login = () => {
         <X className="size-8" />
       </Button>
       <div
-        className="md:w-[390px] md:h-[615px] flex flex-col w-full h-dvh relative bg-[#212138] rounded-4xl"
+        className="md:w-[390px] md:h-[615px] flex flex-col w-full h-dvh relative bg-[#212138] rounded-4xl outline-none"
         onClick={(e) => e.stopPropagation()}
       >
         <Image
@@ -41,14 +56,9 @@ const Login = () => {
         {/* 모바일 네이게이션 */}
         <div
           className="md:hidden relative flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1"
-          // onClick={(e) => e.stopPropagation()}
         >
           <X onClick={handleModalToggle} />
           <div className="flex items-center gap-1">
-            {/* <Button variant={'white'}>
-              <Bookmark fill="black" />
-            </Button>
-            <Button variant={'white'}>비교보기</Button> */}
           </div>
         </div>
 
@@ -66,16 +76,42 @@ const Login = () => {
           <div>
             <Button
               variant={'link'}
-              className="w-full text-[25px] font-medium bg-[#FAE100] text-[#3C1F1A] py-8 rounded-full mb-5"
+              className="w-full text-[25px] font-medium bg-[#FAE100] text-[#3C1F1A] py-8 rounded-full mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleKakaoLogin}
+              disabled={!isAgreed}
             >
               카카오톡으로 로그인
             </Button>
+
+            <div className="flex items-center gap-2 mb-6 px-2 bg-black/20 py-2 rounded-xl border border-white/10">
+              <input
+                type="checkbox"
+                id="terms-agree"
+                checked={isAgreed}
+                onChange={handleCheckChange}
+                className="w-5 h-5 accent-[#F4FF92] cursor-pointer"
+              />
+              <label htmlFor="terms-agree" className="text-sm font-medium cursor-pointer flex flex-row items-center gap-1">
+                <span className="text-white">[필수] 이용약관 및 정책 동의</span>
+                <Link
+                  href="/terms"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleOpen();
+                  }}
+                  className="text-[#F4FF92] underline ml-2 hover:text-white transition-colors font-bold"
+                >
+                  보기 &gt;
+                </Link>
+              </label>
+            </div>
+
             <div className="flex flex-row items-center text-sm font-light">
               <p>아직 회원이 아니시라면, </p>
               <Button
-                className="rounded-4xl bg-white/20"
+                className="rounded-4xl bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleKakaoLogin}
+                disabled={!isAgreed}
               >
                 3초만에 회원가입하기 <MoveRight />
               </Button>
