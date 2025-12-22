@@ -24,8 +24,10 @@ export default function KakaoCallbackPage() {
 
         // Todo : 이전에 로그인 했던 위치 기억해서 거기로 reidrect
         router.replace('/');
-      } catch (error) {
+      } catch (error: any) {
         console.error('카카오 로그인 실패:', error);
+        alert(error.message || '카카오 로그인에 실패했습니다. 다시 시도해주세요.');
+        router.replace('/');
       }
     };
 
