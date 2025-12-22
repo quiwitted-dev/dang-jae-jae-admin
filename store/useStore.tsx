@@ -5,7 +5,9 @@ interface StoreState {
   toggleOpen: () => void;
 
   myPageTab: 'message' | 'assetManagement' | 'settings' | 'none';
-  setMyPageTab: (tab: 'message' | 'assetManagement' | 'settings') => void;
+  setMyPageTab: (
+    tab: 'message' | 'assetManagement' | 'settings' | 'none'
+  ) => void;
 
   settingsTab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none';
   setSettingsTab: (
