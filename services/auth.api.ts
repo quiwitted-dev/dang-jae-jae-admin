@@ -13,8 +13,13 @@ export const LoginKakao = async (code: string) => {
   });
 
   if (!res.ok) {
-    const message = await res.text();
-    throw new Error(message || '카카오 로그인에 실패했습니다.');
+    const text = await res.text();
+    try {
+      const errorData = JSON.parse(text);
+      throw new Error(errorData.message || '카카오 로그인에 실패했습니다.');
+    } catch {
+      throw new Error(text || '카카오 로그인에 실패했습니다.');
+    }
   }
 
   const data = await res.json();
