@@ -242,7 +242,7 @@ export default function NewUnitsFilter() {
     <Dropdown
       isOpen={dropdown.isOpen}
       onClose={dropdown.close}
-      className="w-80 sm:w-72"
+      className="w-80 sm:w-72 sm:max-h-fit"
       trigger={
         <Button
           variant="ghost"
