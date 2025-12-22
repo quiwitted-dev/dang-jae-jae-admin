@@ -1,22 +1,23 @@
-"use client";
+'use client';
 
-import useStore from "@/store/useStore";
-import { Button } from "../ui/button";
-import { Pencil, X } from "lucide-react";
-import { DANGJAEJAE_INFO } from "@/constants/home";
-import InfoCard from "../common/InfoCard";
-import SettingsNavigation from "./SettingsNavigation";
-import { useState } from "react";
-import TermsModal from "./TermsModal";
-import { Switch } from "../ui/switch";
-import { User } from "@/types/user.type";
-import { Input } from "../ui/input";
-import { putUser } from "@/services/user.api.server";
-import { logout } from "@/services/auth.api";
-import useAuthStore from "@/store/useAuthStore";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import toast from "react-hot-toast";
+import useStore from '@/store/useStore';
+import { Button } from '../ui/button';
+import { Pencil, X } from 'lucide-react';
+import { DANGJAEJAE_INFO } from '@/constants/home';
+import InfoCard from '../common/InfoCard';
+import SettingsNavigation from './SettingsNavigation';
+import { useState } from 'react';
+import TermsModal from './TermsModal';
+import { Switch } from '../ui/switch';
+import { User } from '@/types/user.type';
+import { Input } from '../ui/input';
+import { putUser } from '@/services/user.api.server';
+import { logout } from '@/services/auth.api';
+import useAuthStore from '@/store/useAuthStore';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { copyText } from '@/lib/copyText';
 
 const LeftSide = ({ user }: { user: User }) => {
   const myPageTab = useStore((state) => state.myPageTab);
@@ -25,7 +26,7 @@ const LeftSide = ({ user }: { user: User }) => {
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [checked, setChecked] = useState(true);
   const [isEdit, setIsEdit] = useState(false);
-  const [editNickname, setEditNickname] = useState("");
+  const [editNickname, setEditNickname] = useState('');
   const [nickname, setNickname] = useState(user.nickname);
   const isLogin = useAuthStore((state) => state.isLogin);
   const setIsLogin = useAuthStore((state) => state.setIsLogin);
@@ -38,30 +39,36 @@ const LeftSide = ({ user }: { user: User }) => {
   useEffect(() => {
     const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
     checkIsMobile();
-    window.addEventListener("resize", checkIsMobile);
-    return () => window.removeEventListener("resize", checkIsMobile);
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-  const handleSettingTabs = (tab: "privacy" | "policies" | "analysis" | "service" | "none") => {
+  const handleSettingTabs = (
+    tab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none'
+  ) => {
     setSettingsTab(tab);
   };
 
-  const getTabClass = (tab: "privacy" | "policies" | "analysis" | "service" | "none") => {
+  const getTabClass = (
+    tab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none'
+  ) => {
     const isActive = settingsTab === tab;
 
     // 모바일에서는 활성 스타일을 적용하지 않는다
     if (isMobile) {
-      return "text-xl font-semibold";
+      return 'text-xl font-semibold';
     }
 
     if (isActive) {
-      return "text-xl font-semibold relative inline-block after:absolute after:w-0 after:h-[2px] after:left-0 after:bottom-0 after:bg-[#0700DB] after:transition-all after:duration-300 hover:after:w-full underline underline-offset-4 decoration-2 decoration-[#0700DB]";
+      return 'text-xl font-semibold relative inline-block after:absolute after:w-0 after:h-[2px] after:left-0 after:bottom-0 after:bg-[#0700DB] after:transition-all after:duration-300 hover:after:w-full underline underline-offset-4 decoration-2 decoration-[#0700DB]';
     } else {
-      return "text-xl font-semibold relative inline-block after:absolute after:w-0 after:h-[2px] after:left-0 after:bottom-0 after:bg-[#0700DB] after:transition-all after:duration-300 hover:after:w-full";
+      return 'text-xl font-semibold relative inline-block after:absolute after:w-0 after:h-[2px] after:left-0 after:bottom-0 after:bg-[#0700DB] after:transition-all after:duration-300 hover:after:w-full';
     }
   };
 
-  const handleTab = (tab: "privacy" | "policies" | "analysis" | "service" | "none") => {
+  const handleTab = (
+    tab: 'privacy' | 'policies' | 'analysis' | 'service' | 'none'
+  ) => {
     handleSettingTabs(tab);
     setIsTermsModalOpen(true);
   };
@@ -79,17 +86,17 @@ const LeftSide = ({ user }: { user: User }) => {
     const data = await logout();
     if (data.success === true) {
       setIsLogin(false);
-      setAddress("");
-      toast("로그아웃 되었습니다.");
-      if (pathname.startsWith("/my")) {
-        router.replace("/");
+      setAddress('');
+      toast('로그아웃 되었습니다.');
+      if (pathname.startsWith('/my')) {
+        router.replace('/');
       }
     }
   };
 
   return (
     <div className="pt-16 lg:px-16">
-      {myPageTab === "none" && (
+      {myPageTab === 'none' && (
         <div className="flex flex-row justify-between gap-4 mb-16 lg:mb-0 ">
           <h2 className="text-4xl font-extralight leading-snug">
             안녕하세요!
@@ -105,7 +112,7 @@ const LeftSide = ({ user }: { user: User }) => {
           </div>
         </div>
       )}
-      {myPageTab === "settings" && (
+      {myPageTab === 'settings' && (
         <div className="flex flex-col relative">
           <div className="flex flex-col gap-3">
             <p className="text-sm font-extralight text-[#F5B3CB]">닉네임</p>
@@ -117,7 +124,7 @@ const LeftSide = ({ user }: { user: User }) => {
                   placeholder="변경하고 싶은 닉네임 입력"
                   onChange={(e) => setEditNickname(e.target.value)}
                   onKeyDown={(e) => {
-                    e.key === "Enter" && handleNicknameSubmit(editNickname);
+                    e.key === 'Enter' && handleNicknameSubmit(editNickname);
                   }}
                   onBlur={() => {
                     handleNicknameSubmit(editNickname);
@@ -128,17 +135,20 @@ const LeftSide = ({ user }: { user: User }) => {
               <Button
                 className="py-2 px-3 rounded-4xl bg-[#D5B3CB] text-black hover:bg-[#F5B3CB] hover:cursor-pointer"
                 id="nickname-save-btn"
-                size={"none"}
+                size={'none'}
                 type="submit"
                 onClick={() => {
                   isEdit ? handleNicknameSubmit(editNickname) : setIsEdit(true);
                 }}
               >
                 {!isEdit && <Pencil />}
-                <p>{isEdit ? "확인" : "수정"}</p>
+                <p>{isEdit ? '확인' : '수정'}</p>
               </Button>
             </div>
-            <p className="text-sm font-normal text-[#F5B3CB] w-fit" onClick={handleLogout}>
+            <p
+              className="text-sm font-normal text-[#F5B3CB] w-fit"
+              onClick={handleLogout}
+            >
               로그아웃
             </p>
           </div>
@@ -147,18 +157,21 @@ const LeftSide = ({ user }: { user: User }) => {
 
           <div className="flex flex-col gap-3 mb-9">
             <p className="text-sm font-extralight text-[#F5B3CB]">고객센터</p>
-            <h3 className={`${getTabClass("privacy")} w-fit`} onClick={() => handleTab("privacy")}>
+            <h3
+              className={`${getTabClass('privacy')} w-fit`}
+              onClick={() => handleTab('privacy')}
+            >
               개인정보처리방침
             </h3>
             <h3
-              className={`${getTabClass("policies")} w-fit`}
-              onClick={() => handleTab("policies")}
+              className={`${getTabClass('policies')} w-fit`}
+              onClick={() => handleTab('policies')}
             >
               약관 및 정책
             </h3>
             <div className="flex flex-row justify-between">
               <h3
-                className={getTabClass("analysis")}
+                className={getTabClass('analysis')}
                 // onClick={() => handleTab('analysis')}
               >
                 맞춤형 통계 분석 참여 동의
@@ -170,13 +183,18 @@ const LeftSide = ({ user }: { user: User }) => {
                   className="peer w-full h-full rounded-full border-2 border-[#D5B3Cb] bg-transparent px-1 data-[state=checked]:bg-transparent data-[state=unchecked]:bg-transparent"
                 />
                 <span className="pointer-events-none absolute left-1 top-1/2 flex h-7 w-9 -translate-y-1/2 items-center justify-center text-black text-xs font-normal transition-transform duration-200 peer-data-[state=checked]:translate-x-[30px] peer-data-[state=unchecked]:-translate-x-0.5">
-                  {checked ? "동의함" : "거절"}
+                  {checked ? '동의함' : '거절'}
                 </span>
               </div>
             </div>
             <h3
-              className={getTabClass("service")}
-              // onClick={() => handleTab('service')}
+              className={getTabClass('service')}
+              onClick={() =>
+                copyText(
+                  'jajattok@gmail.com',
+                  '메일로 문의를 접수해주시기 바랍니다.'
+                )
+              }
             >
               서비스 문의하기
             </h3>
@@ -189,7 +207,7 @@ const LeftSide = ({ user }: { user: User }) => {
           </div>
           <div className="flex justify-end">
             <Button
-              size={"none"}
+              size={'none'}
               className="mb-9 py-3 px-4 bg-[#A7B1E8] hover:bg-[#95a3ef] w-fit rounded-4xl hover:cursor-pointer"
             >
               <p className="text-sm font-bold text-black">탈퇴하기</p>
