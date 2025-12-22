@@ -27,7 +27,16 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
   return (
     <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] text-black min-h-dvh whitespace-normal break-keep">
       <div className="flex max-w-[400px] mx-auto px-4">
-        <div className="flex flex-col items-center justify-center gap-3">
+        <div className="md:flex hidden flex-col items-center justify-center gap-3">
+          <div className="w-full flex flex-row justify-between mt-5">
+            <p>
+              <span>{publicData.address.split(' ')[1]}</span>{' '}
+              <span className="font-medium">
+                {publicData.address.split(' ').slice(2).join(' ')}
+              </span>
+            </p>
+            <p className="font-semibold">{publicData.projectType}</p>
+          </div>
           <div className="text-3xl font-normal w-full">
             <div className="md:hidden flex flex-row py-4">
               <p className="text-[11px] font-[#49454F]">**</p>
