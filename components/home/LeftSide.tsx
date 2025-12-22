@@ -143,7 +143,7 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
   };
 
   return (
-    <div className="flex flex-col relative max-w-[550px] w-full">
+    <div className="flex flex-col relative md:max-w-[550px] w-full">
       <div
         className="sticky md:top-0 top-12 z-30 bg-black"
         style={{ top: 'var(--header-offset, 0px)' }}

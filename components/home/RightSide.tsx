@@ -36,12 +36,12 @@ const RightSide = () => {
   return (
     <div className="hidden md:block sticky top-16 pt-20">
       <div
-        className="text-4xl md:max-w-[980px] font-extralight whitespace-normal break-keep"
+        className="text-4xl md:max-w-[980px] font-thin whitespace-normal break-keep"
         dangerouslySetInnerHTML={{ __html: data.mainTitle.title }}
       />
-      <div className="w-16 border-b-2 mt-8 mb-28" />
+      <div className="w-16 border-b-2 mt-8 xl:mb-14 mb-5" />
 
-      <div className="flex flex-row items-center mb-[65px]">
+      <div className="flex flex-row items-center xl:mb-10 mb-10">
         {isLogin ? (
           <p>환영합니다! 오늘도 당재재와 함께 즐거운 시간 보내세요!</p>
         ) : (
@@ -57,7 +57,7 @@ const RightSide = () => {
         )}
       </div>
 
-      <div className="hidden lg:grid grid-cols-2 gap-1 md:pb-[140px]">
+      <div className="hidden lg:grid grid-cols-2 gap-1 md:pb-[140px] lg:max-w-[1000px]">
         {DANGJAEJAE_INFO.map((item) => (
           <InfoCard info={item} key={item.title} />
         ))}

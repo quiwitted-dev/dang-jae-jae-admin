@@ -36,6 +36,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
   const [keyword, setKeyword] = useState(searchParams?.get('keyword') ?? '');
   const [showHeader, setShowHeader] = useState(true);
   const lastY = useRef(0);
+  const setMyPageTab = useStore((state) => state.setMyPageTab);
 
   useEffect(() => {
     clear();
@@ -89,6 +90,10 @@ const Header = ({ isLoggedIn }: headerProps) => {
     router.back();
   };
 
+  const handleMyButton = () => {
+    setMyPageTab('none');
+    handleLink('/my');
+  };
   const handleLogout = async () => {
     const data = await logout();
     if (data.success === true) {
@@ -156,7 +161,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
             className="hidden md:flex flex-row h-10 cursor-pointer"
             variant={'white'}
             onClick={() => {
-              isLogin ? handleLink('/my') : handleLoginToggle();
+              isLogin ? handleMyButton() : handleLoginToggle();
             }}
           >
             <Bookmark fill="black" />
@@ -202,7 +207,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 className="flex flex-row w-10 h-10 cursor-pointer"
                 variant={'white'}
                 onClick={() => {
-                  isLogin ? handleLink('/my') : handleLoginToggle();
+                  isLogin ? handleMyButton() : handleLoginToggle();
                 }}
               >
                 <Bookmark fill="black" />
@@ -224,15 +229,13 @@ const Header = ({ isLoggedIn }: headerProps) => {
               />
             </div>
             <div className="relative flex flex-row items-center gap-1">
-              {isLogin && (
-                <Button
-                  className="w-10 h-10 cursor-pointer bg-transparent border"
-                  variant={'white'}
-                  // onClick={handleBack}
-                >
-                  <Bookmark fill="white" className="text-white" />
-                </Button>
-              )}
+              <Button
+                className="w-10 h-10 cursor-pointer bg-transparent border"
+                variant={'white'}
+                onClick={() => setMyPageTab('none')}
+              >
+                <Bookmark fill="white" className="text-white" />
+              </Button>
               <Link href={'/compare'}>
                 <HeaderCompareButton hasTitle={true} />
               </Link>
@@ -254,7 +257,7 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 className="flex flex-row w-10 h-10 cursor-pointer border border-black bg-transparent"
                 variant={'white'}
                 onClick={() => {
-                  isLogin ? handleLink('/my') : handleLoginToggle();
+                  isLogin ? handleMyButton() : handleLoginToggle();
                 }}
               >
                 <Bookmark fill="black" />
