@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { Button } from '../ui/button';
-import { MoveRight } from 'lucide-react';
-import InfoCard from '../common/InfoCard';
-import { DANGJAEJAE_INFO } from '@/constants/home';
-import { getMainTitle } from '@/services/api';
-import { useEffect, useState } from 'react';
-import { MainTitleResponse } from '@/types/type';
-import useAuthStore from '@/store/useAuthStore';
-import useStore from '@/store/useStore';
+import { Button } from "../ui/button";
+import { MoveRight } from "lucide-react";
+import InfoCard from "../common/InfoCard";
+import { DANGJAEJAE_INFO } from "@/constants/home";
+import { getMainTitle } from "@/services/api";
+import { useEffect, useState } from "react";
+import { MainTitleResponse } from "@/types/type";
+import useAuthStore from "@/store/useAuthStore";
+import useStore from "@/store/useStore";
 
 const RightSide = () => {
   const [data, setData] = useState<MainTitleResponse>();
@@ -36,21 +36,18 @@ const RightSide = () => {
   return (
     <div className="hidden md:block sticky top-16 pt-20">
       <div
-        className="text-4xl md:max-w-[980px] font-thin whitespace-normal break-keep"
+        className="lg:text-4xl text-2xl md:max-w-[980px] font-thin whitespace-normal break-keep"
         dangerouslySetInnerHTML={{ __html: data.mainTitle.title }}
       />
       <div className="w-16 border-b-2 mt-8 xl:mb-14 mb-5" />
 
-      <div className="flex flex-row items-center xl:mb-10 mb-10">
+      <div className="flex lg:flex-row flex-col items-center xl:mb-10 mb-10">
         {isLogin ? (
           <p>환영합니다! 오늘도 당재재와 함께 즐거운 시간 보내세요!</p>
         ) : (
           <>
             <p>아직 회원이 아니시라면, </p>
-            <Button
-              className="rounded-4xl cursor-pointer"
-              onClick={handleLoginToggle}
-            >
+            <Button className="rounded-4xl cursor-pointer" onClick={handleLoginToggle}>
               3초만에 회원가입하기 <MoveRight />
             </Button>
           </>
