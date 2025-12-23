@@ -16,10 +16,18 @@ export const getUser = async (): Promise<User | null> => {
     headers: { cookie },
   });
 
-  if (res.status === 401) return null;
+  if (res.status === 401 || res.status === 403) return null;
 
   if (!res.ok) {
-    throw new Error(`유저 정보 조회 실패 ${res.status} ${res.statusText}`);
+    const text = await res.text();
+    let message = '유저 정보 조회 실패';
+    try {
+      const errorData = JSON.parse(text);
+      message = errorData.message || errorData.error || message;
+    } catch {
+      message = text || `${message} ${res.status} ${res.statusText}`;
+    }
+    throw new Error(message);
   }
 
   const data = await res.json();
@@ -42,7 +50,15 @@ export const putUser = async (nickname: string): Promise<User | null> => {
   if (res.status === 401) return null;
 
   if (!res.ok) {
-    throw new Error(`유저 닉네임 변경 실패 ${res.status} ${res.statusText}`);
+    const text = await res.text();
+    let message = '유저 닉네임 변경 실패';
+    try {
+      const errorData = JSON.parse(text);
+      message = errorData.message || message;
+    } catch {
+      message = text || `${message} ${res.status} ${res.statusText}`;
+    }
+    throw new Error(message);
   }
 
   const data = await res.json();

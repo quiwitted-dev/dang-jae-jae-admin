@@ -16,11 +16,24 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
     projectArea > 0 && ownerCount > 0
       ? ((projectArea / ownerCount) * 0.3025).toFixed(2)
       : '-';
+  const [_, ...address] = publicData.representativeLotNumber.split(' ');
 
   return (
     <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] text-black min-h-dvh whitespace-normal break-keep">
       <div className="flex max-w-[400px] mx-auto px-4">
         <div className="flex flex-col items-center justify-center gap-3">
+          <div className="md:flex hidden w-full flex-row justify-between mt-5">
+            <p>
+              <span>{publicData.representativeLotNumber.split(' ')[1]}</span>{' '}
+              <span className="font-medium">
+                {publicData.representativeLotNumber
+                  .split(' ')
+                  .slice(2)
+                  .join(' ')}
+              </span>
+            </p>
+            <p className="font-semibold">{publicData.businessType}</p>
+          </div>
           <div className="text-3xl font-normal w-full">
             <div className="md:hidden flex flex-row py-4">
               <p className="text-[11px] font-[#49454F]">**</p>

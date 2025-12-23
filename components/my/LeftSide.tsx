@@ -2,6 +2,16 @@
 
 import useStore from "@/store/useStore";
 import { Button } from "../ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 import { Pencil, X } from "lucide-react";
 import { DANGJAEJAE_INFO } from "@/constants/home";
 import InfoCard from "../common/InfoCard";
@@ -12,11 +22,12 @@ import { Switch } from "../ui/switch";
 import { User } from "@/types/user.type";
 import { Input } from "../ui/input";
 import { putUser } from "@/services/user.api.server";
-import { logout } from "@/services/auth.api";
+import { deleteAccount, logout } from "@/services/auth.api";
 import useAuthStore from "@/store/useAuthStore";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { copyText } from "@/lib/copyText";
 
 const LeftSide = ({ user }: { user: User }) => {
   const myPageTab = useStore((state) => state.myPageTab);
@@ -27,6 +38,7 @@ const LeftSide = ({ user }: { user: User }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [editNickname, setEditNickname] = useState("");
   const [nickname, setNickname] = useState(user.nickname);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isLogin = useAuthStore((state) => state.isLogin);
   const setIsLogin = useAuthStore((state) => state.setIsLogin);
   const setAddress = useStore((state) => state.setAddress);
@@ -84,6 +96,16 @@ const LeftSide = ({ user }: { user: User }) => {
       if (pathname.startsWith("/my")) {
         router.replace("/");
       }
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const data = await deleteAccount();
+    if (data.success === true) {
+      setIsLogin(false);
+      setAddress("");
+      toast("회원탈퇴 되었습니다.");
+      window.location.replace("/");
     }
   };
 
@@ -176,7 +198,7 @@ const LeftSide = ({ user }: { user: User }) => {
             </div>
             <h3
               className={getTabClass("service")}
-              // onClick={() => handleTab('service')}
+              onClick={() => copyText("jajattok@gmail.com", "메일로 문의를 접수해주시기 바랍니다.")}
             >
               서비스 문의하기
             </h3>
@@ -188,12 +210,41 @@ const LeftSide = ({ user }: { user: User }) => {
             ))}
           </div>
           <div className="flex justify-end">
-            <Button
-              size={"none"}
-              className="mb-9 py-3 px-4 bg-[#A7B1E8] hover:bg-[#95a3ef] w-fit rounded-4xl hover:cursor-pointer"
-            >
-              <p className="text-sm font-bold text-black">탈퇴하기</p>
-            </Button>
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  size={"none"}
+                  className="mb-9 py-3 px-4 bg-[#A7B1E8] hover:bg-[#95a3ef] w-fit rounded-4xl hover:cursor-pointer"
+                >
+                  <p className="text-sm font-bold text-black">탈퇴하기</p>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-white border-white/10 text-black">
+                <DialogHeader>
+                  <DialogTitle>탈퇴하시겠습니까?</DialogTitle>
+                  <DialogDescription>탈퇴하면 7일간 재가입이 불가능합니다.</DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="sm:justify-start sm:flex-row-reverse">
+                  <Button
+                    className="rounded-4xl bg-[#A7B1E8] hover:bg-[#95a3ef] text-black"
+                    onClick={async () => {
+                      await handleDeleteAccount();
+                      setIsDeleteDialogOpen(false);
+                    }}
+                  >
+                    탈퇴하기
+                  </Button>
+                  <DialogClose asChild>
+                    <Button
+                      variant="outline"
+                      className="rounded-4xl border-white/30 bg-red-400 text-white"
+                    >
+                      취소
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {isTermsModalOpen && (
