@@ -203,7 +203,7 @@ export default function NewUnitsFilter() {
     if (dropdown.isOpen) {
       if (newConstructionUnitsMin && !newConstructionUnitsMax) {
         if (newConstructionUnitsMin === 5000) {
-          return `${newConstructionUnitsMin}명 이상`;
+          return `${newConstructionUnitsMin}세대 이상`;
         }
         return `${newConstructionUnitsMin}세대 이하`;
       }
