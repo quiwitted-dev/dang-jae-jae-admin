@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Playfair_Display } from 'next/font/google';
+import { Suspense } from 'react';
 import './globals.css';
 import Header from '@/components/layout/Header';
 import ModalProvider from '@/components/providers/ModalProviders';
@@ -29,7 +30,6 @@ export default async function RootLayout({
   try {
     user = await getUser();
   } catch (error) {
-    console.error('getUser failed');
     user = null;
   }
 
@@ -39,7 +39,9 @@ export default async function RootLayout({
       <body
         className={`${playfairDisplay.variable} antialiased bg-black text-white font-sans`}
       >
-        <Header isLoggedIn={isLoggedIn} />
+        <Suspense fallback={null}>
+          <Header isLoggedIn={isLoggedIn} />
+        </Suspense>
         <main>{children}</main>
         <ModalProvider />
         <ToastProvider />

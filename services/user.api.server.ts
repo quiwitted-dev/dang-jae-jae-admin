@@ -11,6 +11,8 @@ export const getUser = async (): Promise<User | null> => {
     .map(({ name, value }) => `${name}=${value}`)
     .join(';');
 
+  if (!cookie) return null;
+
   const res = await fetch(`${DOMAIL_URL}/api/user`, {
     method: 'GET',
     headers: { cookie },
