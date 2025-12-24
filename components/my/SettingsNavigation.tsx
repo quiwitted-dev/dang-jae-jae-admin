@@ -21,8 +21,8 @@ const SettingsNavigation = () => {
       <Button
         size={'none'}
         variant={'yellow'}
-        className={activeTab('message')}
-        onClick={() => setMyPageTab('message')}
+        // className={activeTab('message')}
+        // onClick={() => setMyPageTab('message')}
       >
         <Mail />
         메세지
@@ -30,8 +30,8 @@ const SettingsNavigation = () => {
       <Button
         size={'none'}
         variant={'yellow'}
-        className={activeTab('assetManagement')}
-        onClick={() => setMyPageTab('assetManagement')}
+        // className={activeTab('assetManagement')}
+        // onClick={() => setMyPageTab('assetManagement')}
       >
         <HandCoins />
         자산 관리
