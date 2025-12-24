@@ -1,23 +1,23 @@
-import type { Metadata } from "next";
-import { Playfair_Display } from "next/font/google";
-import "./globals.css";
-import Header from "@/components/layout/Header";
-import ModalProvider from "@/components/providers/ModalProviders";
-import { cookies } from "next/headers";
-import { getUser } from "@/services/user.api.server";
-import { ToastProvider } from "@/components/providers/ToastProvider";
-import Footer from "@/components/layout/Footer";
+import type { Metadata } from 'next';
+import { Playfair_Display } from 'next/font/google';
+import './globals.css';
+import Header from '@/components/layout/Header';
+import ModalProvider from '@/components/providers/ModalProviders';
+import { cookies } from 'next/headers';
+import { getUser } from '@/services/user.api.server';
+import { ToastProvider } from '@/components/providers/ToastProvider';
+import Footer from '@/components/layout/Footer';
 
 // Playfair Display Google 폰트 설정
 const playfairDisplay = Playfair_Display({
-  variable: "--font-playfair-display",
-  subsets: ["latin"],
-  display: "swap",
+  variable: '--font-playfair-display',
+  subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: "당재재",
-  description: "당재재",
+  title: '당재재',
+  description: '당재재',
 };
 
 export default async function RootLayout({
@@ -25,12 +25,20 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getUser();
+  let user = null;
+  try {
+    user = await getUser();
+  } catch (error) {
+    console.error('getUser failed');
+    user = null;
+  }
 
   const isLoggedIn = !!user;
   return (
     <html lang="ko">
-      <body className={`${playfairDisplay.variable} antialiased bg-black text-white font-sans`}>
+      <body
+        className={`${playfairDisplay.variable} antialiased bg-black text-white font-sans`}
+      >
         <Header isLoggedIn={isLoggedIn} />
         <main>{children}</main>
         <ModalProvider />

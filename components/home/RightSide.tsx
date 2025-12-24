@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Button } from "../ui/button";
-import { MoveRight } from "lucide-react";
-import InfoCard from "../common/InfoCard";
-import { DANGJAEJAE_INFO } from "@/constants/home";
-import { getMainTitle } from "@/services/api";
-import { useEffect, useState } from "react";
-import { MainTitleResponse } from "@/types/type";
-import useAuthStore from "@/store/useAuthStore";
-import useStore from "@/store/useStore";
+import { Button } from '../ui/button';
+import { MoveRight } from 'lucide-react';
+import InfoCard from '../common/InfoCard';
+import { DANGJAEJAE_INFO } from '@/constants/home';
+import { getMainTitle } from '@/services/api';
+import { useEffect, useState } from 'react';
+import { MainTitleResponse } from '@/types/type';
+import useAuthStore from '@/store/useAuthStore';
+import useStore from '@/store/useStore';
 
 const RightSide = () => {
   const [data, setData] = useState<MainTitleResponse>();
@@ -30,7 +30,11 @@ const RightSide = () => {
   };
 
   if (!data) {
-    return <div className="hidden md:block">데이터를 불러오는중...</div>;
+    return (
+      <div className="hidden md:block absolute top-0 left-0 translate-x-80  whitespace-nowrap">
+        데이터를 불러오는중...
+      </div>
+    );
   }
 
   return (
@@ -47,7 +51,10 @@ const RightSide = () => {
         ) : (
           <>
             <p>아직 회원이 아니시라면, </p>
-            <Button className="rounded-4xl cursor-pointer" onClick={handleLoginToggle}>
+            <Button
+              className="rounded-4xl cursor-pointer"
+              onClick={handleLoginToggle}
+            >
               3초만에 회원가입하기 <MoveRight />
             </Button>
           </>
