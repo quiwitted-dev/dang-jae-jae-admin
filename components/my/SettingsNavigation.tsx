@@ -10,9 +10,9 @@ const SettingsNavigation = () => {
   const activeTab = (tab: string) => {
     const isActive = tab === myPageTab;
     if (isActive) {
-      return 'flex flex-col bg-transparent border border-[#FAFFCE] text-[#FAFFCE] hover:text-black';
+      return 'bg-transparent border border-[#FAFFCE] text-[#FAFFCE] hover:text-black';
     } else {
-      return 'flex flex-col';
+      return '';
     }
   };
 
@@ -21,7 +21,7 @@ const SettingsNavigation = () => {
       <Button
         size={'none'}
         variant={'yellow'}
-        // className={activeTab('message')}
+        className={`flex flex-col` + activeTab('message')}
         // onClick={() => setMyPageTab('message')}
       >
         <Mail />
@@ -30,7 +30,7 @@ const SettingsNavigation = () => {
       <Button
         size={'none'}
         variant={'yellow'}
-        // className={activeTab('assetManagement')}
+        className={`flex flex-col` + activeTab('assetManagement')}
         // onClick={() => setMyPageTab('assetManagement')}
       >
         <HandCoins />
