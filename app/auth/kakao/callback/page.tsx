@@ -3,9 +3,9 @@
 import { LoginKakao } from '@/services/auth.api';
 import useAuthStore from '@/store/useAuthStore';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 
-export default function KakaoCallbackPage() {
+function KakaoCallbackContent() {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
   const router = useRouter();
@@ -35,4 +35,12 @@ export default function KakaoCallbackPage() {
   }, [code]);
 
   return null;
+}
+
+export default function KakaoCallbackPage() {
+  return (
+    <Suspense fallback={null}>
+      <KakaoCallbackContent />
+    </Suspense>
+  );
 }
