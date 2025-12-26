@@ -18,7 +18,8 @@ export const defaultValue = {
   address: '',
   projectArenaM2: '',
   residentialLandAreaM2: '',
-  price: '',
+  minPrice: '',
+  maxPrice: '',
   averageLandScale: '',
   ownerCount: '',
   associationSaleUnits: '',
@@ -39,7 +40,8 @@ const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
       address: data.address ?? '',
       projectArenaM2: data.projectAreaM2 ?? '',
       residentialLandAreaM2: '0',
-      price: '0',
+      minPrice: data.renovationPrice?.minPrice ?? '0',
+      maxPrice: data.renovationPrice?.maxPrice ?? '0',
       averageLandScale: `${getAverageLandSclae(
         +data.projectAreaM2,
         +data.ownerCount
@@ -61,7 +63,8 @@ const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
     address: data.representativeLotNumber ?? '-',
     projectArenaM2: data.projectAreaM2 ?? '0',
     residentialLandAreaM2: data.residentialLandAreaM2 ?? '0',
-    price: '0',
+    minPrice: data.renovationPrice?.minPrice ?? '0',
+    maxPrice: data.renovationPrice?.maxPrice ?? '0',
     averageLandScale: `${getAverageLandSclae(
       +data.projectAreaM2,
       +data.ownerCount
@@ -83,7 +86,14 @@ const mapUserResultToCompare = (data: SubmissionUserDetail) => ({
   address: data.location ?? '-',
   projectArenaM2: data.projectArea ?? '0',
   residentialLandAreaM2: '0',
-  price: data.priceRange ?? '0',
+  minPrice:
+    data.renovationPrice?.minPrice ??
+    data.priceRange?.match(/\d+/g)?.[0] ??
+    '0',
+  maxPrice:
+    data.renovationPrice?.maxPrice ??
+    data.priceRange?.match(/\d+/g)?.[1] ??
+    '0',
   averageLandScale: `${getAverageLandSclae(
     +data.projectArea,
     +data.ownerCount
@@ -204,7 +214,7 @@ const ComparePage = () => {
 
   return (
     <div
-      className="flex flex-row min-h-dvh relative pb-20
+      className="flex flex-row min-h-dvh relative pb-20  overflow-hidden
     "
     >
       {/* 왼쪽 50% - 그라데이션 */}
@@ -398,13 +408,38 @@ const ComparePage = () => {
           {/* 가격 비교 */}
           <div className="flex items-center w-full">
             <div className="flex-1 text-right pr-4">
-              <span className="text-xl font-semibold">{compare1.price}억</span>
+              {compare[0] ? (
+                <>
+                  <span className="text-xl font-semibold">
+                    {compare1.minPrice}억
+                  </span>
+                  <span className="text-xl font-semibold">~</span>
+                  <span className="text-xl font-semibold">
+                    {compare1.maxPrice}억
+                  </span>
+                </>
+              ) : (
+                <span className="text-xl font-semibold">억</span>
+              )}
             </div>
             <div className="bg-black text-white rounded-full w-[60px] h-[60px] flex items-center justify-center text-sm font-normal shrink-0">
               가격
             </div>
             <div className="flex-1 text-left pl-4">
-              <span className="text-xl font-semibold">{compare2.price}억</span>
+              {compare[1] ? (
+                <>
+                  {' '}
+                  <span className="text-xl font-semibold">
+                    {compare2.minPrice}억
+                  </span>
+                  <span className="text-xl font-semibold">~</span>
+                  <span className="text-xl font-semibold">
+                    {compare2.maxPrice}억
+                  </span>
+                </>
+              ) : (
+                <span className="text-xl font-semibold">억</span>
+              )}
             </div>
           </div>
 
