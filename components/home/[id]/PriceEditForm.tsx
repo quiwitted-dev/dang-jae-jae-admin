@@ -3,12 +3,14 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { postPrice } from '@/services/price.api';
+import useStore from '@/store/useStore';
 import {
   GyeonggiSubmissionDetail,
   SeoulSubmissionDetail,
   SubmissionUserDetail,
 } from '@/types/submission.type';
 import { Check, Pencil, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -34,6 +36,8 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
     string | null
   >(null);
   const [premium, setPremium] = useState<string | null>(null);
+  const router = useRouter();
+  const { toggleOpen } = useStore();
 
   const isPublic = type === 'PUBLIC_DATA';
 
@@ -69,6 +73,12 @@ const PriceEditForm = ({ data, type, min, max }: Props) => {
     } catch (error) {
       console.error(error);
       const message = JSON.parse((error as Error).message).error;
+      if (message.includes('유효하지')) {
+        toast('로그인 정보가 만료되었습니다. 다시 로그인 해주세요.');
+        router.push('/');
+        toggleOpen();
+        return;
+      }
 
       toast(message);
     }

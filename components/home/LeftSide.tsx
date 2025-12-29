@@ -29,6 +29,7 @@ import {
   PaginationPrevious,
 } from '../ui/pagination';
 import useAuthStore from '@/store/useAuthStore';
+import toast from 'react-hot-toast';
 
 const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
   const submissions = data.submissions;
@@ -142,6 +143,14 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
     router.push('?', { scroll: false });
   };
 
+  const handleGoForm = () => {
+    if (!isLogin) {
+      toast('로그인이 필요한 서비스입니다.');
+      return;
+    }
+    router.push('/expected_add');
+  };
+
   return (
     <div className="flex flex-col relative md:max-w-[550px] w-full">
       <div
@@ -249,15 +258,13 @@ const LeftSide = ({ data }: { data: ApprovedSubmissionList }) => {
             {`찾는 사업장이 없나요? \n예정지 인가요? \n사업장을 추가하여 \n다른사람들에게 알려주세요`}
           </p>
         </div>
-
-        <Link href={'/expected_add'}>
-          <Button
-            className="absolute mx-auto bottom-9 left-1/2 -translate-x-1/2 text-[25px] font-semibold rounded-full cursor-pointer"
-            size={'lg'}
-          >
-            <Plus /> 예정지 추가하기
-          </Button>
-        </Link>
+        <Button
+          className="absolute mx-auto bottom-9 left-1/2 -translate-x-1/2 text-[25px] font-semibold rounded-full cursor-pointer"
+          size={'lg'}
+          onClick={handleGoForm}
+        >
+          <Plus /> 예정지 추가하기
+        </Button>
       </div>
     </div>
   );
