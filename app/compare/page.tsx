@@ -54,7 +54,7 @@ const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
       newVolumeRatio: data.newVolumeRatio ?? '0',
       currentStage: data.currentStage ?? '-',
       businessType: data.projectType ?? '-',
-      businessOperator: '-',
+      businessOperator: data.businessOperatorName ?? '-',
     };
   }
 
@@ -71,13 +71,17 @@ const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
     )}`,
     ownerCount: `${data.ownerCount ?? '0'}`,
     associationSaleUnits: `${data.ownerCount ?? '0'}`,
-    generalSaleUnits: `${+data.totalSaleUnits - +data.ownerCount}`,
+    generalSaleUnits: `${
+      +data.totalSaleUnits - +data.ownerCount < 0
+        ? 0
+        : +data.totalSaleUnits - +data.ownerCount
+    }`,
     rentalUnits: `${data.rentalUnits}`,
     newConstructionUnits: `${+data.rentalUnits + +data.totalSaleUnits}`,
     newVolumeRatio: data.buildingCoverageRatio ?? '0',
     currentStage: data.currentStage ?? '',
     businessType: data.businessType ?? '',
-    businessOperator: '-',
+    businessOperator: data.businessOperatorName ?? '-',
   };
 };
 
@@ -122,14 +126,14 @@ const ComparePage = () => {
   const { compare, removeCompare } = useCompareStore();
   const [compare1, setCompare1] = useState(defaultValue);
   const [compare2, setCompare2] = useState(defaultValue);
-  const [widthOffset, setWidthOffset] = useState(5);
+  const [widthOffset, setWidthOffset] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
     const computeOffset = (width: number) => {
-      if (width < 555) return 12;
-      if (width < 768) return 7;
-      if (width < 1150) return 15;
+      if (width < 555) return 14;
+      if (width < 768) return 9;
+      if (width < 1150) return 17;
       if (width < 1500) return 12;
       return 7;
     };
@@ -199,6 +203,8 @@ const ComparePage = () => {
 
   const getAdjustedPercentage = (dividend: number, divisor: number) => {
     const base = getPercentage(dividend, divisor);
+    if (base >= 100) return 100;
+    if (base === 0) return 0;
     return base + widthOffset;
   };
 
