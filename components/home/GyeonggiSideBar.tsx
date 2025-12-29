@@ -28,7 +28,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
     <div className="bg-linear-to-b from-[#F8F4F1] via-[rgb(242,236,251)] to-[#F1E6E6] text-black min-h-dvh whitespace-normal break-keep">
       <div className="flex max-w-[400px] mx-auto px-4">
         <div className="flex flex-col items-center justify-center gap-3">
-          <div className="w-full flex flex-row justify-between mt-5">
+          <div className="md:flex hidden w-full flex-row justify-between mt-5">
             <p>
               <span>{publicData.address.split(' ')[1]}</span>{' '}
               <span className="font-medium">
@@ -100,7 +100,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
                 <p className="font-bold">
                   용적률{' '}
                   <span className="text-black font-extrabold">
-                    {publicData.newVolumeRatio}
+                    {publicData.newVolumeRatio}%
                   </span>
                 </p>
               </div>

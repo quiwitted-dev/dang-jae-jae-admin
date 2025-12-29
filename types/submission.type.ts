@@ -50,6 +50,7 @@ export type SeoulSubmissionDetail = {
   district: string; // 자치구명
   representativeLotNumber: string; // 대표지번
   businessType: string; // 사업구분
+  businessOperatorName: string; // 사업주체
   currentStage: string; // 진행단계
   renovationZoneName: string; // 정비구역명칭
   usageZone: string; // 용도지역
@@ -97,6 +98,7 @@ export type GyeonggiSubmissionDetail = {
   rentalUnits: number; // 임대세대수
   memberSaleUnits: number; // 조합원 분양수
   newVolumeRatio: string; // 용적률(%)
+  businessOperatorName: string; // 사업주체
 
   ownerCount: number; // 토지등소유자수
 
