@@ -4,10 +4,11 @@ import { Suspense } from 'react';
 import './globals.css';
 import Header from '@/components/layout/Header';
 import ModalProvider from '@/components/providers/ModalProviders';
-import { cookies } from 'next/headers';
 import { getUser } from '@/services/user.api.server';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 import Footer from '@/components/layout/Footer';
+import LogoutUnauthorized from '@/components/common/LogoutUnauthorized';
+import { cookies } from 'next/headers';
 
 // Playfair Display Google 폰트 설정
 const playfairDisplay = Playfair_Display({
@@ -26,6 +27,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = cookies();
+  const hasAuthCookie = !!(await cookieStore).get('userAccessToken');
   let user = null;
   try {
     user = await getUser();
@@ -34,6 +37,7 @@ export default async function RootLayout({
   }
 
   const isLoggedIn = !!user;
+
   return (
     <html lang="ko">
       <body
@@ -42,7 +46,10 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <Header isLoggedIn={isLoggedIn} />
         </Suspense>
-        <main>{children}</main>
+        <main>
+          {!user && hasAuthCookie && <LogoutUnauthorized />}
+          {children}
+        </main>
         <ModalProvider />
         <ToastProvider />
         <script
