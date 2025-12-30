@@ -203,7 +203,7 @@ const ComparePage = () => {
 
   const getAdjustedPercentage = (dividend: number, divisor: number) => {
     const base = getPercentage(dividend, divisor);
-    if (base >= 100) return 100;
+    if (base + widthOffset >= 100) return base;
     if (base === 0) return 0;
     return base + widthOffset;
   };
