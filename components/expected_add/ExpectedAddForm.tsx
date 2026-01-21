@@ -106,7 +106,7 @@ const ExpectedAddForm = () => {
       {/* 본문 */}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col items-center gap-7 md:w-3/4 px-4 mx-auto"
+        className="flex flex-col items-center gap-7 md:w-4/5 px-4 mx-auto"
       >
         <h2 className="text-[28px] font-bold text-center">
           당신의 정보력,
@@ -146,7 +146,7 @@ const ExpectedAddForm = () => {
               <div className="items-center">
                 <Input
                   {...register('sido')}
-                  className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
+                  className="md:w-[65px] w-[70px] text-end  text-base bg-white h-7"
                   placeholder={`${isSeoul ? '서울시' : '경기도'}`}
                 />
                 {isSeoul ? '시*' : '시/군*'}
@@ -154,7 +154,7 @@ const ExpectedAddForm = () => {
               <div className="flex flex-row items-center">
                 <Input
                   {...register('gugun')}
-                  className="md:w-[50px] w-[70px] text-end text-base bg-white h-7"
+                  className="md:w-[65px] w-[70px] text-end text-base bg-white h-7"
                   placeholder={`${isSeoul ? '서울구' : '경기구'}`}
                 />
                 {isSeoul ? '구*' : '구'}
@@ -162,7 +162,7 @@ const ExpectedAddForm = () => {
               <div className="flex flex-row items-center">
                 <Input
                   {...register('dong')}
-                  className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
+                  className="md:w-[65px] w-[70px] text-end  text-base bg-white h-7"
                   placeholder={`${isSeoul ? '서울동' : '경기리'}`}
                 />
                 {isSeoul ? '동*' : '읍/면/동/리'}
