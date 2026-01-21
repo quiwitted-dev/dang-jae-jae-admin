@@ -25,7 +25,7 @@ const SubmissionUserSideBar = ({
   return (
     <div className="relative bg-linear-to-b from-[#A1ACEB] to-[#FFFEB1] text-black min-h-dvh whitespace-normal break-keep pb-10">
       <div className="flex max-w-[400px] mx-auto px-4 pt-4">
-        <div className="md:flex hidden flex-col items-center justify-center gap-3">
+        <div className="flex flex-col items-center justify-center gap-3">
           <div className="w-full flex flex-row justify-between mt-5">
             <p>
               <span>{submissionData.location.split(' ')[1]}</span>{' '}
@@ -69,10 +69,9 @@ const SubmissionUserSideBar = ({
               요즘시세
             </h4>
             <p className="text-xs font-medium text-gray-500 whitespace-pre-line break-keep">
-              <span className="text-gray-700">{`${
-                submissionData.renovationPrice?.user.nickname ??
+              <span className="text-gray-700">{`${submissionData.renovationPrice?.user.nickname ??
                 submissionData.user.nickname
-              }님이 올려주신 시세입니다.`}</span>
+                }님이 올려주신 시세입니다.`}</span>
               {`\n시세의 대략적인 정보이며 사용자 누구나 올리실 수 있습니다. 당신의 정보력을 보여주세요!`}
             </p>
           </div>
@@ -106,7 +105,7 @@ const SubmissionUserSideBar = ({
                   <span className="text-black font-extrabold">
                     {submissionData.currentVolumeRatio
                       ? Number(submissionData.currentVolumeRatio).toFixed(2) ??
-                        '-'
+                      '-'
                       : '-'}{' '}
                     %
                   </span>

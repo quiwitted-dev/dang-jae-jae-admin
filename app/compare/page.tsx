@@ -71,11 +71,10 @@ const mapPublicResultToCompare = (data: SubmissionPublicDetail) => {
     )}`,
     ownerCount: `${data.ownerCount ?? '0'}`,
     associationSaleUnits: `${data.ownerCount ?? '0'}`,
-    generalSaleUnits: `${
-      +data.totalSaleUnits - +data.ownerCount < 0
-        ? 0
-        : +data.totalSaleUnits - +data.ownerCount
-    }`,
+    generalSaleUnits: `${+data.totalSaleUnits - +data.ownerCount < 0
+      ? 0
+      : +data.totalSaleUnits - +data.ownerCount
+      }`,
     rentalUnits: `${data.rentalUnits}`,
     newConstructionUnits: `${+data.rentalUnits + +data.totalSaleUnits}`,
     newVolumeRatio: data.buildingCoverageRatio ?? '0',
@@ -203,6 +202,7 @@ const ComparePage = () => {
 
   const getAdjustedPercentage = (dividend: number, divisor: number) => {
     const base = getPercentage(dividend, divisor);
+    if (base >= 100) return 100;
     if (base + widthOffset >= 100) return base;
     if (base === 0) return 0;
     return base + widthOffset;
@@ -812,13 +812,12 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 right-0 bg-[#61616C] transition-all duration-500 rounded-l-4xl"
                   style={{
-                    width: `${
-                      compare1.newConstructionUnits === '0'
-                        ? 0
-                        : compare1.newConstructionUnits
+                    width: `${compare1.newConstructionUnits === '0'
+                      ? 0
+                      : compare1.newConstructionUnits
                         ? 100
                         : 0
-                    }%`,
+                      }%`,
                   }} // 왼쪽 비율
                 />
               </div>
@@ -828,13 +827,12 @@ const ComparePage = () => {
                 <div
                   className="absolute inset-y-0 left-0 bg-[#61616C] transition-all duration-500 rounded-r-4xl"
                   style={{
-                    width: `${
-                      compare2.newConstructionUnits === '0'
-                        ? 0
-                        : compare2.newConstructionUnits
+                    width: `${compare2.newConstructionUnits === '0'
+                      ? 0
+                      : compare2.newConstructionUnits
                         ? 100
                         : 0
-                    }%`,
+                      }%`,
                   }} // 오른쪽 비율
                 />
               </div>
@@ -844,8 +842,8 @@ const ComparePage = () => {
                 {compare1.newConstructionUnits === '0'
                   ? 0
                   : compare1.newConstructionUnits
-                  ? 100
-                  : 0}
+                    ? 100
+                    : 0}
                 %
               </span>
               <div className="flex items-center justify-end gap-2 flex-1 pr-20">
@@ -873,8 +871,8 @@ const ComparePage = () => {
                 {compare2.newConstructionUnits === '0'
                   ? 0
                   : compare2.newConstructionUnits
-                  ? 100
-                  : 0}
+                    ? 100
+                    : 0}
                 %
               </span>
             </div>
