@@ -147,7 +147,7 @@ const ExpectedAddForm = () => {
                 <Input
                   {...register('sido')}
                   className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
-                  placeholder={`${isSeoul ? '서울' : '경기'}`}
+                  placeholder={`${isSeoul ? '서울시' : '경기도'}`}
                 />
                 {isSeoul ? '시*' : '시/군*'}
               </div>
@@ -155,7 +155,7 @@ const ExpectedAddForm = () => {
                 <Input
                   {...register('gugun')}
                   className="md:w-[50px] w-[70px] text-end text-base bg-white h-7"
-                  placeholder={`${isSeoul ? '서울' : '경기'}`}
+                  placeholder={`${isSeoul ? '서울구' : '경기구'}`}
                 />
                 {isSeoul ? '구*' : '구'}
               </div>
@@ -163,7 +163,7 @@ const ExpectedAddForm = () => {
                 <Input
                   {...register('dong')}
                   className="md:w-[50px] w-[70px] text-end  text-base bg-white h-7"
-                  placeholder={`${isSeoul ? '서울' : '경기'}`}
+                  placeholder={`${isSeoul ? '서울동' : '경기리'}`}
                 />
                 {isSeoul ? '동*' : '읍/면/동/리'}
               </div>
@@ -181,8 +181,8 @@ const ExpectedAddForm = () => {
             errors.gugun ||
             errors.dong ||
             errors.locationDetail) && (
-            <p className="text-red-600">위치를 작성해주세요</p>
-          )}
+              <p className="text-red-600">위치를 작성해주세요</p>
+            )}
           <div>
             <p className="text-[10px] leading-relaxed">
               <strong>
