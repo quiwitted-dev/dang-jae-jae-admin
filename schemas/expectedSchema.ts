@@ -1,12 +1,18 @@
 import z from 'zod';
+import { getStringWeight } from '@/lib/utils';
+
 const emptyToUndefined = z
   .union([z.number(), z.nan()]) // 숫자나 NaN 허용
   .transform((v) => (Number.isNaN(v) ? undefined : v))
   .optional();
 const requiredString = (msg: string) =>
   z.string().trim().min(1, { message: msg });
+
 export const expectedSchema = z.object({
-  tempName: requiredString('가칭를 입력해주세요'),
+  tempName: requiredString('가칭를 입력해주세요').refine(
+    (val) => getStringWeight(val) <= 30,
+    { message: '가칭이 너무 깁니다. (한글 최대 15자)' }
+  ),
   sido: requiredString('위치를 입력해주세요'),
   gugun: z.string(),
   dong: requiredString('위치를 입력해주세요'),

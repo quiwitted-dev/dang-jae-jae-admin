@@ -14,6 +14,7 @@ import { getUser } from '@/services/user.api.client';
 import { User } from '@/types/user.type';
 import useAuthStore from '@/store/useAuthStore';
 import toast from 'react-hot-toast';
+import { truncateByWeight } from '@/lib/utils';
 
 const ExpectedAddForm = () => {
   const router = useRouter();
@@ -130,7 +131,16 @@ const ExpectedAddForm = () => {
               가칭*
             </h3>
             <Input
-              {...register('tempName')}
+              {...register('tempName', {
+                onChange: (e) => {
+                  const truncated = truncateByWeight(e.target.value, 30);
+                  e.target.value = truncated;
+                  setValue('tempName', truncated, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                },
+              })}
               className="w-3/5 text-end text-base bg-white h-7"
               placeholder="서울1구역"
             />
