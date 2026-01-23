@@ -448,7 +448,7 @@ const ExpectedAddForm = () => {
             <Input
               {...register('notes')}
               className="w-3/5 text-end text-base bg-white h-7"
-              placeholder="재개발"
+              placeholder="주민들 의지력 큼"
             />
           </div>
           <div className="flex flex-row justify-between gap-5">
