@@ -30,6 +30,7 @@ export type ApprovedSubmission = {
   announcementDates: {};
   renovationPrice?: Renovationprice;
   dataSource: string;
+  applicablePolicy?: string;
   createdAt: string;
   reviewedAt: string;
   referenceId?: string;

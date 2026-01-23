@@ -385,7 +385,16 @@ const ExpectedAddForm = () => {
               적용가능 정책*
             </h3>
             <Input
-              {...register('applicablePolicy')}
+              {...register('applicablePolicy', {
+                onChange: (e) => {
+                  const truncated = truncateByWeight(e.target.value, 26);
+                  e.target.value = truncated;
+                  setValue('applicablePolicy', truncated, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                },
+              })}
               className="w-3/5 text-end text-base bg-white h-7"
               placeholder="역세권특별법"
             />

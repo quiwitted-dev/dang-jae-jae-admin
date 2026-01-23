@@ -29,7 +29,10 @@ export const expectedSchema = z.object({
   constructionYearEnd: emptyToUndefined,
   mainUsage: z.string(),
   usageZone: z.string(),
-  applicablePolicy: requiredString('적용 정책을 입력해주세요'),
+  applicablePolicy: requiredString('적용 정책을 입력해주세요').refine(
+    (val) => getStringWeight(val) <= 26,
+    { message: '적용가능정책이 너무 깁니다.' }
+  ),
   businessEntity: requiredString('사업주체를 입력해주세요'),
   businessType: requiredString('사업유형을 입력해주세요'),
   consentRateStr: z.string(),

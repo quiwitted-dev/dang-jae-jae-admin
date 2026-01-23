@@ -227,7 +227,9 @@ const ProjectCard = ({
               />
             </div>
             <div className="flex flex-col">
-              <p className="text-xs text-black text-right">예정지</p>
+              <p className="text-xs text-black text-right whitespace-nowrap">
+                {item.applicablePolicy}
+              </p>
             </div>
           </>
         )}
