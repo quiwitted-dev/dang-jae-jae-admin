@@ -213,10 +213,10 @@ const ProjectCard = ({
           </>
         ) : (
           <>
-            <div className="flex flex-col font-bold">
-              <p className="text-sm font-normal">{gugun}</p>
-              <p className="text-xs">{item.projectName}</p>
-              <p className="text-xs">{`${dong} ${locationDetail}`}</p>
+            <div className="flex flex-col font-bold min-w-0 flex-1">
+              <p className="text-sm font-normal truncate">{gugun}</p>
+              <p className="text-xs truncate">{item.projectName}</p>
+              <p className="text-xs truncate">{`${dong} ${locationDetail}`}</p>
             </div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
               <Bookmark

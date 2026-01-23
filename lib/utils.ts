@@ -34,3 +34,14 @@ export function truncateByWeight(str: string, maxWeight: number): string {
 
   return result;
 }
+
+/**
+ * 가중치 제한을 넘을 경우 말줄임표(...)를 추가합니다.
+ */
+export function truncateWithEllipsis(str: string, maxWeight: number): string {
+  if (getStringWeight(str) <= maxWeight) {
+    return str;
+  }
+
+  return truncateByWeight(str, maxWeight) + '...';
+}

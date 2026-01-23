@@ -10,8 +10,8 @@ const requiredString = (msg: string) =>
 
 export const expectedSchema = z.object({
   tempName: requiredString('가칭를 입력해주세요').refine(
-    (val) => getStringWeight(val) <= 30,
-    { message: '가칭이 너무 깁니다. (한글 최대 15자)' }
+    (val) => getStringWeight(val) <= 26,
+    { message: '가칭이 너무 깁니다.' }
   ),
   sido: requiredString('위치를 입력해주세요'),
   gugun: z.string(),
@@ -33,7 +33,10 @@ export const expectedSchema = z.object({
   businessEntity: requiredString('사업주체를 입력해주세요'),
   businessType: requiredString('사업유형을 입력해주세요'),
   consentRateStr: z.string(),
-  notes: z.string(),
+  notes: z.string().refine(
+    (val) => getStringWeight(val) <= 26,
+    { message: '기타사항이 너무 깁니다.' }
+  ),
   submittedName: requiredString('이름을 입력해주세요'),
   submittedPhoneNumber: requiredString('연락처를 입력해주세요'),
 });

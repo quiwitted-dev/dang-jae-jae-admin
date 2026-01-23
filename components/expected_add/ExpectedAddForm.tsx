@@ -133,7 +133,7 @@ const ExpectedAddForm = () => {
             <Input
               {...register('tempName', {
                 onChange: (e) => {
-                  const truncated = truncateByWeight(e.target.value, 30);
+                  const truncated = truncateByWeight(e.target.value, 26);
                   e.target.value = truncated;
                   setValue('tempName', truncated, {
                     shouldValidate: true,
@@ -446,7 +446,16 @@ const ExpectedAddForm = () => {
               기타사항
             </h3>
             <Input
-              {...register('notes')}
+              {...register('notes', {
+                onChange: (e) => {
+                  const truncated = truncateByWeight(e.target.value, 26);
+                  e.target.value = truncated;
+                  setValue('notes', truncated, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                },
+              })}
               className="w-3/5 text-end text-base bg-white h-7"
               placeholder="주민들 의지력 큼"
             />
