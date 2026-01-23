@@ -93,14 +93,14 @@ const SubmissionUserSideBar = ({
                   </span>
                 </p>
               </div>
-              <div className="flex flex-row justify-between">
-                <p>
-                  기타 :{' '}
-                  <span className="text-black font-semibold">
+              <div className="flex flex-row justify-between items-start gap-2">
+                <div className="flex flex-row items-start gap-1 min-w-0 flex-1">
+                  <p className="whitespace-nowrap shrink-0">기타 :</p>
+                  <span className="text-black font-semibold whitespace-normal break-all">
                     {submissionData.notes ?? '-'}
                   </span>
-                </p>
-                <p className="font-bold">
+                </div>
+                <p className="font-bold whitespace-nowrap shrink-0">
                   현재 용적률{' '}
                   <span className="text-black font-extrabold">
                     {submissionData.currentVolumeRatio
@@ -115,7 +115,7 @@ const SubmissionUserSideBar = ({
                 <p className="text-black font-bold">
                   {submissionData.usageZone}
                 </p>
-                <p>
+                <p className="whitespace-nowrap">
                   미래용적률{' '}
                   <span className="text-black font-bold">
                     {submissionData.expectedVolumeRatio ?? '-'}
@@ -124,7 +124,7 @@ const SubmissionUserSideBar = ({
                 </p>
               </div>
               <div className="flex flex-row justify-between">
-                <p>
+                <p className="whitespace-nowrap">
                   소유자수 :{' '}
                   <span className="text-black font-extrabold">
                     {submissionData.ownerCount ?? '-'}
@@ -132,7 +132,7 @@ const SubmissionUserSideBar = ({
                   세대
                 </p>
                 <ArrowRight />
-                <p>
+                <p className="whitespace-nowrap">
                   신축세대수 :{' '}
                   <span className="text-black font-extrabold">
                     {submissionData.expectedNewUnits ?? '-'}
@@ -141,7 +141,7 @@ const SubmissionUserSideBar = ({
                 </p>
               </div>
               <div className="flex flex-row justify-between">
-                <p>
+                <p className="whitespace-nowrap">
                   정비구역면적 :{' '}
                   <span className="text-black font-extrabold">
                     {submissionData.projectArea}
