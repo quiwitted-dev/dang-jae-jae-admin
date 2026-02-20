@@ -45,7 +45,11 @@ const RightSide = () => {
   return (
     <div className="flex flex-col w-full md:px-9 md:pt-16 md:gap-20">
       <div className="flex flex-row justify-between items-center">
-        <h3 className="hidden lg:block text-4xl font-bold">{getTabTitle()}</h3>
+        {myPageTab === 'settings' ? (
+          <h3 className="hidden lg:block text-4xl font-bold">{getTabTitle()}</h3>
+        ) : (
+          <div />
+        )}
         <div className="hidden lg:block">
           <SettingsNavigation />
         </div>
