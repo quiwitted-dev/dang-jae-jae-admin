@@ -93,7 +93,10 @@ const SeoulSideBar = ({ publicData }: SeoulSideBarProps) => {
               </div>
               <div className="flex flex-row justify-between">
                 <p>
-                  기타 : <span>-</span>
+                  기타 :{' '}
+                  <span className="text-black">
+                    {publicData.constructionPlanNotes || '-'}
+                  </span>
                 </p>
                 <p className="font-bold">
                   용적률{' '}
