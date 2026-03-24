@@ -124,6 +124,14 @@ export type GyeonggiSubmissionDetail = {
   newUnits85To135M2: number; // 85~135㎡
   newUnitsOver135M2: number; // 135㎡ 이상
 
+  announcementDates?: {
+    managementDisposition: string | null;
+    constructionStart: string | null;
+    generalSale: string | null;
+    completion: string | null;
+    relocationNotification: string | null;
+  };
+
   renovationPrice?: Renovationprice;
 };
 

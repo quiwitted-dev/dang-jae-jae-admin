@@ -210,7 +210,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               <div>
                 관리처분인가{' '}
                 <span className="font-bold">
-                  {publicData.managementDispositionApprovalDate?.split(
+                  {publicData.announcementDates?.managementDisposition?.split(
                     'T'
                   )[0] ?? '-'}
                 </span>
@@ -218,7 +218,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               <div>
                 착공일자{' '}
                 <span className="font-bold">
-                  {publicData.managementDispositionApprovalDate?.split(
+                  {publicData.announcementDates?.constructionStart?.split(
                     'T'
                   )[0] ?? '-'}
                 </span>
@@ -226,7 +226,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               <div>
                 일반분양일자{' '}
                 <span className="font-bold">
-                  {publicData.managementDispositionApprovalDate?.split(
+                  {publicData.announcementDates?.generalSale?.split(
                     'T'
                   )[0] ?? '-'}
                 </span>
@@ -234,7 +234,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               <div>
                 준공일자{' '}
                 <span className="font-bold">
-                  {publicData.managementDispositionApprovalDate?.split(
+                  {publicData.announcementDates?.completion?.split(
                     'T'
                   )[0] ?? '-'}
                 </span>
@@ -242,7 +242,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               <div>
                 이전고시일자{' '}
                 <span className="font-bold">
-                  {publicData.managementDispositionApprovalDate?.split(
+                  {publicData.announcementDates?.relocationNotification?.split(
                     'T'
                   )[0] ?? '-'}
                 </span>
