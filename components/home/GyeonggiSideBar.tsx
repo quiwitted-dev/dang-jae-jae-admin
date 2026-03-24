@@ -156,45 +156,54 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               <div>
                 정비예정구역고시일자{' '}
                 <span className="font-bold">
-                  {publicData.designatedZoneNotificationDate?.split('T')[0] ??
-                    '-'}
+                  {publicData.announcementDates?.designatedZoneNotification?.split(
+                    'T'
+                  )[0] ?? '-'}
                 </span>
               </div>
               <div>
                 정비구역지정예정일자{' '}
                 <span className="font-bold">
-                  {publicData.designatedZoneExpectedDate?.split('T')[0] ?? '-'}
+                  {publicData.announcementDates?.designatedZoneNotification?.split(
+                    'T'
+                  )[0] ?? '-'}
                 </span>
               </div>
               <div>
                 정비계획승인일자{' '}
                 <span className="font-bold">
-                  {publicData.planApprovalDate?.split('T')[0] ?? '-'}
+                  {publicData.announcementDates?.planApproval?.split('T')[0] ??
+                    '-'}
                 </span>
               </div>
               <div>
                 정비구역지정일자(최초지정){' '}
                 <span className="font-bold">
-                  {publicData.zoneDesignationDateInitial?.split('T')[0] ?? '-'}
+                  {publicData.announcementDates?.zoneDesignation?.split(
+                    'T'
+                  )[0] ?? '-'}
                 </span>
               </div>
               <div>
                 정비구역지정일자(변경지정){' '}
                 <span className="font-bold">
-                  {publicData.zoneDesignationDateChanged?.split('T')[0] ?? '-'}
+                  {publicData.announcementDates?.zoneDesignationChanged?.split(
+                    'T'
+                  )[0] ?? '-'}
                 </span>
               </div>
               <div>
                 추진위승인일자{' '}
                 <span className="font-bold">
-                  {publicData.promotionCommitteeApprovalDate?.split('T')[0] ??
-                    '-'}
+                  {publicData.announcementDates?.promotionCommitteeApproval?.split(
+                    'T'
+                  )[0] ?? '-'}
                 </span>
               </div>
               <div>
                 조합설립인가{' '}
                 <span className="font-bold">
-                  {publicData.associationEstablishmentApprovalDate?.split(
+                  {publicData.announcementDates?.associationEstablishment?.split(
                     'T'
                   )[0] ?? '-'}
                 </span>
@@ -202,7 +211,7 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               <div>
                 사업시행인가{' '}
                 <span className="font-bold">
-                  {publicData.projectImplementationApprovalDate?.split(
+                  {publicData.announcementDates?.projectImplementationApproval?.split(
                     'T'
                   )[0] ?? '-'}
                 </span>
@@ -234,9 +243,8 @@ const GyeonggiSideBar = ({ publicData }: GyeonggiSideBarProps) => {
               <div>
                 준공일자{' '}
                 <span className="font-bold">
-                  {publicData.announcementDates?.completion?.split(
-                    'T'
-                  )[0] ?? '-'}
+                  {publicData.announcementDates?.completion?.split('T')[0] ??
+                    '-'}
                 </span>
               </div>
               <div>

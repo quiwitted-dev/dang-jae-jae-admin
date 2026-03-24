@@ -130,6 +130,14 @@ export type GyeonggiSubmissionDetail = {
     generalSale: string | null;
     completion: string | null;
     relocationNotification: string | null;
+    projectImplementationApproval: string | null;
+    zoneDesignation: string | null;
+    planApproval: string | null;
+    promotionCommitteeApproval: string | null;
+    associationEstablishment: string | null;
+    zoneDesignationChanged: string | null;
+    designatedZoneNotification: string | null;
+    dissolution: string | null;
   };
 
   renovationPrice?: Renovationprice;
