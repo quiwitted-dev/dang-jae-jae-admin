@@ -22,14 +22,18 @@ type Props = {
 const BookmarkCompareGroup = ({ id, type, address }: Props) => {
   useEffect(() => {
     (async () => {
-      const data = await getBookmark();
-      const favorite = data.favorites.find((item) => item.referenceId === id);
-      if (favorite) {
-        setIsFavorite(true);
-        setCurrentBookmarkId(favorite.id);
-      } else {
-        setIsFavorite(false);
-        setCurrentBookmarkId(undefined);
+      try {
+        const data = await getBookmark();
+        const favorite = data.favorites.find((item: any) => item.referenceId === id);
+        if (favorite) {
+          setIsFavorite(true);
+          setCurrentBookmarkId(favorite.id);
+        } else {
+          setIsFavorite(false);
+          setCurrentBookmarkId(undefined);
+        }
+      } catch {
+        // 비로그인 상태(401 등) 에러를 무시하고 컴포넌트는 정상 렌더링
       }
     })();
     setAddress(address);
