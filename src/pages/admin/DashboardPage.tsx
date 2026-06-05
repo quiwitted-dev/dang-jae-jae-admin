@@ -52,18 +52,15 @@ const seededRandom = (seed: string) => {
 const generateMockData = (dateRange: string): DashboardData => {
   const rand = seededRandom(dateRange);
   let daysCount = 7;
-  let labelFormat = 'MM/DD';
 
   if (dateRange === '24h') {
     daysCount = 24;
-    labelFormat = 'HH:00';
   } else if (dateRange === '7d') {
     daysCount = 7;
   } else if (dateRange === '28d') {
     daysCount = 28;
   } else if (dateRange === '3m') {
     daysCount = 12; // 주 단위 표현
-    labelFormat = 'W주';
   }
 
   // 1. 차트 데이터 생성
