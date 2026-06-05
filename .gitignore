@@ -1,0 +1,8 @@
+.DS_Store
+/node_modules
+.idea
+/dist
+aws_configure_staging.sh
+.env
+.env.*
+!.env.example
