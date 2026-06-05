@@ -334,7 +334,7 @@ const DashboardPage: React.FC = () => {
         activeTab === 'referrers' ? '-' : row.position
       ];
       csvRows.push(values.join(','));
-    };
+    });
 
     const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + csvRows.join('\n');
     const encodedUri = encodeURI(csvContent);
