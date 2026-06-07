@@ -18,9 +18,19 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: '당재재',
-  description: '당재재',
+  title: '재재인포컴 | 데이터 기반 정비사업 분석 플랫폼',
+  description: '재건축 재개발 리모델링 가로정비 지역주택까지 정비사업장의 상세 수치 기반의 스마트한 사업지 비교 분석 시스템입니다.',
+  other: {
+    'naver-site-verification': '427b353fe4505f1f00a52281d7c903243a70242d',
+  },
+  openGraph: {
+    title: '재재인포컴 | 데이터로 증명하는 정비사업 분석 플랫폼',
+    description: '인허가 기반 상세 데이터로 투자 후보지를 스마트하게 비교 분석하세요.',
+    url: 'https://www.jaejaeinfo.com',
+    type: 'website',
+  },
 };
+
 
 export default async function RootLayout({
   children,
@@ -43,6 +53,9 @@ export default async function RootLayout({
       <body
         className={`${playfairDisplay.variable} antialiased bg-black text-white font-sans`}
       >
+<h1 style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', border: 0 }}>
+  재재인포컴 - 데이터 기반 정비사업 투자 분석 및 비교 시스템
+</h1>
         <Suspense fallback={null}>
           <Header isLoggedIn={isLoggedIn} />
         </Suspense>

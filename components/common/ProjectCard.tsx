@@ -208,7 +208,7 @@ const ProjectCard = ({
                 소유자 수{' '}
                 <span className="font-bold">{item.ownerCount || '-'}명</span>
               </p>
-              <p className="font-bold">{item.projectAreaM2 || '-'}m2</p>
+              <p className="font-bold">{item.projectAreaM2 || '-'}㎡</p>
             </div>
           </>
         ) : (

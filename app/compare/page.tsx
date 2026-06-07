@@ -787,7 +787,7 @@ const ComparePage = () => {
                   className="absolute inset-y-0 right-0 bg-[#F4FF92] transition-all duration-500 rounded-l-4xl"
                   style={{
                     width: `${getAdjustedPercentage(
-                      +compare1.generalSaleUnits,
+                      +compare1.generalSaleUnits + (+compare1.rentalUnits),
                       +compare1.newConstructionUnits
                     )}%`,
                   }} // 왼쪽 비율
@@ -800,7 +800,7 @@ const ComparePage = () => {
                   className="absolute inset-y-0 left-0 bg-[#F4FF92] transition-all duration-500 rounded-r-4xl"
                   style={{
                     width: `${getAdjustedPercentage(
-                      +compare2.generalSaleUnits,
+                      +compare2.generalSaleUnits + (+compare2.rentalUnits),
                       +compare2.newConstructionUnits
                     )}%`,
                   }} // 오른쪽 비율
