@@ -47,6 +47,7 @@ const DashboardPage: React.FC = () => {
   const [dateRange, setDateRange] = useState<string>('7d'); // 24h, 7d, 28d, 3m
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<DashboardData | null>(null);
+  const [fetchError, setFetchError] = useState<boolean>(false);
 
   // 차트 활성 라인 제어
   const [activeMetrics, setActiveMetrics] = useState({
@@ -69,6 +70,7 @@ const DashboardPage: React.FC = () => {
   // 실제 API에서 분석 데이터 조회
   const fetchData = async (range: string) => {
     setLoading(true);
+    setFetchError(false);
     try {
       const res = await fetch(
         `${API_BASE}/api/analytics/dashboard?dateRange=${range}`,
@@ -80,6 +82,7 @@ const DashboardPage: React.FC = () => {
     } catch (err) {
       console.error('대시보드 데이터 로드 실패:', err);
       setData(null);
+      setFetchError(true);
     } finally {
       setLoading(false);
     }
@@ -362,6 +365,20 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 에러 상태 */}
+      {!loading && fetchError && (
+        <div className="w-full bg-amber-50 border border-amber-200 rounded-lg p-6 mb-4 text-center">
+          <p className="text-sm font-semibold text-amber-700">백엔드 서버에서 데이터를 불러오지 못했습니다.</p>
+          <p className="text-xs text-amber-600 mt-1">EC2 서버에 analytics API가 배포되지 않았거나 연결 오류가 발생했습니다.</p>
+          <button
+            onClick={() => fetchData(dateRange)}
+            className="mt-3 px-4 py-1.5 text-xs font-semibold bg-amber-600 text-white rounded hover:bg-amber-700"
+          >
+            다시 시도
+          </button>
+        </div>
+      )}
 
       {/* 로딩 인디케이터 */}
       {loading && (

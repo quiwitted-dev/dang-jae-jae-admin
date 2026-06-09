@@ -522,3 +522,16 @@ export const mainTitleApi = {
     return response.data;
   },
 };
+
+// 엑셀 업로드 API
+export const excelApi = {
+  upload: async (file: File): Promise<{ success: boolean; message: string; details?: { processedCount: number; deletedCount: number; ignoredCount: number } }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post('/api/admin/excel/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 300000,
+    });
+    return response.data;
+  },
+};

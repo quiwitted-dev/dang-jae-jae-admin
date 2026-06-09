@@ -10,6 +10,7 @@ import AdminManagePage from './pages/admin/AdminManagePage';
 import UserManagePage from './pages/admin/UserManagePage';
 import MainTitlePage from './pages/admin/MainTitlePage';
 import ApiDataSyncPage from './pages/api-data/ApiDataSyncPage';
+import ExcelUploadPage from './pages/api-data/ExcelUploadPage';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
 
               {/* 공공데이터 */}
               <Route path="api-data/sync" element={<ApiDataSyncPage />} />
+              <Route path="api-data/excel-upload" element={<ExcelUploadPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
