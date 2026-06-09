@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { MagnifyingGlassIcon, ArrowDownTrayIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 // ==========================================
-// 1. 모의 데이터 타입 정의 및 제너레이터
+// 1. 타입 정의
 // ==========================================
 
 interface ChartDataPoint {
@@ -36,168 +36,7 @@ interface DashboardData {
   devices: TableRowData[];
 }
 
-// 해시 기반 의사 난수 생성기 (일관된 데이터 유지 목적)
-const seededRandom = (seed: string) => {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) {
-    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
-  }
-  return () => {
-    h = Math.imul(h ^ h >>> 16, 2246822507);
-    h = Math.imul(h ^ h >>> 13, 3266489909);
-    return ((h ^= h >>> 16) >>> 0) / 4294967296;
-  };
-};
-
-const generateMockData = (dateRange: string): DashboardData => {
-  const rand = seededRandom(dateRange);
-  let daysCount = 7;
-
-  if (dateRange === '24h') {
-    daysCount = 24;
-  } else if (dateRange === '7d') {
-    daysCount = 7;
-  } else if (dateRange === '28d') {
-    daysCount = 28;
-  } else if (dateRange === '3m') {
-    daysCount = 12; // 주 단위 표현
-  }
-
-  // 1. 차트 데이터 생성
-  const chartData: ChartDataPoint[] = [];
-  let baseClicks = dateRange === '24h' ? 5 : dateRange === '7d' ? 30 : dateRange === '28d' ? 120 : 500;
-  let baseImpressions = baseClicks * 200;
-
-  for (let i = 0; i < daysCount; i++) {
-    const rawVal = rand();
-    // 추세선 형성용 사인파 추가
-    const trend = Math.sin((i / daysCount) * Math.PI * 2) * 0.3 + 1; 
-    const clicks = Math.max(1, Math.round(baseClicks * rawVal * trend * 0.5 + baseClicks * 0.5));
-    const impressions = Math.max(clicks * 10, Math.round(baseImpressions * rawVal * trend * 0.6 + baseImpressions * 0.4));
-    const ctr = impressions > 0 ? parseFloat(((clicks / impressions) * 100).toFixed(2)) : 0;
-    const position = parseFloat((4.5 + rawVal * 5 - Math.sin(i) * 1.5).toFixed(1));
-
-    let dateStr = '';
-    if (dateRange === '24h') {
-      dateStr = `${String(i).padStart(2, '0')}:00`;
-    } else if (dateRange === '3m') {
-      dateStr = `${i + 1}주`;
-    } else {
-      const d = new Date();
-      d.setDate(d.getDate() - (daysCount - 1 - i));
-      dateStr = `${d.getMonth() + 1}/${d.getDate()}`;
-    }
-
-    chartData.push({
-      date: dateStr,
-      clicks,
-      impressions,
-      ctr,
-      position,
-    });
-  }
-
-  // 전체 요약 계산
-  const totalClicks = chartData.reduce((acc, curr) => acc + curr.clicks, 0);
-  const totalImpressions = chartData.reduce((acc, curr) => acc + curr.impressions, 0);
-  const avgCtr = totalImpressions > 0 ? parseFloat(((totalClicks / totalImpressions) * 100).toFixed(2)) : 0;
-  const avgPosition = parseFloat((chartData.reduce((acc, curr) => acc + curr.position, 0) / daysCount).toFixed(1));
-
-  // 2. 검색어 데이터
-  const queryTemplates = [
-    { name: '재재맵', clickShare: 0.35, impShare: 0.25 },
-    { name: '정비구역 용적률', clickShare: 0.15, impShare: 0.18 },
-    { name: '당신의재재', clickShare: 0.12, impShare: 0.10 },
-    { name: '소규모주택정비사업', clickShare: 0.08, impShare: 0.12 },
-    { name: '한남하이츠 재개발', clickShare: 0.07, impShare: 0.06 },
-    { name: '가로주택정비사업 분담금', clickShare: 0.06, impShare: 0.08 },
-    { name: '성수동 재개발 시세', clickShare: 0.05, impShare: 0.07 },
-    { name: '여의도 재건축 현황', clickShare: 0.04, impShare: 0.05 },
-    { name: '재재인포컴', clickShare: 0.03, impShare: 0.02 },
-    { name: '조합원 분담금 계산기', clickShare: 0.02, impShare: 0.04 },
-    { name: '아파트 재건축 조건', clickShare: 0.015, impShare: 0.02 },
-    { name: '서울시 정비구역 지도', clickShare: 0.01, impShare: 0.01 },
-  ];
-
-  const queries: TableRowData[] = queryTemplates.map((q) => {
-    const clicks = Math.round(totalClicks * q.clickShare);
-    const impressions = Math.round(totalImpressions * q.impShare);
-    const ctr = impressions > 0 ? parseFloat(((clicks / impressions) * 100).toFixed(2)) : 0;
-    const position = parseFloat((2.1 + rand() * 8).toFixed(1));
-    return { name: q.name, clicks, impressions, ctr, position };
-  });
-
-  // 3. 페이지 데이터
-  const pageTemplates = [
-    { name: '/', clickShare: 0.45, impShare: 0.40 },
-    { name: '/map (재재맵 지도)', clickShare: 0.25, impShare: 0.22 },
-    { name: '/admin/submissions (사업예정지)', clickShare: 0.12, impShare: 0.15 },
-    { name: '/price (가격 분석)', clickShare: 0.08, impShare: 0.10 },
-    { name: '/guide (이용 안내)', clickShare: 0.05, impShare: 0.06 },
-    { name: '/about (회사 소개)', clickShare: 0.03, impShare: 0.04 },
-    { name: '/api-data/sync (데이터동기화)', clickShare: 0.02, impShare: 0.03 },
-  ];
-
-  const pages: TableRowData[] = pageTemplates.map((p) => {
-    const clicks = Math.round(totalClicks * p.clickShare);
-    const impressions = Math.round(totalImpressions * p.impShare);
-    const ctr = impressions > 0 ? parseFloat(((clicks / impressions) * 100).toFixed(2)) : 0;
-    const position = parseFloat((1.5 + rand() * 4).toFixed(1));
-    return { name: p.name, clicks, impressions, ctr, position };
-  });
-
-  // 4. 유입 경로 데이터 (Referrers)
-  const referrerTemplates = [
-    { name: '네이버 검색 (Naver Search)', clickShare: 0.48, impShare: 0.45 },
-    { name: '구글 검색 (Google Search)', clickShare: 0.32, impShare: 0.35 },
-    { name: '직접 유입 (Direct / Bookmark)', clickShare: 0.08, impShare: 0.08 },
-    { name: '네이버 블로그 링크', clickShare: 0.05, impShare: 0.04 },
-    { name: '카카오톡 (KakaoTalk Link)', clickShare: 0.03, impShare: 0.03 },
-    { name: '다음 검색 (Daum Search)', clickShare: 0.02, impShare: 0.03 },
-    { name: '페이스북 / 인스타그램', clickShare: 0.015, impShare: 0.015 },
-    { name: '기타 추천 사이트', clickShare: 0.005, impShare: 0.005 },
-  ];
-
-  const referrers: TableRowData[] = referrerTemplates.map((r) => {
-    const clicks = Math.round(totalClicks * r.clickShare);
-    const impressions = Math.round(totalImpressions * r.impShare);
-    const ctr = impressions > 0 ? parseFloat(((clicks / impressions) * 100).toFixed(2)) : 0;
-    const position = 1.0; // 유입 경로는 검색 순위 개념이 없으므로 기본값 1.0으로 표현하거나 생략
-    return { name: r.name, clicks, impressions, ctr, position };
-  });
-
-  // 5. 국가 데이터
-  const countries = [
-    { name: '대한민국', clicks: Math.round(totalClicks * 0.96), impressions: Math.round(totalImpressions * 0.95), ctr: 0, position: 5.2 },
-    { name: '미국', clicks: Math.round(totalClicks * 0.025), impressions: Math.round(totalImpressions * 0.03), ctr: 0, position: 8.5 },
-    { name: '일본', clicks: Math.round(totalClicks * 0.008), impressions: Math.round(totalImpressions * 0.012), ctr: 0, position: 9.1 },
-    { name: '캐나다', clicks: Math.round(totalClicks * 0.004), impressions: Math.round(totalImpressions * 0.005), ctr: 0, position: 7.3 },
-    { name: '기타', clicks: Math.round(totalClicks * 0.003), impressions: Math.round(totalImpressions * 0.003), ctr: 0, position: 10.2 },
-  ].map(c => ({
-    ...c,
-    ctr: c.impressions > 0 ? parseFloat(((c.clicks / c.impressions) * 100).toFixed(2)) : 0
-  }));
-
-  // 6. 기기 데이터
-  const devices = [
-    { name: '모바일 (Mobile)', clicks: Math.round(totalClicks * 0.68), impressions: Math.round(totalImpressions * 0.62), ctr: 0, position: 4.8 },
-    { name: '데스크톱 (Desktop)', clicks: Math.round(totalClicks * 0.29), impressions: Math.round(totalImpressions * 0.35), ctr: 0, position: 6.1 },
-    { name: '태블릿 (Tablet)', clicks: Math.round(totalClicks * 0.03), impressions: Math.round(totalImpressions * 0.03), ctr: 0, position: 5.9 },
-  ].map(d => ({
-    ...d,
-    ctr: d.impressions > 0 ? parseFloat(((d.clicks / d.impressions) * 100).toFixed(2)) : 0
-  }));
-
-  return {
-    summary: { totalClicks, totalImpressions, avgCtr, avgPosition },
-    chartData,
-    queries,
-    pages,
-    referrers,
-    countries,
-    devices
-  };
-};
+const API_BASE = import.meta.env.VITE_API_URL || 'https://api.jaejaeinfo.com';
 
 // ==========================================
 // 2. 메인 Dashboard 컴포넌트
@@ -218,7 +57,7 @@ const DashboardPage: React.FC = () => {
   });
 
   // 하단 상세 탭 및 필터 제어
-  const [activeTab, setActiveTab] = useState<'queries' | 'pages' | 'referrers' | 'countries' | 'devices' | 'dates'>('queries');
+  const [activeTab, setActiveTab] = useState<'pages' | 'referrers' | 'countries' | 'devices' | 'dates'>('pages');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortField, setSortField] = useState<'clicks' | 'impressions' | 'ctr' | 'position'>('clicks');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -227,14 +66,23 @@ const DashboardPage: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const chartContainerRef = useRef<SVGSVGElement | null>(null);
 
-  // 데이터 로드 시뮬레이션
+  // 실제 API에서 분석 데이터 조회
   const fetchData = async (range: string) => {
     setLoading(true);
-    // 실제 서버 응답을 모방하기 위해 비동기 딜레이 적용
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const generated = generateMockData(range);
-    setData(generated);
-    setLoading(false);
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/analytics/dashboard?dateRange=${range}`,
+        { credentials: 'include' }
+      );
+      if (!res.ok) throw new Error('API 오류');
+      const json: DashboardData = await res.json();
+      setData(json);
+    } catch (err) {
+      console.error('대시보드 데이터 로드 실패:', err);
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -282,8 +130,7 @@ const DashboardPage: React.FC = () => {
     if (!data) return [];
     
     let baseList: TableRowData[] = [];
-    if (activeTab === 'queries') baseList = data.queries;
-    else if (activeTab === 'pages') baseList = data.pages;
+    if (activeTab === 'pages') baseList = data.pages;
     else if (activeTab === 'referrers') baseList = data.referrers;
     else if (activeTab === 'countries') baseList = data.countries;
     else if (activeTab === 'devices') baseList = data.devices;
@@ -316,20 +163,11 @@ const DashboardPage: React.FC = () => {
   const handleExportCSV = () => {
     if (!currentTableData.length) return;
     
-    // 헤더 지정
-    const headers = ['대상', '클릭수', '노출수', 'CTR (%)', '평균 게재위치'];
-    if (activeTab === 'referrers') headers[4] = '비고'; // 유입경로는 게재위치 미표시
-
+    const headers = ['대상', '방문수'];
     const csvRows = [headers.join(',')];
-    
+
     currentTableData.forEach((row) => {
-      const values = [
-        `"${row.name}"`,
-        row.clicks,
-        row.impressions,
-        `${row.ctr}%`,
-        activeTab === 'referrers' ? '-' : row.position
-      ];
+      const values = [`"${row.name}"`, row.clicks];
       csvRows.push(values.join(','));
     });
 
@@ -454,10 +292,10 @@ const DashboardPage: React.FC = () => {
           <div>
             <h1 className="text-xl font-bold text-gray-900 flex items-center">
               <span className="w-2.5 h-6 bg-blue-600 rounded-sm mr-2.5 inline-block"></span>
-              사이트 검색 실적 관제 현황
+              사이트 방문 분석 현황
             </h1>
             <p className="text-xs text-gray-500 mt-1">
-              Google/Naver의 검색엔진 노출 지표 및 유입 채널 통계를 종합 분석합니다. (마지막 업데이트: 방금 전)
+              자체 서버 로그 기반 방문자 집계 — 페이지뷰, 유입 경로, 기기 통계를 실시간으로 분석합니다.
             </p>
           </div>
           
@@ -516,7 +354,7 @@ const DashboardPage: React.FC = () => {
 
           <div className="flex items-center gap-2">
             <span className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-semibold border border-blue-100">
-              검색 유형: 웹 (Web)
+              수집 방식: 자체 로그
             </span>
             <span className="text-xs bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full font-semibold border border-purple-100">
               대상 도메인: jaejaeinfo.com
@@ -546,7 +384,7 @@ const DashboardPage: React.FC = () => {
           
           {/* 1. 지표 카드 영역 (클릭 가능 토글 방식) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 border-b border-gray-200">
-            {/* 카드 A: 총 클릭수 */}
+            {/* 카드 A: 총 방문수 */}
             <div
               onClick={() => toggleMetric('clicks')}
               className={`p-4 cursor-pointer select-none transition-colors border-r border-b lg:border-b-0 border-gray-100 ${
@@ -556,7 +394,7 @@ const DashboardPage: React.FC = () => {
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
                   <span className={`w-2.5 h-2.5 rounded-full inline-block ${activeMetrics.clicks ? 'bg-blue-600' : 'bg-gray-300'}`}></span>
-                  총 클릭수
+                  총 방문수
                 </span>
                 <input
                   type="checkbox"
@@ -568,7 +406,7 @@ const DashboardPage: React.FC = () => {
               <div className="text-2xl font-extrabold text-blue-700">{data.summary.totalClicks.toLocaleString()}</div>
             </div>
 
-            {/* 카드 B: 총 노출수 */}
+            {/* 카드 B: 순 방문자수 */}
             <div
               onClick={() => toggleMetric('impressions')}
               className={`p-4 cursor-pointer select-none transition-colors border-r border-b lg:border-b-0 border-gray-100 ${
@@ -578,7 +416,7 @@ const DashboardPage: React.FC = () => {
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
                   <span className={`w-2.5 h-2.5 rounded-full inline-block ${activeMetrics.impressions ? 'bg-purple-600' : 'bg-gray-300'}`}></span>
-                  총 노출수
+                  순 방문자수
                 </span>
                 <input
                   type="checkbox"
@@ -590,48 +428,30 @@ const DashboardPage: React.FC = () => {
               <div className="text-2xl font-extrabold text-purple-700">{data.summary.totalImpressions.toLocaleString()}</div>
             </div>
 
-            {/* 카드 C: 평균 CTR */}
+            {/* 카드 C: 인기 페이지 수 */}
             <div
-              onClick={() => toggleMetric('ctr')}
-              className={`p-4 cursor-pointer select-none transition-colors border-r border-gray-100 ${
-                activeMetrics.ctr ? 'bg-emerald-50/50' : 'hover:bg-gray-50'
-              }`}
+              className="p-4 select-none border-r border-gray-100 bg-gray-50/50"
             >
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
-                  <span className={`w-2.5 h-2.5 rounded-full inline-block ${activeMetrics.ctr ? 'bg-emerald-600' : 'bg-gray-300'}`}></span>
-                  평균 CTR
+                  <span className="w-2.5 h-2.5 rounded-full inline-block bg-emerald-400"></span>
+                  인기 페이지 수
                 </span>
-                <input
-                  type="checkbox"
-                  checked={activeMetrics.ctr}
-                  readOnly
-                  className="rounded text-emerald-600 focus:ring-emerald-500 pointer-events-none"
-                />
               </div>
-              <div className="text-2xl font-extrabold text-emerald-700">{data.summary.avgCtr}%</div>
+              <div className="text-2xl font-extrabold text-emerald-700">{data.pages.length}</div>
             </div>
 
-            {/* 카드 D: 평균 게재위치 */}
+            {/* 카드 D: 유입 채널 수 */}
             <div
-              onClick={() => toggleMetric('position')}
-              className={`p-4 cursor-pointer select-none transition-colors ${
-                activeMetrics.position ? 'bg-amber-50/50' : 'hover:bg-gray-50'
-              }`}
+              className="p-4 select-none bg-gray-50/50"
             >
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
-                  <span className={`w-2.5 h-2.5 rounded-full inline-block ${activeMetrics.position ? 'bg-amber-600' : 'bg-gray-300'}`}></span>
-                  평균 게재위치
+                  <span className="w-2.5 h-2.5 rounded-full inline-block bg-amber-400"></span>
+                  유입 채널 수
                 </span>
-                <input
-                  type="checkbox"
-                  checked={activeMetrics.position}
-                  readOnly
-                  className="rounded text-amber-600 focus:ring-amber-500 pointer-events-none"
-                />
               </div>
-              <div className="text-2xl font-extrabold text-amber-700">{data.summary.avgPosition}위</div>
+              <div className="text-2xl font-extrabold text-amber-700">{data.referrers.length}</div>
             </div>
           </div>
 
@@ -769,26 +589,14 @@ const DashboardPage: React.FC = () => {
                 <div className="space-y-0.5">
                   {activeMetrics.clicks && (
                     <div className="flex justify-between gap-6 text-blue-700">
-                      <span>클릭수:</span>
+                      <span>방문수:</span>
                       <span className="font-bold">{data.chartData[hoveredIndex].clicks}회</span>
                     </div>
                   )}
                   {activeMetrics.impressions && (
                     <div className="flex justify-between gap-6 text-purple-700">
-                      <span>노출수:</span>
-                      <span className="font-bold">{data.chartData[hoveredIndex].impressions}회</span>
-                    </div>
-                  )}
-                  {activeMetrics.ctr && (
-                    <div className="flex justify-between gap-6 text-emerald-700">
-                      <span>클릭률 (CTR):</span>
-                      <span className="font-bold">{data.chartData[hoveredIndex].ctr}%</span>
-                    </div>
-                  )}
-                  {activeMetrics.position && (
-                    <div className="flex justify-between gap-6 text-amber-700">
-                      <span>평균 순위:</span>
-                      <span className="font-bold">{data.chartData[hoveredIndex].position}위</span>
+                      <span>순방문자:</span>
+                      <span className="font-bold">{data.chartData[hoveredIndex].impressions}명</span>
                     </div>
                   )}
                 </div>
@@ -806,14 +614,6 @@ const DashboardPage: React.FC = () => {
           
           {/* GSC 스타일의 상단 세부 탭 버튼 그룹 */}
           <div className="flex overflow-x-auto bg-gray-50 border-b border-gray-200">
-            <button
-              onClick={() => { setActiveTab('queries'); setSearchTerm(''); }}
-              className={`px-5 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
-                activeTab === 'queries' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              인기 검색어 (QUERIES)
-            </button>
             <button
               onClick={() => { setActiveTab('pages'); setSearchTerm(''); }}
               className={`px-5 py-3 text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
@@ -867,7 +667,6 @@ const DashboardPage: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={`${
-                  activeTab === 'queries' ? '검색어' :
                   activeTab === 'pages' ? '페이지 경로' :
                   activeTab === 'referrers' ? '접속 경로/채널' :
                   activeTab === 'countries' ? '국가명' :
@@ -892,8 +691,7 @@ const DashboardPage: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    {activeTab === 'queries' ? '검색어' :
-                     activeTab === 'pages' ? '페이지' :
+                    {activeTab === 'pages' ? '페이지' :
                      activeTab === 'referrers' ? '접속 경로' :
                      activeTab === 'countries' ? '국가' :
                      activeTab === 'devices' ? '기기' : '날짜'}
@@ -904,50 +702,12 @@ const DashboardPage: React.FC = () => {
                     className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
                   >
                     <div className="flex items-center justify-end gap-1">
-                      클릭수
+                      방문수
                       {sortField === 'clicks' && (
                         <span>{sortOrder === 'desc' ? '▼' : '▲'}</span>
                       )}
                     </div>
                   </th>
-                  <th
-                    scope="col"
-                    onClick={() => handleSort('impressions')}
-                    className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
-                  >
-                    <div className="flex items-center justify-end gap-1">
-                      노출수
-                      {sortField === 'impressions' && (
-                        <span>{sortOrder === 'desc' ? '▼' : '▲'}</span>
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    scope="col"
-                    onClick={() => handleSort('ctr')}
-                    className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
-                  >
-                    <div className="flex items-center justify-end gap-1">
-                      CTR (클릭률)
-                      {sortField === 'ctr' && (
-                        <span>{sortOrder === 'desc' ? '▼' : '▲'}</span>
-                      )}
-                    </div>
-                  </th>
-                  {activeTab !== 'referrers' && (
-                    <th
-                      scope="col"
-                      onClick={() => handleSort('position')}
-                      className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
-                    >
-                      <div className="flex items-center justify-end gap-1">
-                        평균 게재위치
-                        {sortField === 'position' && (
-                          <span>{sortOrder === 'desc' ? '▼' : '▲'}</span>
-                        )}
-                      </div>
-                    </th>
-                  )}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200 text-xs text-gray-700">
@@ -960,17 +720,6 @@ const DashboardPage: React.FC = () => {
                       <td className="px-6 py-3.5 text-right whitespace-nowrap font-semibold">
                         {row.clicks.toLocaleString()}회
                       </td>
-                      <td className="px-6 py-3.5 text-right whitespace-nowrap text-gray-500">
-                        {row.impressions.toLocaleString()}회
-                      </td>
-                      <td className="px-6 py-3.5 text-right whitespace-nowrap text-gray-600">
-                        {row.ctr}%
-                      </td>
-                      {activeTab !== 'referrers' && (
-                        <td className="px-6 py-3.5 text-right whitespace-nowrap font-semibold text-gray-600">
-                          {row.position}위
-                        </td>
-                      )}
                     </tr>
                   ))
                 ) : (
