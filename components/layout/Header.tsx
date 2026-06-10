@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Bookmark, ChevronLeft, Home, LogOut, Search, UserRound } from "lucide-react";
+import { Bookmark, ChevronLeft, Home, LogOut, Search, UserRound, X } from "lucide-react";
 import useStore from "@/store/useStore";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -30,6 +30,8 @@ const Header = ({ isLoggedIn }: headerProps) => {
   const [showHeader, setShowHeader] = useState(true);
   const lastY = useRef(0);
   const setMyPageTab = useStore((state) => state.setMyPageTab);
+  const desktopInputRef = useRef<HTMLInputElement>(null);
+  const mobileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     clear();
@@ -117,6 +119,23 @@ const Header = ({ isLoggedIn }: headerProps) => {
     }
   };
 
+  const handleClear = () => {
+    setKeyword("");
+    const params = new URLSearchParams(searchParams?.toString());
+    params.delete("keyword");
+    params.set("page", "1");
+    const query = params.toString();
+    router.push(`/${query ? `?${query}` : ""}`, { scroll: false });
+
+    setTimeout(() => {
+      if (window.innerWidth >= 768) {
+        desktopInputRef.current?.focus();
+      } else {
+        mobileInputRef.current?.focus();
+      }
+    }, 50);
+  };
+
   return (
     <div
       className={`sticky top-0 z-50 bg-black ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
@@ -125,12 +144,22 @@ const Header = ({ isLoggedIn }: headerProps) => {
       <div className="hidden md:relative md:flex flex-row md:px-14 px-2 justify-between items-center py-3 gap-1 ">
         <div className="relative text-black max-w-[400px] w-full ">
           <Input
-            className="bg-white rounded-4xl w-full pr-16"
+            ref={desktopInputRef}
+            className="bg-white rounded-4xl w-full pr-20"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={handleKeywordKeyDown}
             placeholder="검색어를 입력하세요"
           />
+          {keyword && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="absolute top-1/2 right-12 -translate-y-1/2 flex items-center justify-center rounded-full bg-slate-500 hover:bg-slate-600 text-white w-5 h-5 transition-colors cursor-pointer"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          )}
           <Button
             variant="ghost"
             className="absolute flex flex-row items-center justify-center gap-2 top-1/2 right-1 -translate-y-1/2 rounded-full px-3"
@@ -180,11 +209,21 @@ const Header = ({ isLoggedIn }: headerProps) => {
           <div className="relative flex flex-row px-2 justify-between items-center py-1 gap-1">
             <div className="relative text-black md:max-w-[400px] w-full">
               <Input
-                className="bg-white rounded-4xl w-full pr-14 text-base"
+                ref={mobileInputRef}
+                className="bg-white rounded-4xl w-full pr-[68px] text-base"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={handleKeywordKeyDown}
               />
+              {keyword && (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="absolute top-1/2 right-10 -translate-y-1/2 flex items-center justify-center rounded-full bg-slate-500 hover:bg-slate-600 text-white w-5 h-5 transition-colors cursor-pointer"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
               <Button
                 variant="ghost"
                 className="absolute flex flex-row items-center justify-center gap-2 top-1/2 right-1 -translate-y-1/2 rounded-full px-2"
