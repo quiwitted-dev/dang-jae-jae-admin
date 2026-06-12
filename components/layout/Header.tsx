@@ -155,18 +155,19 @@ const Header = ({ isLoggedIn }: headerProps) => {
             <button
               type="button"
               onClick={handleClear}
-              className="absolute top-1/2 right-12 -translate-y-1/2 flex items-center justify-center rounded-full bg-slate-500 hover:bg-slate-600 text-white w-5 h-5 transition-colors cursor-pointer"
+              className="absolute top-1/2 right-12 -translate-y-1/2 z-10 flex items-center justify-center rounded-full bg-slate-500 hover:bg-slate-600 text-white w-5 h-5 transition-colors cursor-pointer"
             >
               <X className="h-3 w-3" />
             </button>
           )}
-          <Button
-            variant="ghost"
-            className="absolute flex flex-row items-center justify-center gap-2 top-1/2 right-1 -translate-y-1/2 rounded-full px-3"
+          <button
+            type="button"
+            aria-label="검색"
             onClick={performKeywordSearch}
+            className="absolute top-1/2 right-1 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <Search className="h-4 w-4" />
-          </Button>
+          </button>
         </div>
         <Image
           src={"/logo.png"}
@@ -219,18 +220,19 @@ const Header = ({ isLoggedIn }: headerProps) => {
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="absolute top-1/2 right-10 -translate-y-1/2 flex items-center justify-center rounded-full bg-slate-500 hover:bg-slate-600 text-white w-5 h-5 transition-colors cursor-pointer"
+                  className="absolute top-1/2 right-10 -translate-y-1/2 z-10 flex items-center justify-center rounded-full bg-slate-500 hover:bg-slate-600 text-white w-5 h-5 transition-colors cursor-pointer"
                 >
                   <X className="h-3 w-3" />
                 </button>
               )}
-              <Button
-                variant="ghost"
-                className="absolute flex flex-row items-center justify-center gap-2 top-1/2 right-1 -translate-y-1/2 rounded-full px-2"
+              <button
+                type="button"
+                aria-label="검색"
                 onClick={performKeywordSearch}
+                className="absolute top-1/2 right-1 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 <Search className="h-4 w-4" />
-              </Button>
+              </button>
             </div>
             <div className="relative flex flex-row items-center min-w-[150px] gap-1 md:gap-2">
               <Button
