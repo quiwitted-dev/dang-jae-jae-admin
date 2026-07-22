@@ -19,6 +19,7 @@ interface TableRowData {
   impressions: number;
   ctr: number;
   position: number;
+  siteName?: string;
 }
 
 interface DashboardData {
@@ -166,11 +167,13 @@ const DashboardPage: React.FC = () => {
   const handleExportCSV = () => {
     if (!currentTableData.length) return;
     
-    const headers = ['대상', '방문수'];
+    const headers = activeTab === 'pages' ? ['페이지', '사업지명', '방문수'] : ['대상', '방문수'];
     const csvRows = [headers.join(',')];
 
     currentTableData.forEach((row) => {
-      const values = [`"${row.name}"`, row.clicks];
+      const values = activeTab === 'pages'
+        ? [`"${row.name}"`, `"${row.siteName || '-'}"`, row.clicks]
+        : [`"${row.name}"`, row.clicks];
       csvRows.push(values.join(','));
     });
 
@@ -713,6 +716,11 @@ const DashboardPage: React.FC = () => {
                      activeTab === 'countries' ? '국가' :
                      activeTab === 'devices' ? '기기' : '날짜'}
                   </th>
+                  {activeTab === 'pages' && (
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      페이지의 사업지명
+                    </th>
+                  )}
                   <th
                     scope="col"
                     onClick={() => handleSort('clicks')}
@@ -734,6 +742,11 @@ const DashboardPage: React.FC = () => {
                       <td className="px-6 py-3.5 whitespace-nowrap font-medium text-gray-900 truncate max-w-md">
                         {row.name}
                       </td>
+                      {activeTab === 'pages' && (
+                        <td className="px-6 py-3.5 whitespace-nowrap font-medium text-gray-500 truncate max-w-md">
+                          {row.siteName || '-'}
+                        </td>
+                      )}
                       <td className="px-6 py-3.5 text-right whitespace-nowrap font-semibold">
                         {row.clicks.toLocaleString()}회
                       </td>
