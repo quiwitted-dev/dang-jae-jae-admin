@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { excelApi } from '../../api';
 
 const ExcelUploadPage: React.FC = () => {
@@ -7,6 +8,7 @@ const ExcelUploadPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ processedCount: number; deletedCount: number; ignoredCount: number } | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +52,32 @@ const ExcelUploadPage: React.FC = () => {
     }
   };
 
+  const handleDownload = async () => {
+    setDownloading(true);
+    setError(null);
+
+    try {
+      const { blob, filename } = await excelApi.download();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 404) {
+        setError('엑셀 다운로드 API가 아직 배포되지 않았습니다. EC2 백엔드 배포가 필요합니다.');
+      } else {
+        setError(err?.response?.data?.message || err?.message || '엑셀 다운로드 중 오류가 발생했습니다.');
+      }
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">
@@ -58,6 +86,24 @@ const ExcelUploadPage: React.FC = () => {
       </div>
 
       <div className="bg-white shadow rounded-lg p-6 space-y-6">
+
+        {/* 최신 엑셀 다운로드 */}
+        <div className="flex items-center justify-between gap-4 pb-6 border-b border-gray-200">
+          <div>
+            <h2 className="text-lg font-medium text-gray-900">최신 데이터 다운로드</h2>
+            <p className="text-sm text-gray-600 mt-1">현재 DB에 저장된 서울시 정비사업 엑셀 파일을 내려받습니다.</p>
+          </div>
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-semibold text-white transition-colors ${
+              downloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+            }`}
+          >
+            <ArrowDownTrayIcon className="h-4 w-4" />
+            {downloading ? '다운로드 중...' : '최신 엑셀 다운로드'}
+          </button>
+        </div>
 
         {/* 파일 선택 영역 */}
         <div>

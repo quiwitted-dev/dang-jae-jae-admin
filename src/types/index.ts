@@ -327,3 +327,47 @@ export interface UserListResponse {
   };
   error?: string;
 }
+
+// 서울 정비사업 업데이트 배치 타입
+export interface SeoulUpdateBatch {
+  id: string;
+  status: string;
+  source?: string;
+  fileName?: string;
+  processedCount?: number;
+  deletedCount?: number;
+  ignoredCount?: number;
+  insertedCount?: number;
+  updatedCount?: number;
+  startedAt?: string;
+  completedAt?: string;
+  createdAt?: string;
+  triggeredBy?: string;
+  errorMessage?: string;
+}
+
+export interface SeoulUpdateChange {
+  action: string;
+  businessNumber?: string;
+  projectName?: string;
+  message?: string;
+}
+
+export interface SeoulUpdateBatchDetail extends SeoulUpdateBatch {
+  changes?: SeoulUpdateChange[];
+  errors?: string[];
+}
+
+export interface SeoulUpdateBatchListResponse {
+  success: boolean;
+  batches?: SeoulUpdateBatch[];
+  data?: SeoulUpdateBatch[] | { batches: SeoulUpdateBatch[] };
+  error?: string;
+}
+
+export interface SeoulUpdateBatchDetailResponse {
+  success: boolean;
+  batch?: SeoulUpdateBatchDetail;
+  data?: SeoulUpdateBatchDetail;
+  error?: string;
+}

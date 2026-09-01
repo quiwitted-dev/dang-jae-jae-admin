@@ -18,6 +18,10 @@ import type {
   PriceGroupDetailResponse,
   PriceCandidateStatus,
   UserListResponse,
+  SeoulUpdateBatchListResponse,
+  SeoulUpdateBatchDetailResponse,
+  SeoulUpdateBatch,
+  SeoulUpdateBatchDetail,
 } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -533,5 +537,66 @@ export const excelApi = {
       timeout: 300000,
     });
     return response.data;
+  },
+
+  download: async (): Promise<{ blob: Blob; filename: string }> => {
+    const response = await apiClient.get('/api/admin/excel/download', {
+      responseType: 'blob',
+      timeout: 120000,
+    });
+
+    const disposition = response.headers['content-disposition'] as string | undefined;
+    let filename = 'seoul_renovation_latest.xlsx';
+    if (disposition) {
+      const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+      const plainMatch = disposition.match(/filename="?([^";\n]+)"?/i);
+      if (utf8Match?.[1]) {
+        filename = decodeURIComponent(utf8Match[1]);
+      } else if (plainMatch?.[1]) {
+        filename = plainMatch[1];
+      }
+    }
+
+    return { blob: response.data, filename };
+  },
+};
+
+const extractBatches = (response: SeoulUpdateBatchListResponse): SeoulUpdateBatch[] => {
+  if (Array.isArray(response.batches)) return response.batches;
+  if (Array.isArray(response.data)) return response.data;
+  if (response.data && Array.isArray((response.data as { batches?: SeoulUpdateBatch[] }).batches)) {
+    return (response.data as { batches: SeoulUpdateBatch[] }).batches;
+  }
+  return [];
+};
+
+const extractBatchDetail = (response: SeoulUpdateBatchDetailResponse): SeoulUpdateBatchDetail | null => {
+  if (response.batch) return response.batch;
+  if (response.data) return response.data;
+  return null;
+};
+
+// 서울 정비사업 업데이트 히스토리 API
+export const seoulUpdatesApi = {
+  getBatches: async (): Promise<SeoulUpdateBatch[]> => {
+    const response = await apiClient.get<SeoulUpdateBatchListResponse>('/api/admin/seoul-updates/batches');
+    if (!response.data?.success) {
+      throw new Error(response.data?.error || '배치 목록을 불러오지 못했습니다.');
+    }
+    return extractBatches(response.data);
+  },
+
+  getBatchById: async (batchId: string): Promise<SeoulUpdateBatchDetail> => {
+    const response = await apiClient.get<SeoulUpdateBatchDetailResponse>(
+      `/api/admin/seoul-updates/batches/${batchId}`
+    );
+    if (!response.data?.success) {
+      throw new Error(response.data?.error || '배치 상세를 불러오지 못했습니다.');
+    }
+    const batch = extractBatchDetail(response.data);
+    if (!batch) {
+      throw new Error('배치 상세 데이터가 없습니다.');
+    }
+    return batch;
   },
 };
