@@ -12,6 +12,7 @@ import MainTitlePage from './pages/admin/MainTitlePage';
 import ApiDataSyncPage from './pages/api-data/ApiDataSyncPage';
 import ExcelUploadPage from './pages/api-data/ExcelUploadPage';
 import SeoulUpdateHistoryPage from './pages/api-data/SeoulUpdateHistoryPage';
+import NoticeDetectPage from './pages/api-data/NoticeDetectPage';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
               <Route path="api-data/sync" element={<ApiDataSyncPage />} />
               <Route path="api-data/excel-upload" element={<ExcelUploadPage />} />
               <Route path="api-data/seoul-updates" element={<SeoulUpdateHistoryPage />} />
+              <Route path="api-data/notice-detect" element={<NoticeDetectPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
