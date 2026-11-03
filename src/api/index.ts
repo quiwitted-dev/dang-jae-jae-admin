@@ -22,6 +22,10 @@ import type {
   SeoulUpdateBatchDetailResponse,
   SeoulUpdateBatch,
   SeoulUpdateBatchDetail,
+  NoticeCandidate,
+  NoticeCandidateListResponse,
+  NoticeCandidateStatus,
+  NoticeCandidateUpdateResponse,
 } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -598,5 +602,82 @@ export const seoulUpdatesApi = {
       throw new Error('배치 상세 데이터가 없습니다.');
     }
     return batch;
+  },
+};
+
+const extractNoticeCandidates = (response: NoticeCandidateListResponse): NoticeCandidate[] => {
+  if (Array.isArray(response.candidates)) return response.candidates;
+  if (Array.isArray(response.data)) return response.data;
+  if (response.data && Array.isArray(response.data.candidates)) return response.data.candidates;
+  if (response.data && Array.isArray(response.data.items)) return response.data.items;
+  return [];
+};
+
+const extractNoticePagination = (
+  response: NoticeCandidateListResponse,
+  fallback: { page: number; limit: number; total: number }
+) => {
+  const nestedPagination =
+    response.data && !Array.isArray(response.data) ? response.data.pagination : undefined;
+  const pagination = response.pagination || nestedPagination;
+  if (!pagination) return fallback;
+  return {
+    page: pagination.page ?? fallback.page,
+    limit: pagination.limit ?? fallback.limit,
+    total: pagination.total ?? fallback.total,
+    totalPages: pagination.totalPages,
+  };
+};
+
+// 서울 공고 탐지 후보 API
+export const seoulNoticeCandidatesApi = {
+  getCandidates: async (params: {
+    page?: number;
+    limit?: number;
+    status?: NoticeCandidateStatus;
+    source?: string;
+  } = {}): Promise<{
+    candidates: NoticeCandidate[];
+    pagination: { page: number; limit: number; total: number; totalPages?: number };
+  }> => {
+    const page = params.page ?? 1;
+    const limit = params.limit ?? 20;
+    const response = await apiClient.get<NoticeCandidateListResponse>(
+      '/api/admin/seoul-notices/candidates',
+      {
+        params: {
+          page,
+          limit,
+          ...(params.status ? { status: params.status } : {}),
+          ...(params.source ? { source: params.source } : {}),
+        },
+      }
+    );
+    if (!response.data?.success) {
+      throw new Error(response.data?.error || '탐지 목록을 불러오지 못했습니다.');
+    }
+    const candidates = extractNoticeCandidates(response.data);
+    return {
+      candidates,
+      pagination: extractNoticePagination(response.data, {
+        page,
+        limit,
+        total: candidates.length,
+      }),
+    };
+  },
+
+  updateStatus: async (
+    id: string,
+    status: NoticeCandidateStatus
+  ): Promise<NoticeCandidate | null> => {
+    const response = await apiClient.patch<NoticeCandidateUpdateResponse>(
+      `/api/admin/seoul-notices/candidates/${id}`,
+      { status }
+    );
+    if (!response.data?.success) {
+      throw new Error(response.data?.error || '상태 변경에 실패했습니다.');
+    }
+    return response.data.candidate || response.data.data || null;
   },
 };

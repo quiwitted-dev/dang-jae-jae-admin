@@ -45,6 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         { name: '데이터 동기화', path: '/api-data/sync' },
         { name: '엑셀 데이터 업로드', path: '/api-data/excel-upload' },
         { name: '업데이트 히스토리', path: '/api-data/seoul-updates' },
+        { name: '탐지리스트', path: '/api-data/notice-detect' },
       ],
     },
     {

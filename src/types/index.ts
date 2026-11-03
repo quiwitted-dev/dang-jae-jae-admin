@@ -371,3 +371,55 @@ export interface SeoulUpdateBatchDetailResponse {
   data?: SeoulUpdateBatchDetail;
   error?: string;
 }
+
+// 서울 공고 탐지 후보 타입
+export type NoticeCandidateStatus = 'NEW' | 'REVIEWING' | 'APPLIED' | 'SKIPPED';
+
+export interface NoticeCandidate {
+  id: string;
+  status: NoticeCandidateStatus;
+  source?: string;
+  title?: string;
+  projectName?: string;
+  businessNumber?: string;
+  district?: string;
+  gu?: string;
+  url?: string;
+  noticeDate?: string;
+  publishedAt?: string;
+  detectedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  reviewedAt?: string;
+  summary?: string;
+  content?: string;
+}
+
+export interface NoticeCandidateListResponse {
+  success: boolean;
+  candidates?: NoticeCandidate[];
+  data?: NoticeCandidate[] | {
+    candidates?: NoticeCandidate[];
+    items?: NoticeCandidate[];
+    pagination?: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages?: number;
+    };
+  };
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages?: number;
+  };
+  error?: string;
+}
+
+export interface NoticeCandidateUpdateResponse {
+  success: boolean;
+  candidate?: NoticeCandidate;
+  data?: NoticeCandidate;
+  error?: string;
+}
