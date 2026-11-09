@@ -375,6 +375,34 @@ export interface SeoulUpdateBatchDetailResponse {
 // 서울 공고 탐지 후보 타입
 export type NoticeCandidateStatus = 'NEW' | 'REVIEWING' | 'APPLIED' | 'SKIPPED';
 
+/** 탐지 건에서 사이트 반영이 예상되는 개별 사업/변경 항목 */
+export interface NoticeCandidateUpdateItem {
+  projectName?: string;
+  renovationZoneName?: string;
+  name?: string;
+  title?: string;
+  businessNumber?: string;
+  originalId?: string;
+  district?: string;
+  gu?: string;
+  fromStage?: string;
+  previousStage?: string;
+  oldStage?: string;
+  currentStage?: string;
+  toStage?: string;
+  newStage?: string;
+  proposedStage?: string;
+  targetStage?: string;
+  publicRenovationDataId?: string;
+  matchedSiteId?: string;
+  siteId?: string;
+  action?: string;
+  message?: string;
+  note?: string;
+  summary?: string;
+  [key: string]: unknown;
+}
+
 export interface NoticeCandidate {
   id: string;
   status: NoticeCandidateStatus;
@@ -393,6 +421,25 @@ export interface NoticeCandidate {
   reviewedAt?: string;
   summary?: string;
   content?: string;
+  body?: string;
+  rawContent?: string;
+  html?: string;
+  /** 사이트 반영 예정 항목(백엔드 필드명이 달라도 상세 모달에서 탐색) */
+  updates?: NoticeCandidateUpdateItem[];
+  changes?: NoticeCandidateUpdateItem[];
+  proposedChanges?: NoticeCandidateUpdateItem[];
+  parsedItems?: NoticeCandidateUpdateItem[];
+  parsedProjects?: NoticeCandidateUpdateItem[];
+  projects?: NoticeCandidateUpdateItem[];
+  matches?: NoticeCandidateUpdateItem[];
+  detections?: NoticeCandidateUpdateItem[];
+  items?: NoticeCandidateUpdateItem[];
+  targets?: NoticeCandidateUpdateItem[];
+  results?: NoticeCandidateUpdateItem[];
+  siteUpdates?: NoticeCandidateUpdateItem[];
+  applyPreview?: NoticeCandidateUpdateItem[] | Record<string, unknown>;
+  parsedResult?: Record<string, unknown> | NoticeCandidateUpdateItem[];
+  [key: string]: unknown;
 }
 
 export interface NoticeCandidateListResponse {
