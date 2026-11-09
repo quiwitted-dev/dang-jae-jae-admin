@@ -1,0 +1,17 @@
+{
+  "name": "dang-jae-jae-admin",
+  "install": "npm ci",
+  "terminals": [
+    {
+      "name": "vite-dev",
+      "command": "npm run dev -- --host 0.0.0.0",
+      "description": "Vite dev server for the admin dashboard (http://localhost:5173)."
+    }
+  ],
+  "ports": [
+    {
+      "name": "vite dev server",
+      "port": 5173
+    }
+  ]
+}
