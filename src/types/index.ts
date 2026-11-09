@@ -375,8 +375,17 @@ export interface SeoulUpdateBatchDetailResponse {
 // 서울 공고 탐지 후보 타입
 export type NoticeCandidateStatus = 'NEW' | 'REVIEWING' | 'APPLIED' | 'SKIPPED';
 
+/** 필드별 현재값(before) → 반영예정값(after) */
+export interface NoticeFieldDiff {
+  before?: string | number | null;
+  after?: string | number | null;
+}
+
 /** 탐지 건에서 사이트 반영이 예상되는 개별 사업/변경 항목 */
 export interface NoticeCandidateUpdateItem {
+  publicRenovationDataId?: string;
+  matchedSiteId?: string;
+  siteId?: string;
   projectName?: string;
   renovationZoneName?: string;
   name?: string;
@@ -393,9 +402,11 @@ export interface NoticeCandidateUpdateItem {
   newStage?: string;
   proposedStage?: string;
   targetStage?: string;
-  publicRenovationDataId?: string;
-  matchedSiteId?: string;
-  siteId?: string;
+  unmatched?: boolean;
+  matchConfidence?: number | string;
+  matchMethod?: string;
+  changedFieldCount?: number;
+  fields?: Record<string, NoticeFieldDiff | string | number | null>;
   action?: string;
   message?: string;
   note?: string;
@@ -424,8 +435,9 @@ export interface NoticeCandidate {
   body?: string;
   rawContent?: string;
   html?: string;
-  /** 사이트 반영 예정 항목(백엔드 필드명이 달라도 상세 모달에서 탐색) */
+  /** 사이트 반영 예정 항목 */
   updates?: NoticeCandidateUpdateItem[];
+  unmatchedUpdates?: NoticeCandidateUpdateItem[];
   changes?: NoticeCandidateUpdateItem[];
   proposedChanges?: NoticeCandidateUpdateItem[];
   parsedItems?: NoticeCandidateUpdateItem[];
@@ -442,31 +454,58 @@ export interface NoticeCandidate {
   [key: string]: unknown;
 }
 
+export interface NoticeCandidatePagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages?: number;
+}
+
 export interface NoticeCandidateListResponse {
   success: boolean;
   candidates?: NoticeCandidate[];
-  data?: NoticeCandidate[] | {
-    candidates?: NoticeCandidate[];
-    items?: NoticeCandidate[];
-    pagination?: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages?: number;
-    };
-  };
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages?: number;
-  };
+  candidate?: NoticeCandidate;
+  data?:
+    | NoticeCandidate[]
+    | {
+        candidates?: NoticeCandidate[];
+        items?: NoticeCandidate[];
+        candidate?: NoticeCandidate;
+        pagination?: NoticeCandidatePagination;
+      };
+  pagination?: NoticeCandidatePagination;
   error?: string;
+}
+
+export interface NoticeCandidateDetailResponse {
+  success: boolean;
+  candidate?: NoticeCandidate;
+  data?: NoticeCandidate | { candidate?: NoticeCandidate };
+  error?: string;
+}
+
+export interface NoticeCandidateApplyResult {
+  appliedCount?: number;
+  appliedFields?: string[] | Record<string, unknown>[];
+  skippedCount?: number;
+  unmatchedCount?: number;
+  message?: string;
 }
 
 export interface NoticeCandidateUpdateResponse {
   success: boolean;
   candidate?: NoticeCandidate;
-  data?: NoticeCandidate;
+  data?:
+    | NoticeCandidate
+    | {
+        candidate?: NoticeCandidate;
+        appliedCount?: number;
+        appliedFields?: string[] | Record<string, unknown>[];
+        applyResult?: NoticeCandidateApplyResult;
+      };
+  appliedCount?: number;
+  appliedFields?: string[] | Record<string, unknown>[];
+  applyResult?: NoticeCandidateApplyResult;
   error?: string;
+  message?: string;
 }

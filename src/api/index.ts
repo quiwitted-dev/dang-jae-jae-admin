@@ -23,6 +23,8 @@ import type {
   SeoulUpdateBatch,
   SeoulUpdateBatchDetail,
   NoticeCandidate,
+  NoticeCandidateApplyResult,
+  NoticeCandidateDetailResponse,
   NoticeCandidateListResponse,
   NoticeCandidateStatus,
   NoticeCandidateUpdateResponse,
@@ -605,12 +607,39 @@ export const seoulUpdatesApi = {
   },
 };
 
+const isNoticeCandidate = (value: unknown): value is NoticeCandidate => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  return typeof record.id === 'string' && typeof record.status === 'string';
+};
+
 const extractNoticeCandidates = (response: NoticeCandidateListResponse): NoticeCandidate[] => {
   if (Array.isArray(response.candidates)) return response.candidates;
   if (Array.isArray(response.data)) return response.data;
-  if (response.data && Array.isArray(response.data.candidates)) return response.data.candidates;
-  if (response.data && Array.isArray(response.data.items)) return response.data.items;
+  if (response.data && !Array.isArray(response.data) && Array.isArray(response.data.candidates)) {
+    return response.data.candidates;
+  }
+  if (response.data && !Array.isArray(response.data) && Array.isArray(response.data.items)) {
+    return response.data.items;
+  }
   return [];
+};
+
+const extractNoticeCandidateDetail = (
+  response: NoticeCandidateDetailResponse | NoticeCandidateUpdateResponse
+): NoticeCandidate | null => {
+  if (response.candidate) return response.candidate;
+  if (isNoticeCandidate(response.data)) return response.data;
+  if (
+    response.data &&
+    typeof response.data === 'object' &&
+    !Array.isArray(response.data) &&
+    'candidate' in response.data &&
+    isNoticeCandidate(response.data.candidate)
+  ) {
+    return response.data.candidate;
+  }
+  return null;
 };
 
 const extractNoticePagination = (
@@ -627,6 +656,34 @@ const extractNoticePagination = (
     total: pagination.total ?? fallback.total,
     totalPages: pagination.totalPages,
   };
+};
+
+const extractApplyResult = (
+  response: NoticeCandidateUpdateResponse
+): NoticeCandidateApplyResult | null => {
+  if (response.applyResult) return response.applyResult;
+  if (typeof response.appliedCount === 'number' || response.appliedFields) {
+    return {
+      appliedCount: response.appliedCount,
+      appliedFields: response.appliedFields,
+      message: response.message,
+    };
+  }
+  if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && !isNoticeCandidate(response.data)) {
+    const nested = response.data as {
+      applyResult?: NoticeCandidateApplyResult;
+      appliedCount?: number;
+      appliedFields?: string[] | Record<string, unknown>[];
+    };
+    if (nested.applyResult) return nested.applyResult;
+    if (typeof nested.appliedCount === 'number' || nested.appliedFields) {
+      return {
+        appliedCount: nested.appliedCount,
+        appliedFields: nested.appliedFields,
+      };
+    }
+  }
+  return null;
 };
 
 // 서울 공고 탐지 후보 API
@@ -667,10 +724,28 @@ export const seoulNoticeCandidatesApi = {
     };
   },
 
+  getCandidateById: async (id: string): Promise<NoticeCandidate> => {
+    const response = await apiClient.get<NoticeCandidateDetailResponse>(
+      `/api/admin/seoul-notices/candidates/${id}`
+    );
+    if (!response.data?.success) {
+      throw new Error(response.data?.error || '탐지 상세를 불러오지 못했습니다.');
+    }
+    const candidate = extractNoticeCandidateDetail(response.data);
+    if (!candidate) {
+      throw new Error('탐지 상세 데이터가 없습니다.');
+    }
+    return candidate;
+  },
+
   updateStatus: async (
     id: string,
     status: NoticeCandidateStatus
-  ): Promise<NoticeCandidate | null> => {
+  ): Promise<{
+    candidate: NoticeCandidate | null;
+    applyResult: NoticeCandidateApplyResult | null;
+    message?: string;
+  }> => {
     const response = await apiClient.patch<NoticeCandidateUpdateResponse>(
       `/api/admin/seoul-notices/candidates/${id}`,
       { status }
@@ -678,6 +753,10 @@ export const seoulNoticeCandidatesApi = {
     if (!response.data?.success) {
       throw new Error(response.data?.error || '상태 변경에 실패했습니다.');
     }
-    return response.data.candidate || response.data.data || null;
+    return {
+      candidate: extractNoticeCandidateDetail(response.data),
+      applyResult: extractApplyResult(response.data),
+      message: response.data.message,
+    };
   },
 };

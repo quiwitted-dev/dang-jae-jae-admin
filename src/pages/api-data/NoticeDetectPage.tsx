@@ -6,8 +6,10 @@ import Modal from '../../components/Modal';
 import useDebounce from '../../lib/useDebounce';
 import type {
   NoticeCandidate,
+  NoticeCandidateApplyResult,
   NoticeCandidateStatus,
   NoticeCandidateUpdateItem,
+  NoticeFieldDiff,
 } from '../../types';
 
 const PAGE_SIZE = 20;
@@ -26,8 +28,37 @@ const statusBadgeMap: Record<NoticeCandidateStatus, string> = {
   SKIPPED: 'bg-gray-100 text-gray-800',
 };
 
+const FIELD_LABELS: Record<string, string> = {
+  newConstructionUnits: '신축세대수',
+  rentalUnits: '임대세대수',
+  totalSaleUnits: '분양세대총수',
+  generalSaleUnits: '일반분양 세대수',
+  newConstructionFloors: '지상층수',
+  undergroundFloors: '지하층수',
+  projectAreaM2: '정비구역면적(㎡)',
+  residentialLandAreaM2: '택지면적(㎡)',
+  buildingFloorAreaM2: '건축연면적(㎡)',
+  buildingCoverageRatio: '건폐율(%)',
+  volumeRatio: '용적률(%)',
+  buildingHeight: '건물높이(m)',
+  unitsUnder60M2: '60㎡ 이하 세대수',
+  units60To85M2: '60~85㎡ 세대수',
+  unitsOver85M2: '85㎡ 초과 세대수',
+  ownerCount: '소유자수',
+  usageZone: '용도지역',
+  mainUsage: '주용도',
+  businessType: '사업구분',
+  constructionPlanNotes: '건축계획 비고',
+  noticeContent: '고시 요약',
+  currentStage: '진행단계',
+  parkAreaM2: '공원면적(㎡)',
+  publicOpenSpaceAreaM2: '공공공지면적(㎡)',
+  otherAreaM2: '기타면적(㎡)',
+};
+
 const UPDATE_COLLECTION_KEYS = [
   'updates',
+  'unmatchedUpdates',
   'changes',
   'proposedChanges',
   'parsedItems',
@@ -64,6 +95,17 @@ const pickString = (item: Record<string, unknown>, keys: string[]) => {
   return '';
 };
 
+const formatDiffValue = (value: unknown) => {
+  if (value === null || value === undefined || value === '') return '-';
+  return String(value);
+};
+
+const isFieldDiff = (value: unknown): value is NoticeFieldDiff => {
+  const record = asRecord(value);
+  if (!record) return false;
+  return 'before' in record || 'after' in record;
+};
+
 const normalizeUpdateItem = (value: unknown): NoticeCandidateUpdateItem | null => {
   const record = asRecord(value);
   if (!record) return null;
@@ -86,7 +128,6 @@ const collectUpdateItems = (candidate: NoticeCandidate): NoticeCandidateUpdateIt
     const record = asRecord(value);
     if (!record) return;
 
-    // 중첩 배열 키도 한 번 더 탐색
     let nestedFound = false;
     for (const key of UPDATE_COLLECTION_KEYS) {
       if (Array.isArray(record[key])) {
@@ -102,12 +143,15 @@ const collectUpdateItems = (candidate: NoticeCandidate): NoticeCandidateUpdateIt
         'name',
         'title',
         'businessNumber',
+        'publicRenovationDataId',
         'toStage',
         'newStage',
         'proposedStage',
         'targetStage',
         'currentStage',
-      ]) !== '';
+      ]) !== '' ||
+      !!record.fields ||
+      record.unmatched === true;
 
     if (!nestedFound && looksLikeUpdate) {
       collected.push(record as NoticeCandidateUpdateItem);
@@ -118,23 +162,11 @@ const collectUpdateItems = (candidate: NoticeCandidate): NoticeCandidateUpdateIt
     pushValue(candidate[key]);
   });
 
-  // 후보 자체에 사업/단계 정보가 직접 있는 경우도 1건으로 표시
-  if (collected.length === 0) {
-    const selfItem = normalizeUpdateItem(candidate);
-    if (
-      selfItem &&
-      (pickString(selfItem, ['projectName', 'renovationZoneName', 'businessNumber']) ||
-        pickString(selfItem, ['toStage', 'newStage', 'proposedStage', 'targetStage']))
-    ) {
-      collected.push(selfItem);
-    }
-  }
-
   return collected;
 };
 
 const getUpdateProjectLabel = (item: NoticeCandidateUpdateItem) =>
-  pickString(item, ['projectName', 'renovationZoneName', 'name', 'title']) || '사업명 미상';
+  pickString(item, ['renovationZoneName', 'projectName', 'name', 'title']) || '사업명 미상';
 
 const getUpdateFromStage = (item: NoticeCandidateUpdateItem) =>
   pickString(item, ['fromStage', 'previousStage', 'oldStage', 'currentStage']) || '-';
@@ -144,6 +176,51 @@ const getUpdateToStage = (item: NoticeCandidateUpdateItem) =>
 
 const getCandidateText = (candidate: NoticeCandidate) =>
   pickString(candidate, ['summary', 'content', 'body', 'rawContent', 'html']) || '';
+
+const getChangedFields = (item: NoticeCandidateUpdateItem) => {
+  const fields = item.fields;
+  if (!fields || typeof fields !== 'object') return [] as Array<{
+    key: string;
+    label: string;
+    before: string;
+    after: string;
+  }>;
+
+  return Object.entries(fields)
+    .map(([key, value]) => {
+      if (isFieldDiff(value)) {
+        const before = formatDiffValue(value.before);
+        const after = formatDiffValue(value.after);
+        if (before === after) return null;
+        return {
+          key,
+          label: FIELD_LABELS[key] || key,
+          before,
+          after,
+        };
+      }
+
+      // 단순 값만 온 경우: after로 취급
+      if (value === null || value === undefined || value === '') return null;
+      return {
+        key,
+        label: FIELD_LABELS[key] || key,
+        before: '-',
+        after: formatDiffValue(value),
+      };
+    })
+    .filter((row): row is { key: string; label: string; before: string; after: string } => !!row);
+};
+
+const countUpdatePreview = (candidate: NoticeCandidate) => {
+  const updates = collectUpdateItems(candidate);
+  if (updates.length === 0) return 0;
+  return updates.reduce((sum, item) => {
+    const fieldCount = item.changedFieldCount ?? getChangedFields(item).length;
+    const stageChanged = getUpdateFromStage(item) !== getUpdateToStage(item) ? 1 : 0;
+    return sum + Math.max(fieldCount, 0) + (fieldCount === 0 ? stageChanged : 0);
+  }, 0);
+};
 
 const NoticeDetectPage: React.FC = () => {
   const [candidates, setCandidates] = useState<NoticeCandidate[]>([]);
@@ -156,7 +233,10 @@ const NoticeDetectPage: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selected, setSelected] = useState<NoticeCandidate | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState<string | null>(null);
   const [showRawJson, setShowRawJson] = useState(false);
+  const [applyResult, setApplyResult] = useState<NoticeCandidateApplyResult | null>(null);
 
   const selectedUpdates = useMemo(
     () => (selected ? collectUpdateItems(selected) : []),
@@ -165,6 +245,14 @@ const NoticeDetectPage: React.FC = () => {
   const selectedText = useMemo(
     () => (selected ? getCandidateText(selected) : ''),
     [selected]
+  );
+  const matchedUpdates = useMemo(
+    () => selectedUpdates.filter((item) => !item.unmatched),
+    [selectedUpdates]
+  );
+  const unmatchedUpdates = useMemo(
+    () => selectedUpdates.filter((item) => !!item.unmatched),
+    [selectedUpdates]
   );
 
   const fetchCandidates = useCallback(async () => {
@@ -207,21 +295,41 @@ const NoticeDetectPage: React.FC = () => {
     setSourceFilter(value);
   };
 
-  const openDetail = (candidate: NoticeCandidate) => {
+  const openDetail = async (candidate: NoticeCandidate) => {
     setSelected(candidate);
     setShowRawJson(false);
+    setApplyResult(null);
+    setDetailError(null);
+    setDetailLoading(true);
+
+    try {
+      const detail = await seoulNoticeCandidatesApi.getCandidateById(candidate.id);
+      setSelected(detail);
+    } catch (err: any) {
+      // 상세 API가 없거나 실패하면 목록 데이터로 모달 유지
+      const status = err?.response?.status;
+      if (status && status !== 404) {
+        setDetailError(
+          err?.response?.data?.error || err?.message || '상세 정보를 불러오지 못했습니다.'
+        );
+      }
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   const closeDetail = () => {
     setSelected(null);
     setShowRawJson(false);
+    setApplyResult(null);
+    setDetailError(null);
   };
 
   const handleUpdateStatus = async (id: string, status: NoticeCandidateStatus) => {
     const label = statusLabelMap[status];
     const confirmMessage =
       status === 'APPLIED'
-        ? `이 탐지 건을 "${label}"로 표시할까요?\n\n※ 이 버튼은 탐지리스트의 처리 상태를 바꿉니다.\n사이트의 사업단계가 실제로 바뀌는지는 서버 반영 로직에 따릅니다.\n가능하면 '상세'에서 반영 예정 내용을 먼저 확인하세요.`
+        ? `이 탐지 건을 "${label}"로 처리할까요?\n\n매칭된 사업의 단계·신축/임대세대·층수·면적 등 변경값이 사이트 DB에 실제로 반영됩니다.`
         : `이 항목을 "${label}"(으)로 변경하시겠습니까?`;
 
     if (!confirm(confirmMessage)) return;
@@ -229,10 +337,30 @@ const NoticeDetectPage: React.FC = () => {
     setUpdatingId(id);
     setError(null);
     try {
-      const updated = await seoulNoticeCandidatesApi.updateStatus(id, status);
+      const result = await seoulNoticeCandidatesApi.updateStatus(id, status);
       await fetchCandidates();
+
       if (selected?.id === id) {
-        setSelected(updated ? { ...selected, ...updated, status } : { ...selected, status });
+        const nextCandidate = result.candidate
+          ? { ...selected, ...result.candidate, status: result.candidate.status || status }
+          : { ...selected, status };
+        setSelected(nextCandidate);
+      }
+
+      if (status === 'APPLIED') {
+        setApplyResult(
+          result.applyResult || {
+            message: result.message || '반영완료 처리되었습니다.',
+          }
+        );
+        if (result.applyResult?.appliedCount != null) {
+          alert(
+            `반영 완료: ${result.applyResult.appliedCount}개 사업 적용` +
+              (result.applyResult.unmatchedCount
+                ? `\n미매칭: ${result.applyResult.unmatchedCount}건`
+                : '')
+          );
+        }
       }
     } catch (err: any) {
       const httpStatus = err?.response?.status;
@@ -246,13 +374,90 @@ const NoticeDetectPage: React.FC = () => {
     }
   };
 
+  const renderUpdateCard = (item: NoticeCandidateUpdateItem, index: number) => {
+    const changedFields = getChangedFields(item);
+    const fromStage = getUpdateFromStage(item);
+    const toStage = getUpdateToStage(item);
+
+    return (
+      <div
+        key={`${item.publicRenovationDataId || item.projectName || 'update'}-${index}`}
+        className="border border-gray-200 rounded-lg overflow-hidden"
+      >
+        <div className="bg-gray-50 px-4 py-3 flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <p className="font-medium text-gray-900">{getUpdateProjectLabel(item)}</p>
+            <p className="text-xs text-gray-500 mt-1">
+              {[
+                pickString(item, ['district', 'gu']),
+                pickString(item, ['businessNumber', 'originalId']),
+                item.publicRenovationDataId ? `ID ${item.publicRenovationDataId}` : '',
+              ]
+                .filter(Boolean)
+                .join(' · ') || '매칭 정보 없음'}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            {item.unmatched ? (
+              <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                미매칭
+              </span>
+            ) : null}
+            <span className="text-gray-500">{fromStage}</span>
+            <span className="text-gray-400">→</span>
+            <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              {toStage}
+            </span>
+          </div>
+        </div>
+
+        {changedFields.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 text-sm">
+              <thead className="bg-white">
+                <tr>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500">항목</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500">현재</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500">반영 예정</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {changedFields.map((field) => (
+                  <tr key={field.key}>
+                    <td className="px-4 py-2 text-gray-700 whitespace-nowrap">{field.label}</td>
+                    <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{field.before}</td>
+                    <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
+                      {field.after}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="px-4 py-3 text-sm text-gray-500">
+            {fromStage !== toStage
+              ? '단계 변경만 예정되어 있습니다.'
+              : '세부 수치 변경 항목이 없습니다.'}
+          </div>
+        )}
+
+        {pickString(item, ['message', 'note', 'summary', 'action']) ? (
+          <div className="px-4 py-2 text-xs text-gray-500 border-t border-gray-100">
+            {pickString(item, ['message', 'note', 'summary', 'action'])}
+          </div>
+        ) : null}
+      </div>
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">탐지리스트</h1>
           <p className="text-gray-600 mt-1">
-            서울시 공고/고시에서 자동 탐지된 후보를 검토하고 반영 여부를 관리합니다.
+            서울시 공고/고시에서 자동 탐지된 후보를 검토하고, 통합심의 변경값을 사이트에 반영합니다.
           </p>
         </div>
         <button
@@ -265,17 +470,17 @@ const NoticeDetectPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        <p className="font-medium">확인 방법</p>
+      <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+        <p className="font-medium">사용 방법</p>
         <ul className="mt-1 list-disc space-y-1 pl-5">
           <li>
-            <strong>상세</strong>에서 “내 사이트에 어떤 사업/단계가 바뀌는지”를 먼저 확인하세요.
+            <strong>상세</strong>에서 사업별 단계·신축/임대세대·층수·면적 등 before → after를 확인하세요.
           </li>
           <li>
-            <strong>원문</strong>은 서울시 공고 페이지 링크입니다. 사이트 반영 내용 미리보기가 아닙니다.
+            <strong>원문</strong>은 서울시 공고 페이지입니다.
           </li>
           <li>
-            <strong>반영완료</strong>는 탐지 건을 처리 완료 상태로 표시합니다. 사업단계 자동 반영 여부는 서버 로직에 따릅니다.
+            <strong>반영완료</strong>를 누르면 매칭된 사업 데이터가 사이트 DB에 실제로 반영됩니다.
           </li>
         </ul>
       </div>
@@ -296,7 +501,7 @@ const NoticeDetectPage: React.FC = () => {
           type="text"
           value={sourceFilter}
           onChange={(e) => handleSourceFilterChange(e.target.value)}
-          placeholder="출처 필터 (예: SEOUL)"
+          placeholder="출처 필터 (예: IR_PRESS)"
           className="px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]"
         />
       </div>
@@ -331,17 +536,15 @@ const NoticeDetectPage: React.FC = () => {
             {
               header: '반영 예정',
               accessor: (row) => {
-                const count = collectUpdateItems(row).length;
-                return count > 0 ? `${count}건` : '상세 확인';
+                const updateCount = collectUpdateItems(row).length;
+                const fieldCount = countUpdatePreview(row);
+                if (updateCount === 0) return '-';
+                return `${updateCount}개 사업` + (fieldCount > 0 ? ` · ${fieldCount}항목` : '');
               },
             },
             {
               header: '출처',
               accessor: (row) => row.source || '-',
-            },
-            {
-              header: '구역/구',
-              accessor: (row) => row.district || row.gu || '-',
             },
             {
               header: '탐지 시각',
@@ -418,7 +621,7 @@ const NoticeDetectPage: React.FC = () => {
           data={candidates}
           loading={loading}
           emptyMessage="탐지된 후보가 없습니다."
-          onRowClick={openDetail}
+          onRowClick={(row) => openDetail(row)}
           pagination={{
             currentPage: page,
             pageSize: PAGE_SIZE,
@@ -460,7 +663,7 @@ const NoticeDetectPage: React.FC = () => {
               {selected.status !== 'APPLIED' && (
                 <button
                   type="button"
-                  disabled={updatingId === selected.id}
+                  disabled={updatingId === selected.id || detailLoading}
                   onClick={() => handleUpdateStatus(selected.id, 'APPLIED')}
                   className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                 >
@@ -483,6 +686,32 @@ const NoticeDetectPage: React.FC = () => {
       >
         {selected && (
           <div className="space-y-6">
+            {detailLoading && (
+              <div className="flex items-center text-sm text-gray-500">
+                <ArrowPathIcon className="h-4 w-4 animate-spin mr-2" />
+                상세 정보를 불러오는 중...
+              </div>
+            )}
+
+            {detailError && (
+              <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded text-sm">
+                {detailError}
+              </div>
+            )}
+
+            {applyResult && (
+              <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded text-sm">
+                <p className="font-medium">반영 결과</p>
+                <p className="mt-1">
+                  {applyResult.message ||
+                    `적용 ${applyResult.appliedCount ?? 0}건` +
+                      (applyResult.unmatchedCount != null
+                        ? ` · 미매칭 ${applyResult.unmatchedCount}건`
+                        : '')}
+                </p>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">상태</p>
@@ -523,49 +752,25 @@ const NoticeDetectPage: React.FC = () => {
             <div>
               <h4 className="text-sm font-semibold text-gray-900 mb-2">
                 사이트 반영 예정 내용
+                {matchedUpdates.length > 0 ? ` (${matchedUpdates.length}개 사업)` : ''}
               </h4>
-              {selectedUpdates.length > 0 ? (
-                <div className="overflow-x-auto border border-gray-200 rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">사업/구역</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">현재 단계</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">반영 예정 단계</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">비고</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {selectedUpdates.map((item, index) => (
-                        <tr key={index}>
-                          <td className="px-3 py-2">
-                            <div className="font-medium text-gray-900">{getUpdateProjectLabel(item)}</div>
-                            <div className="text-xs text-gray-500 mt-0.5">
-                              {pickString(item, ['businessNumber', 'originalId', 'district', 'gu']) ||
-                                ''}
-                            </div>
-                          </td>
-                          <td className="px-3 py-2 whitespace-nowrap">{getUpdateFromStage(item)}</td>
-                          <td className="px-3 py-2 whitespace-nowrap">
-                            <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              {getUpdateToStage(item)}
-                            </span>
-                          </td>
-                          <td className="px-3 py-2 text-gray-600">
-                            {pickString(item, ['message', 'note', 'summary', 'action']) || '-'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+              {matchedUpdates.length > 0 ? (
+                <div className="space-y-4">{matchedUpdates.map(renderUpdateCard)}</div>
               ) : (
                 <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-600">
-                  서버 응답에 사업별 반영 예정 목록이 없습니다. 아래 요약/원본 데이터를 확인하거나,
-                  백엔드에서 파싱된 업데이트 항목을 내려주도록 보완이 필요할 수 있습니다.
+                  매칭된 사업별 반영 예정 목록이 없습니다. 서버가 `updates` 배열을 내려주는지 확인해 주세요.
                 </div>
               )}
             </div>
+
+            {unmatchedUpdates.length > 0 && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900 mb-2">
+                  미매칭 사업 ({unmatchedUpdates.length})
+                </h4>
+                <div className="space-y-4">{unmatchedUpdates.map(renderUpdateCard)}</div>
+              </div>
+            )}
 
             {selectedText ? (
               <div>
