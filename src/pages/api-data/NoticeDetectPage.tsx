@@ -326,11 +326,10 @@ const NoticeDetectPage: React.FC = () => {
   };
 
   const handleUpdateStatus = async (id: string, status: NoticeCandidateStatus) => {
-    const label = statusLabelMap[status];
     const confirmMessage =
       status === 'APPLIED'
-        ? `이 탐지 건을 "${label}"로 처리할까요?\n\n매칭된 사업의 단계·신축/임대세대·층수·면적 등 변경값이 사이트 DB에 실제로 반영됩니다.`
-        : `이 항목을 "${label}"(으)로 변경하시겠습니까?`;
+        ? `이 탐지 건을 사이트에 반영할까요?\n\n매칭된 사업의 단계·신축/임대세대·층수·면적 등 변경값이 DB에 실제로 저장됩니다.\n처리에 시간이 걸릴 수 있으니 잠시만 기다려 주세요.`
+        : `이 항목을 "${statusLabelMap[status]}"(으)로 변경하시겠습니까?`;
 
     if (!confirm(confirmMessage)) return;
 
@@ -350,7 +349,7 @@ const NoticeDetectPage: React.FC = () => {
       if (status === 'APPLIED') {
         setApplyResult(
           result.applyResult || {
-            message: result.message || '반영완료 처리되었습니다.',
+            message: result.message || '사이트 반영이 완료되었습니다.',
           }
         );
         if (result.applyResult?.appliedCount != null) {
@@ -360,12 +359,25 @@ const NoticeDetectPage: React.FC = () => {
                 ? `\n미매칭: ${result.applyResult.unmatchedCount}건`
                 : '')
           );
+        } else {
+          alert(result.message || '사이트 반영이 완료되었습니다.');
         }
       }
     } catch (err: any) {
       const httpStatus = err?.response?.status;
+      const isNetworkError =
+        err?.code === 'ECONNABORTED' ||
+        err?.message === 'Network Error' ||
+        !err?.response;
+
       if (httpStatus === 404) {
         setError('상태 변경 API가 아직 배포되지 않았습니다. EC2 백엔드 배포가 필요합니다.');
+      } else if (isNetworkError) {
+        setError(
+          status === 'APPLIED'
+            ? '반영 요청 중 네트워크 오류가 발생했습니다. 서버 반영 API가 타임아웃/중단됐을 수 있으니 EC2 로그를 확인해 주세요. (잠시 후 새로고침해서 상태가 반영완료로 바뀌었는지 먼저 확인해 보세요.)'
+            : '네트워크 오류가 발생했습니다. 연결 상태를 확인한 뒤 다시 시도해 주세요.'
+        );
       } else {
         setError(err?.response?.data?.error || err?.message || '상태 변경에 실패했습니다.');
       }
@@ -480,7 +492,7 @@ const NoticeDetectPage: React.FC = () => {
             <strong>원문</strong>은 서울시 공고 페이지입니다.
           </li>
           <li>
-            <strong>반영완료</strong>를 누르면 매칭된 사업 데이터가 사이트 DB에 실제로 반영됩니다.
+            <strong>반영하기</strong>를 누르면 매칭된 사업 데이터가 사이트 DB에 실제로 반영됩니다.
           </li>
         </ul>
       </div>
@@ -600,7 +612,7 @@ const NoticeDetectPage: React.FC = () => {
                         onClick={() => handleUpdateStatus(row.id, 'APPLIED')}
                         className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                       >
-                        반영완료
+                        {busy ? '반영 중...' : '반영하기'}
                       </button>
                     )}
                     {row.status !== 'SKIPPED' && (
@@ -667,7 +679,7 @@ const NoticeDetectPage: React.FC = () => {
                   onClick={() => handleUpdateStatus(selected.id, 'APPLIED')}
                   className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                 >
-                  반영완료
+                  {updatingId === selected.id ? '반영 중...' : '반영하기'}
                 </button>
               )}
               {selected.status !== 'SKIPPED' && (

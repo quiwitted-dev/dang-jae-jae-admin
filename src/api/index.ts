@@ -746,9 +746,11 @@ export const seoulNoticeCandidatesApi = {
     applyResult: NoticeCandidateApplyResult | null;
     message?: string;
   }> => {
+    // 반영하기(APPLIED)는 DB 다건 갱신으로 시간이 걸릴 수 있어 타임아웃을 늘림
     const response = await apiClient.patch<NoticeCandidateUpdateResponse>(
       `/api/admin/seoul-notices/candidates/${id}`,
-      { status }
+      { status },
+      { timeout: status === 'APPLIED' ? 180000 : 30000 }
     );
     if (!response.data?.success) {
       throw new Error(response.data?.error || '상태 변경에 실패했습니다.');
