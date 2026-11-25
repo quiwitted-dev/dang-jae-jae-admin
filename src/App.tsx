@@ -13,6 +13,7 @@ import ApiDataSyncPage from './pages/api-data/ApiDataSyncPage';
 import ExcelUploadPage from './pages/api-data/ExcelUploadPage';
 import SeoulUpdateHistoryPage from './pages/api-data/SeoulUpdateHistoryPage';
 import NoticeDetectPage from './pages/api-data/NoticeDetectPage';
+import InquiriesPage from './pages/admin/InquiriesPage';
 
 function App() {
   return (
@@ -34,6 +35,9 @@ function App() {
 
               {/* 신청 관리 */}
               <Route path="admin/submissions" element={<SubmissionsPage />} />
+
+              {/* 1:1 문의 관리 */}
+              <Route path="admin/inquiries" element={<InquiriesPage />} />
 
               {/* 가격 관리 */}
               <Route path="admin/price" element={<PricePage />} />
