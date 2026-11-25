@@ -509,3 +509,51 @@ export interface NoticeCandidateUpdateResponse {
   error?: string;
   message?: string;
 }
+
+// 1:1 문의 타입
+export type InquiryStatus = "PENDING" | "ANSWERED";
+
+export type InquiryCategory = "결제/환불" | "비교/리포트" | "데이터/정보" | "기타";
+
+export interface InquiryUser {
+  id: string;
+  nickname: string;
+  email?: string | null;
+  phoneNumber?: string | null;
+  kakaoId?: string;
+  isDeleted?: boolean;
+}
+
+export interface Inquiry {
+  id: string;
+  userId: string;
+  category: InquiryCategory | string;
+  title: string;
+  content: string;
+  status: InquiryStatus;
+  answer?: string | null;
+  answeredAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user?: InquiryUser;
+}
+
+export interface InquiryListResponse {
+  success: boolean;
+  inquiries?: Inquiry[];
+  counts?: Partial<Record<InquiryStatus, number>>;
+  pagination?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  error?: string;
+}
+
+export interface InquiryDetailResponse {
+  success: boolean;
+  inquiry?: Inquiry;
+  message?: string;
+  error?: string;
+}

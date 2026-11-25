@@ -28,6 +28,10 @@ import type {
   NoticeCandidateListResponse,
   NoticeCandidateStatus,
   NoticeCandidateUpdateResponse,
+  InquiryCategory,
+  InquiryStatus,
+  InquiryListResponse,
+  InquiryDetailResponse,
 } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -316,6 +320,34 @@ export const adminApi = {
   // 유저 강제 탈퇴 처리
   withdrawUser: async (id: string): Promise<ApiResponse<null>> => {
     const response = await apiClient.delete<ApiResponse<null>>(`/api/admin/users/${id}`);
+    return response.data;
+  },
+
+  // 1:1 문의 목록 조회 (최신순, status/category 필터)
+  getInquiries: async (params?: {
+    status?: InquiryStatus;
+    category?: InquiryCategory;
+    page?: number;
+    limit?: number;
+  }): Promise<InquiryListResponse> => {
+    const response = await apiClient.get<InquiryListResponse>("/api/admin/inquiries", {
+      params,
+    });
+    return response.data;
+  },
+
+  // 1:1 문의 상세 조회
+  getInquiryById: async (id: string): Promise<InquiryDetailResponse> => {
+    const response = await apiClient.get<InquiryDetailResponse>(`/api/admin/inquiries/${id}`);
+    return response.data;
+  },
+
+  // 1:1 문의 답변 등록/수정 (status → ANSWERED)
+  answerInquiry: async (id: string, answer: string): Promise<InquiryDetailResponse> => {
+    const response = await apiClient.put<InquiryDetailResponse>(
+      `/api/admin/inquiries/${id}/answer`,
+      { answer }
+    );
     return response.data;
   },
 };

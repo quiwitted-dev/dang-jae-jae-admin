@@ -27,6 +27,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       ],
     },
     {
+      title: '1:1 문의',
+      subItems: [
+        { name: '문의 목록', path: '/admin/inquiries' },
+      ],
+    },
+    {
       title: '가격 관리',
       subItems: [
         { name: '가격 승인', path: '/admin/price' },
