@@ -374,9 +374,7 @@ const NoticeDetectPage: React.FC = () => {
         setError('상태 변경 API가 아직 배포되지 않았습니다. EC2 백엔드 배포가 필요합니다.');
       } else if (isNetworkError) {
         setError(
-          status === 'APPLIED'
-            ? '반영 요청 중 네트워크 오류가 발생했습니다. 서버 반영 API가 타임아웃/중단됐을 수 있으니 EC2 로그를 확인해 주세요. (잠시 후 새로고침해서 상태가 반영완료로 바뀌었는지 먼저 확인해 보세요.)'
-            : '네트워크 오류가 발생했습니다. 연결 상태를 확인한 뒤 다시 시도해 주세요.'
+          '요청이 브라우저에서 차단됐습니다. 서버 CORS 허용 메서드에 PATCH가 없어 제외/반영하기가 실패하는 경우가 많습니다. 서버에서 Access-Control-Allow-Methods에 PATCH를 추가해 주세요.'
         );
       } else {
         setError(err?.response?.data?.error || err?.message || '상태 변경에 실패했습니다.');
