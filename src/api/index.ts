@@ -27,7 +27,10 @@ import type {
   NoticeCandidateDetailResponse,
   NoticeCandidateListResponse,
   NoticeCandidateStatus,
+  NoticeCandidateUpdateItem,
   NoticeCandidateUpdateResponse,
+  NoticeSiteSearchItem,
+  NoticeSiteSearchResponse,
   InquiryCategory,
   InquiryStatus,
   InquiryListResponse,
@@ -772,7 +775,12 @@ export const seoulNoticeCandidatesApi = {
 
   updateStatus: async (
     id: string,
-    status: NoticeCandidateStatus
+    status: NoticeCandidateStatus,
+    options: {
+      content?: string;
+      updates?: NoticeCandidateUpdateItem[];
+      parse?: boolean;
+    } = {}
   ): Promise<{
     candidate: NoticeCandidate | null;
     applyResult: NoticeCandidateApplyResult | null;
@@ -781,8 +789,13 @@ export const seoulNoticeCandidatesApi = {
     // 반영하기(APPLIED)는 DB 다건 갱신으로 시간이 걸릴 수 있어 타임아웃을 늘림
     const response = await apiClient.patch<NoticeCandidateUpdateResponse>(
       `/api/admin/seoul-notices/candidates/${id}`,
-      { status },
-      { timeout: status === 'APPLIED' ? 180000 : 30000 }
+      {
+        status,
+        ...(options.content != null ? { content: options.content, text: options.content } : {}),
+        ...(options.updates ? { updates: options.updates } : {}),
+        ...(options.parse ? { parse: true, reparse: true, action: 'parse' } : {}),
+      },
+      { timeout: status === 'APPLIED' || options.parse ? 180000 : 30000 }
     );
     if (!response.data?.success) {
       throw new Error(response.data?.error || '상태 변경에 실패했습니다.');
@@ -792,5 +805,126 @@ export const seoulNoticeCandidatesApi = {
       applyResult: extractApplyResult(response.data),
       message: response.data.message,
     };
+  },
+
+  /** 원문 텍스트 저장 + (서버 지원 시) 재파싱 */
+  saveContent: async (
+    id: string,
+    content: string,
+    options: { parse?: boolean; status?: NoticeCandidateStatus } = {}
+  ): Promise<NoticeCandidate | null> => {
+    const response = await apiClient.patch<NoticeCandidateUpdateResponse>(
+      `/api/admin/seoul-notices/candidates/${id}`,
+      {
+        content,
+        text: content,
+        ...(options.status ? { status: options.status } : { status: 'REVIEWING' }),
+        ...(options.parse === false
+          ? {}
+          : { parse: true, reparse: true, action: 'parse' }),
+      },
+      { timeout: 180000 }
+    );
+    if (!response.data?.success) {
+      throw new Error(response.data?.error || '원문 저장에 실패했습니다.');
+    }
+    return extractNoticeCandidateDetail(response.data);
+  },
+
+  /** 원문 파일 업로드 (PATCH multipart) */
+  uploadContentFile: async (
+    id: string,
+    file: File,
+    options: { parse?: boolean } = {}
+  ): Promise<NoticeCandidate | null> => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('status', 'REVIEWING');
+    if (options.parse !== false) {
+      form.append('parse', 'true');
+      form.append('reparse', 'true');
+      form.append('action', 'parse');
+    }
+    const response = await apiClient.patch<NoticeCandidateUpdateResponse>(
+      `/api/admin/seoul-notices/candidates/${id}`,
+      form,
+      {
+        timeout: 180000,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
+    if (!response.data?.success) {
+      throw new Error(response.data?.error || '파일 업로드에 실패했습니다.');
+    }
+    return extractNoticeCandidateDetail(response.data);
+  },
+
+  /** 수동 수정한 updates 초안 저장 */
+  saveUpdatesDraft: async (
+    id: string,
+    updates: NoticeCandidateUpdateItem[],
+    content?: string
+  ): Promise<NoticeCandidate | null> => {
+    const response = await apiClient.patch<NoticeCandidateUpdateResponse>(
+      `/api/admin/seoul-notices/candidates/${id}`,
+      {
+        status: 'REVIEWING',
+        updates,
+        ...(content != null ? { content, text: content } : {}),
+      },
+      { timeout: 60000 }
+    );
+    if (!response.data?.success) {
+      throw new Error(response.data?.error || '초안 저장에 실패했습니다.');
+    }
+    return extractNoticeCandidateDetail(response.data);
+  },
+
+  /** 사업장 검색 (반영 대상 선택) */
+  searchSites: async (query: string): Promise<NoticeSiteSearchItem[]> => {
+    const q = query.trim();
+    if (!q) return [];
+
+    const extractSites = (payload: NoticeSiteSearchResponse | any): NoticeSiteSearchItem[] => {
+      if (!payload) return [];
+      if (Array.isArray(payload)) return payload as NoticeSiteSearchItem[];
+      if (Array.isArray(payload.sites)) return payload.sites;
+      if (Array.isArray(payload.items)) return payload.items;
+      if (Array.isArray(payload.data)) return payload.data;
+      if (payload.data && Array.isArray(payload.data.sites)) return payload.data.sites;
+      if (payload.data && Array.isArray(payload.data.items)) return payload.data.items;
+      if (payload.data && Array.isArray(payload.data.results)) return payload.data.results;
+      return [];
+    };
+
+    const endpoints = [
+      { url: '/api/admin/public-renovation', params: { q, search: q, keyword: q, limit: 20 } },
+      { url: '/api/admin/seoul-sites', params: { q, search: q, keyword: q, limit: 20 } },
+    ];
+
+    let lastError: any = null;
+    for (const endpoint of endpoints) {
+      try {
+        const response = await apiClient.get<NoticeSiteSearchResponse>(endpoint.url, {
+          params: endpoint.params,
+        });
+        const sites = extractSites(response.data);
+        if (sites.length > 0 || response.data?.success !== false) {
+          return sites.map((site) => ({
+            ...site,
+            id: String(site.id),
+          }));
+        }
+      } catch (err: any) {
+        lastError = err;
+        if (err?.response?.status && err.response.status !== 404) {
+          // 인증/서버 오류면 다음 후보도 시도하되, 전부 실패 시 throw
+          continue;
+        }
+      }
+    }
+
+    if (lastError?.response?.status === 401) throw lastError;
+    return [];
   },
 };
