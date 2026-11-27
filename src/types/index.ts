@@ -510,6 +510,39 @@ export interface NoticeCandidateUpdateResponse {
   message?: string;
 }
 
+/** 사업장 검색 결과 (반영 대상 선택용) */
+export interface NoticeSiteSearchItem {
+  id: string;
+  projectName?: string;
+  renovationZoneName?: string;
+  district?: string;
+  address?: string;
+  currentStage?: string;
+  originalId?: string;
+  businessNumber?: string;
+  newConstructionUnits?: number | null;
+  rentalUnits?: number | null;
+  totalSaleUnits?: number | null;
+  generalSaleUnits?: number | null;
+  newConstructionFloors?: number | null;
+  projectAreaM2?: string | null;
+  volumeRatio?: string | null;
+  buildingCoverageRatio?: string | null;
+  [key: string]: unknown;
+}
+
+export interface NoticeSiteSearchResponse {
+  success?: boolean;
+  sites?: NoticeSiteSearchItem[];
+  items?: NoticeSiteSearchItem[];
+  data?: NoticeSiteSearchItem[] | {
+    sites?: NoticeSiteSearchItem[];
+    items?: NoticeSiteSearchItem[];
+    results?: NoticeSiteSearchItem[];
+  };
+  error?: string;
+}
+
 // 1:1 문의 타입
 export type InquiryStatus = "PENDING" | "ANSWERED";
 
